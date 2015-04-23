@@ -1,0 +1,9 @@
+RAAKA-AINE
+#Raaka-aineen tiedot
+
+Tallennettu : 18.4.2015
+Nimi    : Kala
+Maara   : 1
+Yksikko : kg
+Resepti : 
+Allergeenit : Laktoosi

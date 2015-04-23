@@ -1,0 +1,12 @@
+RESEPTI
+#Reseptin tiedot
+
+Tallennettu : 18.4.2015
+Nimi    : Kalakeitto
+Kesto	: 65 
+Ohjeet : Ota kala
+Ohjeet : Paista kala
+Ohjeet : syo kala
+Ra: raaka_aineen_nimi
+Ra: raaka_aineen_nimi2
+
