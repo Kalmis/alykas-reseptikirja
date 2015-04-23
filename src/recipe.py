@@ -3,8 +3,9 @@ from ingredinent import Ingredient
 class Recipe():
     
     
-    def __init__(self,name,instructions,time,ingredients,ingredient_list):
+    def __init__(self, date, name,instructions,time,ingredients,ingredient_list):
         
+        self.date = date
         self.name = name
         self.instructions = instructions
         self.time = time

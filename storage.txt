@@ -1,0 +1,5 @@
+STORAGELIST
+#Storage
+
+Kala : 5 : KG
+Maito : 3 : L

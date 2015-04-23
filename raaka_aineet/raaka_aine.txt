@@ -1,9 +1,11 @@
-RAAKA-AINE
-#Raaka-aineen tiedot
+INGREDIENTLIST
+#Ingredient
 
-Tallennettu : 18.4.2015
-Nimi    : Kala
-Maara   : 1
-Yksikko : kg
-Resepti : 
-Allergeenit : Laktoosi
+Date 		: 18.4.2015
+Name    	: Kala
+Density		: 1
+Quantity	: 1
+Unit 		: kg
+Recipe 		: 
+Allergen 	: Laktoosi
+Allergen	: Maissi
