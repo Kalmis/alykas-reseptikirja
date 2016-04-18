@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from ingredinent import Ingredient
 
 class Recipe():
@@ -17,7 +19,7 @@ class Recipe():
                     self.ingredients[0] = i
                     i += 1
                     
-            # Reseptiä kyseisellä nimellä ei löytynyt.
+            # Reseptiï¿½ kyseisellï¿½ nimellï¿½ ei lï¿½ytynyt.
     
     def return_name(self):
         return self.name

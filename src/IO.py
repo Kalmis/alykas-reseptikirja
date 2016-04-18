@@ -1,3 +1,6 @@
+# -*- coding: utf-8 -*-
+
+
 from recipe import Recipe
 from ingredient import Ingredient
 
@@ -82,9 +85,9 @@ class IO(object):
                             
                         if not self.name or self.unit or self.quantity or self.date:
                             if self.name:
-                                print("Seuraavan raaka-aineen lukeminen epäonnistui:", self.name)
+                                print("Seuraavan raaka-aineen lukeminen epï¿½onnistui:", self.name)
                             else:
-                                 print("Raaka-aineen luku epäonnistui, jatketaan silti.")
+                                 print("Raaka-aineen luku epï¿½onnistui, jatketaan silti.")
                         else:
                             self.ingredient_list.append(self.ingredient)
                             self.date = False
@@ -179,9 +182,9 @@ class IO(object):
                             
                         if not self.name or self.date or self.time or self.instructions or self.ingredients:
                             if self.name:
-                                print("Seuraavan reseptin lukeminen epäonnistui:", self.name)
+                                print("Seuraavan reseptin lukeminen epï¿½onnistui:", self.name)
                             else:
-                                 print("Reseptin luku epäonnistui, jatketaan silti.")
+                                 print("Reseptin luku epï¿½onnistui, jatketaan silti.")
                         else:
                             self.ingredient_list.append(self.ingredient)
                             self.date = False
@@ -258,7 +261,7 @@ class IO(object):
                             header_parts = current_line.split(":")    
                         
                             else:
-                                 print("Reseptin luku epäonnistui, jatketaan silti.")
+                                 print("Reseptin luku epï¿½onnistui, jatketaan silti.")
                         else:
                             self.ingredient_list.append(self.ingredient)
                             self.date = False

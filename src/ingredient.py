@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from recipe import Recipe
 
 KG = 0
@@ -68,8 +70,8 @@ class Ingredient():
     def load_recipe(self,recipe_list):
         '''
         Jos ja kun False, niin resepti olisi, mutta ei ladattu.
-        Etsitään Resepti olio listasta raaka-aine olioon talletettua
-        nimeä totteleva olio ja asetetaan se reseptiksi.
+        Etsitï¿½ï¿½n Resepti olio listasta raaka-aine olioon talletettua
+        nimeï¿½ totteleva olio ja asetetaan se reseptiksi.
         '''
         if(self.recipe_loaded == False):
             while i in recipe_list:
@@ -77,7 +79,7 @@ class Ingredient():
                     self.recipe = i
                     self.recipe_loaded = True
                     return True
-            # Reseptiä kyseisellä nimellä ei löytynyt.
+            # Reseptiï¿½ kyseisellï¿½ nimellï¿½ ei lï¿½ytynyt.
             return False
         else:
             return None # Ei ladattavaa
