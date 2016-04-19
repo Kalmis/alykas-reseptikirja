@@ -261,8 +261,10 @@ class IO(object):
                             current_line = input.readline()
                             header_parts = current_line.split(":")    
                         
-                            else:
-                                print("Reseptin luku ep�onnistui, jatketaan silti.")
+                            #=================================================== Wat is tis?
+                            # else:
+                            #     print("Reseptin luku ep�onnistui, jatketaan silti.")
+                            #===================================================
                         else:
                             self.ingredient_list.append(self.ingredient)
                             self.date = False
@@ -281,4 +283,4 @@ class IO(object):
         except IOError:
 
 
-            raise CorruptedRecipeFileError("Jokin meni aivan totaalisen pieleen.")
+            raise CorruptedStorageFileError("Jokin meni aivan totaalisen pieleen.")
