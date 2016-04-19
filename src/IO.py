@@ -12,7 +12,7 @@ class IO(object):
     Input output luokka, hoitaa kaiken tarvittavan luettavan eri funktioilla.
     '''
 
-    def load_ingredients(self, input):
+    def loagIngredients(self, input):
 
         '''
         TESTAAMATTA
@@ -23,66 +23,66 @@ class IO(object):
         self.name = False
         self.unit = False
         self.quantity = False
-        self.ingredient_list = []
+        self.ingredientList = []
         
         
  
-        current_line = ''
+        currentLine = ''
 
         try:
 
     
 
-            current_line = input.readline()
-            header_parts = current_line.split(" ")
+            currentLine = input.readline()
+            headerParts = currentLine.split(" ")
 
             # Process the data we just read.
 
-            if header_parts[0].strip() != "INGREDIENTLIST":
+            if headerParts[0].strip() != "INGREDIENTLIST":
                 raise CorruptedIngredientFileError("Unknown file type")
 
 
 
-            current_line = input.readline()
-            header_parts = current_line.split(" ")
-            while current_line != '':
+            currentLine = input.readline()
+            headerParts = currentLine.split(" ")
+            while currentLine != '':
          
-                if header_parts[0].strip().lower() == '#ingredient':
+                if headerParts[0].strip().lower() == '#ingredient':
                         self.ingredient = Ingredient()
-                        current_line = input.readline()
-                        header_parts = current_line.split(":")    
-                        while current_line != '':
+                        currentLine = input.readline()
+                        headerParts = currentLine.split(":")    
+                        while currentLine != '':
                             
-                            if current_line[0] == '#':
+                            if currentLine[0] == '#':
                                 break
                             
-                            if header_parts[0].strip().lower() == 'date':
-                                self.ingredient.set_date(header_parts[1].strip())
+                            if headerParts[0].strip().lower() == 'date':
+                                self.ingredient.setDate(headerParts[1].strip())
                                 self_date = True
                                 
-                            elif header_parts[0].strip().lower() == 'name':
-                                self.ingredient.set_name(header_parts[1].strip())
+                            elif headerParts[0].strip().lower() == 'name':
+                                self.ingredient.setName(headerParts[1].strip())
                                 self.name = True
                             
-                            elif header_parts[0].strip().lower() == 'density':
-                                self.ingredient.set_density(header_parts[1].strip())
+                            elif headerParts[0].strip().lower() == 'density':
+                                self.ingredient.setDensity(headerParts[1].strip())
                             
-                            elif header_parts[0].strip().lower() == 'quantity':
-                                self.ingredient.set_quantity(header_parts[1].strip())
+                            elif headerParts[0].strip().lower() == 'quantity':
+                                self.ingredient.setQuantity(headerParts[1].strip())
                                 self.quantity = True
                                 
-                            elif header_parts[0].strip().lower() == 'unit':
-                                self.ingredient.set_unit(header_parts[1].strip())
+                            elif headerParts[0].strip().lower() == 'unit':
+                                self.ingredient.setUnit(headerParts[1].strip())
                                 self.unit = True
                             
-                            elif header_parts[0].strip().lower() == 'recipe':
-                                self.ingredient.set_recipe(header_parts[1].strip())
+                            elif headerParts[0].strip().lower() == 'recipe':
+                                self.ingredient.setRecipe(headerParts[1].strip())
                             
-                            elif header_parts[0].strip().lower() == 'allergen':
-                                self.ingredient.add_allergen(header_parts[1].strip())
+                            elif headerParts[0].strip().lower() == 'allergen':
+                                self.ingredient.addAllergen(headerParts[1].strip())
                                     
-                            current_line = input.readline()
-                            header_parts = current_line.split(":")    
+                            currentLine = input.readline()
+                            headerParts = currentLine.split(":")    
                             
                         if not self.name or self.unit or self.quantity or self.date:
                             if self.name:
@@ -90,7 +90,7 @@ class IO(object):
                             else:
                                 print("Raaka-aineen luku ep�onnistui, jatketaan silti.")
                         else:
-                            self.ingredient_list.append(self.ingredient)
+                            self.ingredientList.append(self.ingredient)
                             self.date = False
                             self.name = False
                             self.unit = False
@@ -98,12 +98,12 @@ class IO(object):
                         
                         
                 else:
-                    current_line = input.readline()
-                    header_parts = current_line.split(" ")
+                    currentLine = input.readline()
+                    headerParts = currentLine.split(" ")
                     
             
     
-            return self.ingredient_list
+            return self.ingredientList
         
         except IOError:
 
@@ -113,7 +113,7 @@ class IO(object):
         
     #################################################################################
         
-    def load_recipes(self, input):
+    def recipeList(self, input):
 
         '''
         TESTAAMATTA
@@ -125,61 +125,61 @@ class IO(object):
         self.time = False
         self.instructions = False
         self.ingredients = False
-        self.recipe_list = []
+        self.recipeList = []
         
         
  
-        current_line = ''
+        currentLine = ''
 
         try:
 
     
 
-            current_line = input.readline()
-            header_parts = current_line.split(" ")
+            currentLine = input.readline()
+            headerParts = currentLine.split(" ")
 
             # Process the data we just read.
 
-            if header_parts[0].strip() != "RECIPELIST":
+            if headerParts[0].strip() != "RECIPELIST":
                 raise CorruptedRecipeFileError("Unknown file type")
 
 
 
-            current_line = input.readline()
-            header_parts = current_line.split(" ")
-            while current_line != '':
+            currentLine = input.readline()
+            headerParts = currentLine.split(" ")
+            while currentLine != '':
          
-                if header_parts[0].strip().lower() == '#recipe':
+                if headerParts[0].strip().lower() == '#recipe':
                         self.recipe = Recipe()
-                        current_line = input.readline()
-                        header_parts = current_line.split(":")    
-                        while current_line != '':
+                        currentLine = input.readline()
+                        headerParts = currentLine.split(":")    
+                        while currentLine != '':
                             
-                            if current_line[0] == '#':
+                            if currentLine[0] == '#':
                                 break
                             
-                            if header_parts[0].strip().lower() == 'date':
-                                self.recipe.set_date(header_parts[1].strip())
+                            if headerParts[0].strip().lower() == 'date':
+                                self.recipe.setDate(headerParts[1].strip())
                                 self_date = True
                                 
-                            elif header_parts[0].strip().lower() == 'name':
-                                self.recipe.set_name(header_parts[1].strip())
+                            elif headerParts[0].strip().lower() == 'name':
+                                self.recipe.setName(headerParts[1].strip())
                                 self.name = True
                             
-                            elif header_parts[0].strip().lower() == 'time':
-                                self.recipe.set_time(header_parts[1].strip())
+                            elif headerParts[0].strip().lower() == 'time':
+                                self.recipe.set_time(headerParts[1].strip())
                                 self.time = True
                                 
-                            elif header_parts[0].strip().lower() == 'instructions':
-                                self.recipe.add_instruction(header_parts[1].strip())
+                            elif headerParts[0].strip().lower() == 'instructions':
+                                self.recipe.add_instruction(headerParts[1].strip())
                                 self.instructions = True
                             
-                            elif header_parts[0].strip().lower() == 'ingredient':
-                                self.recipe.set_ingredient(header_parts[1].strip())
+                            elif headerParts[0].strip().lower() == 'ingredient':
+                                self.recipe.set_ingredient(headerParts[1].strip())
                                 self.ingredients = True
                                     
-                            current_line = input.readline()
-                            header_parts = current_line.split(":")    
+                            currentLine = input.readline()
+                            headerParts = currentLine.split(":")    
                             
                         if not self.name or self.date or self.time or self.instructions or self.ingredients:
                             if self.name:
@@ -187,7 +187,7 @@ class IO(object):
                             else:
                                 print("Reseptin luku ep�onnistui, jatketaan silti.")
                         else:
-                            self.ingredient_list.append(self.ingredient)
+                            self.ingredientList.append(self.ingredient)
                             self.date = False
                             self.name = False
                             self.unit = False
@@ -195,8 +195,8 @@ class IO(object):
                         
                         
                 else:
-                    current_line = input.readline()
-                    header_parts = current_line.split(" ")
+                    currentLine = input.readline()
+                    headerParts = currentLine.split(" ")
                     
             
     
@@ -209,7 +209,7 @@ class IO(object):
         ########################################################################
         
         
-    def load_storage(self, input):
+    def loadStorage(self, input):
 
         '''
         KESKEN
@@ -220,53 +220,53 @@ class IO(object):
         
         
  
-        current_line = ''
+        currentLine = ''
 
         try:
 
     
 
-            current_line = input.readline()
-            header_parts = current_line.split(" ")
+            currentLine = input.readline()
+            headerParts = currentLine.split(" ")
 
             # Process the data we just read.
 
-            if header_parts[0].strip() != "STORAGELIST":
+            if headerParts[0].strip() != "STORAGELIST":
                 raise CorruptedRecipeFileError("Unknown file type")
 
 
 
-            current_line = input.readline()
-            header_parts = current_line.split(" ")
-            while current_line != '':
+            currentLine = input.readline()
+            headerParts = currentLine.split(" ")
+            while currentLine != '':
          
-                if header_parts[0].strip().lower() == '#storage':
+                if headerParts[0].strip().lower() == '#storage':
                         self.recipe = Recipe()
-                        current_line = input.readline()
-                        header_parts = current_line.split(":")    
-                        while current_line != '':
+                        currentLine = input.readline()
+                        headerParts = currentLine.split(":")    
+                        while currentLine != '':
                             
-                            if current_line[0] == '#':
+                            if currentLine[0] == '#':
                                 break
                             
-                            elif len(header_parts < 3):
+                            elif len(headerParts < 3):
                                 pass
                             
-                            elif header_parts[0].strip().lower() == 'date':
-                                self.recipe.set_date(header_parts[1].strip())
+                            elif headerParts[0].strip().lower() == 'date':
+                                self.recipe.setDate(headerParts[1].strip())
                                 self_date = True
                                 
                             
                                     
-                            current_line = input.readline()
-                            header_parts = current_line.split(":")    
+                            currentLine = input.readline()
+                            headerParts = currentLine.split(":")    
                         
                             #=================================================== Wat is tis?
                             # else:
                             #     print("Reseptin luku ep�onnistui, jatketaan silti.")
                             #===================================================
                         else:
-                            self.ingredient_list.append(self.ingredient)
+                            self.ingredientList.append(self.ingredient)
                             self.date = False
                             self.name = False
                             self.unit = False
@@ -274,8 +274,8 @@ class IO(object):
                         
                         
                 else:
-                    current_line = input.readline()
-                    header_parts = current_line.split(" ")
+                    currentLine = input.readline()
+                    headerParts = currentLine.split(" ")
                     
             
     

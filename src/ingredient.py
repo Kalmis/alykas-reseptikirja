@@ -34,50 +34,50 @@ class Ingredient():
         self.density = None          #Int
         self.allergens = []        #String list
         self.recipe = None          #Object
-        self.recipe_loaded = None   #Boolean
+        self.recipeLoaded = None   #Boolean
                             
         
-    def set_date(self,date):
+    def setDate(self,date):
         self.date = date
         
-    def set_name(self,name):
+    def setName(self,name):
         self.name = name
     
-    def set_density(self,density):
+    def setDensity(self,density):
         self.density = float(density)
         
-    def set_quantity(self,quantity):
+    def setQuantity(self,quantity):
         self.quantity = int(quantity)
         
-    def set_unit(self,unit):
+    def setUnit(self,unit):
         '''
         IMPELEMNTOI
         '''
     
         self.unit = unit
     
-    def set_recipe(self,recipe):
+    def setRecipe(self,recipe):
         self.recipe = recipe
-        self.recipe_loaded = False
+        self.recipeLoaded = False
         
-    def add_allergen(self,allergen):
+    def addAllergen(self,allergen):
         self.allergens.append(allergen)
     
-    def return_name(self):
+    def returnName(self):
         return self.name 
             
             
-    def load_recipe(self,recipe_list):
+    def loadRecipe(self,recipeList):
         '''
         Jos ja kun False, niin resepti olisi, mutta ei ladattu.
         Etsit��n Resepti olio listasta raaka-aine olioon talletettua
         nime� totteleva olio ja asetetaan se reseptiksi.
         '''
-        if(self.recipe_loaded == False):
-            while i in recipe_list:
-                if i.return_name == self.recipe:
+        if(self.recipeLoaded == False):
+            for i in recipeList:
+                if i.returnName == self.recipe:
                     self.recipe = i
-                    self.recipe_loaded = True
+                    self.recipeLoaded = True
                     return True
             # Resepti� kyseisell� nimell� ei l�ytynyt.
             return False

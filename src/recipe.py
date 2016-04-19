@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 
-from ingredinent import Ingredient
+from ingredient import Ingredient
 
 class Recipe():
     
     
-    def __init__(self, date, name,instructions,time,ingredients,ingredient_list):
+    def __init__(self, date, name,instructions,time,ingredients,recipesList):
         
         self.date = date
         self.name = name
@@ -13,18 +13,18 @@ class Recipe():
         self.time = time
         self.ingredients = []
         
-        i = 0
-        while i in recipe_list:
-                if i.return_name == self.ingredients[0]:
+        for i in recipesList:
+                if i.returnName == self.ingredients[0]:
                     self.ingredients[0] = i
                     i += 1
                     
-            # Resepti� kyseisell� nimell� ei l�ytynyt.
+            # Reseptiä kyseisellä nimellä ei löytynyt.
     
-    def return_name(self):
+    def returnName(self):
         return self.name
-    def change_name(self,name):
+    
+    def changeName(self,name):
         self.name = name
                 
-    def change_time(self,name):
+    def changeTime(self,time):
         self.time = time
