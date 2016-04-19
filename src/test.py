@@ -17,14 +17,12 @@ class Test(unittest.TestCase):
         self.assertEqual(2, self.MainTest.AskUserInputInt(2), "AskUserInputInt syöte ei vastaa palautetta")
         self.assertEqual(2, self.MainTest.AskUserInputInt(2.4), "AskUserInputInt syöte ei vastaa palautetta")
         self.assertEqual(2, self.MainTest.AskUserInputInt(2.6), "AskUserInputInt syöte ei vastaa palautetta")
-        self.assertFalse(self.MainTest.AskUserInputInt("tadaa"), "AskUserInputInt try except ei toimi")
         
     def testAskUserInputFloat(self):
         
         self.assertEqual(2, self.MainTest.AskUserInputFloat(2), "AskUserInputFloat syöte ei vastaa palautetta")
         self.assertEqual(2.4, self.MainTest.AskUserInputFloat(2.4), "AskUserInputFloat syöte ei vastaa palautetta")
         self.assertEqual(2.6, self.MainTest.AskUserInputFloat(2.6), "AskUserInputFloat syöte ei vastaa palautetta")
-        self.assertFalse(self.MainTest.AskUserInputFloat("tadaa"), "AskUserInputFloat try except ei toimi")
 
 
         
