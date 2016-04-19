@@ -6,7 +6,7 @@ class Main(object):
         
         
         
-        print("Käynnistetään ohjelma. Ehkäpä autom sisäänluku ym. tässä?")
+        #TODO: Automaattinen aineiston sisäänluku ja niiden tallentaminen listoihin
         # Testimoodi pois päältä oletuksena. Testimoodissa mm. AskUserInput metodit käyttävät kysymystä syötteenä.
         self.TestMode = False
         
@@ -28,7 +28,7 @@ class Main(object):
             UserInput = int(UserInput)
             return(UserInput)
         except ValueError:  
-            print("Syöte ei ole kokonaisluku")
+            return False
             
             
     def AskUserInputFloat(self,question):
@@ -42,7 +42,7 @@ class Main(object):
             UserInput = float(UserInput)
             return(UserInput)
         except ValueError:  
-            print("Syöte ei ole desimaaliluku")
+            return False
               
     
         
