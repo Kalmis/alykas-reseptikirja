@@ -8,3 +8,8 @@ class CorruptedIngredientFileError(Exception):
 
     def __init__(self, message):
         super(CorruptedIngredientFileError, self).__init__(message)
+        
+class CorruptedRecipeFileError(Exception):
+
+    def __init__(self, message):
+        super(CorruptedRecipeFileError, self).__init__(message)
