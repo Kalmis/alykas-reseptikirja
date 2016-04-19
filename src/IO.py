@@ -12,7 +12,7 @@ class IO(object):
     Input output luokka, hoitaa kaiken tarvittavan luettavan eri funktioilla.
     '''
 
-    def loagIngredients(self, input):
+    def loadIngredients(self, input):
 
         '''
         TESTAAMATTA
