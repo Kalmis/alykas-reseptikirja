@@ -128,8 +128,4 @@ class Main(object):
         print("LoadMenu")        
         
             
-program = Main()
-program.MainMenu()
-print("Ohjelma sammuu")
-exit()
         
