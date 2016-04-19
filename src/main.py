@@ -1,19 +1,22 @@
 # -*- coding: utf-8 -*-
 
-
-
-
-
 class Main(object):
     
     def __init__(self):
         
-        
-        
+
         #TODO: Automaattinen aineiston sisäänluku ja niiden tallentaminen listoihin
         # Testimoodi pois päältä oletuksena. Testimoodissa mm. AskUserInput metodit käyttävät kysymystä syötteenä.
         self.TestMode = False
         self.MainMenuTitles = ["1. Varastotilanne", "2. Raaka-aineet", "3. Reseptit","4. Haku","5. Tallenna", "6. Lataa", "0. Sulje ohjelma"]
+        self.StorageMenuTitles = ["1. Kerro lisätietoja raaka-aineesta", "2. Näytä varastotilanne", "0. Takaisin"]
+        self.IngredientsMenuTitles = ["1. Kerro lisätietoja raaka-aineesta", "2. Listaa raaka-aineet", "0. Takaisin"]
+        self.RecipesMenuTitles = ["1. Kerro lisätietoja reseptistä", "2. Listaa reseptit", "0. Takaisin"]
+        self.SearchMenuTitles = ["1. Kerro lisätietoja reseptistä", "2. Reseptit, joissa raaka-aine esiintyy", "3. Sopii allergikolle", "4. Reseptit, joihin varastotarvikkeet riittävät", "5. Reseptit, joista puuttuu N-määrä raaka-aineita varastosta", "6. Reseptit, joista löytyy N-määrä raaka-aineita varastosta", "0. Takaisin"]
+        self.SaveMenuTitles =  ["1. Tallenna kaikki", "2. Tallenna reseptit", "3. Tallenna raaka-aineet", "4. Tallenna varasto", "0. Takaisin"]
+        self.LoadMenuTitles =  ["1. Lataa kaikki", "2. Lataa reseptit", "3. Lataa raaka-aineet", "4. Lataa varasto", "0. Takaisin"]
+
+            
     
     def RunMenu(self, MenuTitles):
         
@@ -21,12 +24,11 @@ class Main(object):
             print(i)
         while True:
             UserInput = self.AskUserInputInt("Valintasi > ")
-            if UserInput >= 0 and UserInput <= len(MenuTitles):
+            if UserInput >= 0 and UserInput < len(MenuTitles):
                 return UserInput
             else:
                 print("Virheellinen valinta")
 
-    
     def AskUserInputText(self,question):
         
         UserInput = input(question)
@@ -34,15 +36,12 @@ class Main(object):
     
     def AskUserInputInt(self,question):
        
-       
+        # Testimoodissa käytetään argumenttia syötteenä.
         if self.TestMode:
             UserInput = question
         else:
             UserInput = input(question) 
-            
         while True:
-            # Testimoodissa käytetään argumenttia syötteenä.
-            
             try:
                 UserInput = int(UserInput)
                 return(UserInput)
@@ -51,16 +50,13 @@ class Main(object):
             UserInput = input(question) 
             
     def AskUserInputFloat(self,question):
-        
+        # Testimoodissa käytetään argumenttia syötteenä.
         if self.TestMode:
             UserInput = question
         else:
             UserInput = input(question)
         
         while True:
-            # Testimoodissa käytetään argumenttia syötteenä.
-            
-            
             try:
                 UserInput = float(UserInput)
                 return(UserInput)
@@ -72,7 +68,6 @@ class Main(object):
         
         while True:
             UserChoice = self.RunMenu(self.MainMenuTitles)
-            
             if UserChoice == 1:
                 self.StorageMenu()
             elif UserChoice == 2:
@@ -85,185 +80,92 @@ class Main(object):
                 self.SaveMenu()
             elif UserChoice == 6:
                 self.LoadMenu()
-            elif UserChoice == 7:
+            elif UserChoice == 0:
                 return 0 
 
     def StorageMenu(self):
-        while 1:
-            print("1. Kerro lisätietoja raaka-aineesta")
-            print("2. Näytä varastotilanne")
-            print("0. Takaisin")
-            
-            # Pyydetään käyttäjältä inputtia, kunnes saadaan validi vastaus. 
-            # TÄmän jälkeen break, jotta tulostetaan menu uudelleen
-            while 1:
-                UserInput = self.AskUserInputText("Valintasi > ")
-                print("\n")
-                if UserInput == "1":
-                    print("Lisätietoja")
-                    break;
-                elif UserInput == "2":
-                    print("Varastotilanne")
-                    break;
-                elif UserInput == "0":
-                    return 0 
-                else:
-                    print("Virheellinen valinta.")   
+        
+        while True:
+            UserChoice = self.RunMenu(self.StorageMenuTitles)
+            if UserChoice == 1:
+                print("Lisätietoja")
+            elif UserChoice == 2:
+                print("Varastotilanne")
+            elif UserChoice == 0:
+                return 0 
         
     def IngredientsMenu(self):
-        print("IngredientsMenu")
-        
-        while 1:
-            print("1. Kerro lisätietoja raaka-aineesta")
-            print("2. Listaa raaka-aineet")
-            print("0. Takaisin")
-            
-            # Pyydetään käyttäjältä inputtia, kunnes saadaan validi vastaus. 
-            # TÄmän jälkeen break, jotta tulostetaan menu uudelleen
-            while 1:
-                UserInput = self.AskUserInputText("Valintasi > ")
-                print("\n")
-                if UserInput == "1":
-                    print("Lisätietoja")
-                    break;
-                elif UserInput == "2":
-                    print("Lista raaka-aineista")
-                    break;
-                elif UserInput == "0":
-                    return 0 
-                else:
-                    print("Virheellinen valinta.")   
+        while True:
+            UserChoice = self.RunMenu(self.IngredientsMenuTitles)
+            if UserChoice == 1:
+                print("Lisätietoja")
+            elif UserChoice == 2:
+                print("Lista raaka-aineista")
+            elif UserChoice == 0:
+                return 0   
         
     def RecipesMenu(self):
-        print("RecipesMenu")
         
         while 1:
-            print("1. Kerro lisätietoja reseptistä")
-            print("2. Listaa reseptit")
-            print("0. Takaisin")
-            
-            # Pyydetään käyttäjältä inputtia, kunnes saadaan validi vastaus. 
-            # TÄmän jälkeen break, jotta tulostetaan menu uudelleen
-            while 1:
-                UserInput = self.AskUserInputText("Valintasi > ")
-                print("\n")
-                if UserInput == "1":
-                    print("Lisätietoja")
-                    break;
-                elif UserInput == "2":
-                    print("Lista resepteistä")
-                    break;
-                elif UserInput == "0":
-                    return 0 
-                else:
-                    print("Virheellinen valinta.")   
+            UserChoice = self.RunMenu(self.RecipesMenuTitles)
+            if UserChoice == 1:
+                print("Lisätietoja")
+            elif UserChoice == 2:
+                print("Lista resepteistä")
+            elif UserChoice == 0:
+                return 0   
         
     def SearchMenu(self):
-        print("SearchMenu")   
         
         while 1:
-            print("1. Kerro lisätietoja reseptistä")
-            print("2. Reseptit, joissa raaka-aine esiintyy")
-            print("3. Sopii allergikolle")
-            print("4. Reseptit, joihin varastotarvikkeet riittävät")
-            print("5. Reseptit, joista puuttuu N-määrä raaka-aineita varastosta")
-            print("6. Reseptit, joista löytyy N-määrä raaka-aineita varastosta")
-            print("0. Takaisin")
-            
-            # Pyydetään käyttäjältä inputtia, kunnes saadaan validi vastaus. 
-            # TÄmän jälkeen break, jotta tulostetaan menu uudelleen
-            while 1:
-                UserInput = self.AskUserInputText("Valintasi > ")
-                print("\n")
-                if UserInput == "1":
-                    print("Lisätietoja")
-                    break;
-                elif UserInput == "2":
-                    print("reseptejä")
-                    break;
-                elif UserInput == "3":
-                    print("allergikko")
-                    break;
-                elif UserInput == "4":
-                    print("reseptejä")
-                    break;
-                elif UserInput == "5":
-                    print("Reseptejä")
-                    break;
-                elif UserInput == "6":
-                    print("Reseptejä")
-                    break;
-                elif UserInput == "0":
-                    return 0 
-                else:
-                    print("Virheellinen valinta.")    
+            UserChoice = self.RunMenu(self.SearchMenuTitles)
+            if UserChoice == 1:
+                print("Lisätietoja")
+            elif UserChoice == 2:
+                print("reseptejä")
+            elif UserChoice == 3:
+                print("allergikko")
+            elif UserChoice == 4:
+                print("reseptejä")
+            elif UserChoice == 5:
+                print("Reseptejä")
+            elif UserChoice == 6:
+                print("Reseptejä")
+            elif UserChoice == 0:
+                return 0   
         
-    def SaveMenu(self):
-        print("SaveMenu")
-        
+    def SaveMenu(self):  
+              
         while 1:
-            print("1. Tallenna kaikki")
-            print("2. Tallenna reseptit")
-            print("3. Tallenna raaka-aineet")
-            print("4. Tallenna varasto")
-            print("0. Takaisin")
-            
-            # Pyydetään käyttäjältä inputtia, kunnes saadaan validi vastaus. 
-            # TÄmän jälkeen break, jotta tulostetaan menu uudelleen
-            while 1:
-                UserInput = self.AskUserInputText("Valintasi > ")
-                print("\n")
-                if UserInput == "1":
-                    print("kaikki")
-                    break;
-                elif UserInput == "2":
-                    print("reseptit")
-                    break;
-                elif UserInput == "3":
-                    print("raaka-aineet")
-                    break;
-                elif UserInput == "4":
-                    print("varasto")
-                    break;
-                elif UserInput == "0":
-                    return 0 
-                else:
-                    print("Virheellinen valinta.")
-    
+            UserChoice = self.RunMenu(self.SaveMenuTitles)
+            if UserChoice == 1:
+                print("kaikki")
+            elif UserChoice == 2:
+                print("reseptit")
+            elif UserChoice == 3:
+                print("raaka-aineet")
+            elif UserChoice == 4:
+                print("varasto")
+            elif UserChoice == 0:
+                return 0 
+
     def LoadMenu(self):
-        print("LoadMenu")        
-        
         while 1:
-            print("1. Lataa kaikki")
-            print("2. Lataa reseptit")
-            print("3. Lataa raaka-aineet")
-            print("4. Lataa varasto")
-            print("0. Takaisin")
-            
-            # Pyydetään käyttäjältä inputtia, kunnes saadaan validi vastaus. 
-            # TÄmän jälkeen break, jotta tulostetaan menu uudelleen
-            while 1:
-                UserInput = self.AskUserInputText("Valintasi > ")
-                print("\n")
-                if UserInput == "1":
-                    print("kaikki")
-                    break;
-                elif UserInput == "2":
-                    print("reseptit")
-                    break;
-                elif UserInput == "3":
-                    print("raaka-aineet")
-                    break;
-                elif UserInput == "4":
-                    print("varasto")
-                    break;
-                elif UserInput == "0":
-                    return 0 
-                else:
-                    print("Virheellinen valinta.")
+            UserChoice = self.RunMenu(self.LoadMenuTitles)
+            if UserChoice == 1:
+                print("kaikki")
+            elif UserChoice == 2:
+                print("reseptit")
+            elif UserChoice == 3:
+                print("raaka-aineet")
+            elif UserChoice == 4:
+                print("varasto")
+            elif UserChoice == 0:
+                return 0 
         
 if __name__ == "__main__":
     program = Main()
     program.MainMenu()
+    print("Exit")
                    
         
