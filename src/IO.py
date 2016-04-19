@@ -22,9 +22,12 @@ class IO(object):
         self.date = False
         self.name = False
         self.unit = False
+        self.density = False
         self.quantity = False
         self.ingredientList = []
         
+        self.succesCount = 0
+        self.errorCount = 0
         
  
         currentLine = ''
@@ -62,14 +65,17 @@ class IO(object):
                                 
                             elif headerParts[0].strip().lower() == 'name':
                                 self.ingredient.setName(headerParts[1].strip())
-                                self.name = True
+                                self.name = headerParts[1].strip()
                             
                             elif headerParts[0].strip().lower() == 'density':
-                                self.ingredient.setDensity(headerParts[1].strip())
+                                if self.ingredient.setDensity(headerParts[1].strip()):
+                                    self.density = True
+                                else: break
                             
                             elif headerParts[0].strip().lower() == 'quantity':
-                                self.ingredient.setQuantity(headerParts[1].strip())
-                                self.quantity = True
+                                if self.ingredient.setQuantity(headerParts[1].strip()):
+                                    self.quantity = True
+                                else: break
                                 
                             elif headerParts[0].strip().lower() == 'unit':
                                 self.ingredient.setUnit(headerParts[1].strip())
@@ -84,12 +90,14 @@ class IO(object):
                             currentLine = inputLines.readline()
                             headerParts = currentLine.split(":")    
                             
-                        if not self.name or not self.unit or not self.quantity or not self.date:
+                        if not self.name or not self.unit or not self.density or not self.quantity or not self.date:
+                            self.errorCount +=1
                             if self.name:
                                 print("Seuraavan raaka-aineen lukeminen epäonnistui:", self.name)
                             else:
                                 print("Raaka-aineen luku epäonnistui, jatketaan seuraavaan.")
                         else:
+                            self.succesCount +=1
                             self.ingredientList.append(self.ingredient)
                             self.date = False
                             self.name = False
@@ -103,7 +111,7 @@ class IO(object):
                     
             
     
-            return self.ingredientList
+            return self.ingredientList,self.succesCount,self.errorCount
         
         except IOError:
 
@@ -127,7 +135,8 @@ class IO(object):
         self.ingredients = False
         self.recipes = []
         
-        
+        self.succesCount = 0
+        self.errorCount = 0
  
         currentLine = ''
 
@@ -164,7 +173,7 @@ class IO(object):
                                 
                             elif headerParts[0].strip().lower() == 'name':
                                 self.recipe.setName(headerParts[1].strip())
-                                self.name = True
+                                self.name = headerParts[1].strip()
                             
                             elif headerParts[0].strip().lower() == 'time':
                                 self.recipe.set_time(headerParts[1].strip())
@@ -182,11 +191,13 @@ class IO(object):
                             headerParts = currentLine.split(":")    
                             
                         if not self.name or self.date or self.time or self.instructions or self.ingredients:
+                            self.errorCount += 1
                             if self.name:
-                                print("Seuraavan reseptin lukeminen ep�onnistui:", self.name)
+                                print("Seuraavan reseptin lukeminen epäonnistui:", self.name)
                             else:
-                                print("Reseptin luku ep�onnistui, jatketaan silti.")
+                                print("Reseptin luku epäonnistui, jatketaan silti.")
                         else:
+                            self.succesCount += 1
                             self.ingredientList.append(self.ingredient)
                             self.date = False
                             self.name = False
@@ -199,7 +210,8 @@ class IO(object):
                     headerParts = currentLine.split(" ")
                     
             
-    
+            return self.recipes,self.succesCount,self.errorCount
+
             
         except IOError:
 
