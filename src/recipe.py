@@ -6,9 +6,9 @@ class Recipe():
         
         self.date = None
         self.name = None
-        self.instructions = None
+        self.instructions = []
         self.time = None
-        self.ingredients = None
+        self.ingredients = []
         
                 
     def setName(self, name):
@@ -17,29 +17,37 @@ class Recipe():
     def setDate(self,date):
         self.date = date
         
-    def setInstructions(self,instructions):
-        self.instructions = instructions
-    
+    def addInstruction(self,instruction):
+        self.instructions.append(instruction) 
+        
+    #TODO: tämän pitäis varmaan olla float?
     def setTime(self,time):
         self.time = time
     
-    def returnName(self):
+    def getName(self):
         return self.name
     
-    def changeName(self,name):
-        self.name = name
-                
-    def changeTime(self,time):
-        self.time = time
+    def getDate(self):
+        return self.date
+    
+    def getTime(self):
+        return self.time
+    
+    def getInstructions(self):
+        return self.instructions
+    
         
-    def setIngredients(self,ingredients, ingredientsList):
+    def addIngredient(self, ingredient, ingredientsList):
         # ingredientsList on lista raaka-aine olioista
         # ingredients on lista raaka-aineista tekstinä
         for i in ingredientsList:
-                if i.returnName == self.ingredients[0]:
-                    self.ingredients[0] = i
-                    i += 1
+                if i.getName().strip().lower() == ingredient.lower():
+                    self.ingredients.append(i)
+                    return True
                 else:
                     # Raaka-ainetta kyseisellä nimellä ei löytynyt.
                     pass
-                
+        return False
+
+    def getIngredients(self):
+        return self.ingredients
