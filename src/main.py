@@ -13,7 +13,19 @@ class Main(object):
         #TODO: Automaattinen aineiston sisäänluku ja niiden tallentaminen listoihin
         # Testimoodi pois päältä oletuksena. Testimoodissa mm. AskUserInput metodit käyttävät kysymystä syötteenä.
         self.TestMode = False
+        self.MainMenuTitles = ["1. Varastotilanne", "2. Raaka-aineet", "3. Reseptit","4. Haku","5. Tallenna", "6. Lataa", "0. Sulje ohjelma"]
+    
+    def RunMenu(self, MenuTitles):
         
+        for i in MenuTitles:
+            print(i)
+        while True:
+            UserInput = self.AskUserInputInt("Valintasi > ")
+            if UserInput >= 0 and UserInput <= len(MenuTitles):
+                return UserInput
+            else:
+                print("Virheellinen valinta")
+
     
     def AskUserInputText(self,question):
         
@@ -21,70 +33,60 @@ class Main(object):
         return UserInput    
     
     def AskUserInputInt(self,question):
-        
-        # Testimoodissa käytetään argumenttia syötteenä.
+       
+       
         if self.TestMode:
             UserInput = question
         else:
-            UserInput = input(question)
-        try:
-            UserInput = int(UserInput)
-            return(UserInput)
-        except ValueError:  
-            return False
+            UserInput = input(question) 
+            
+        while True:
+            # Testimoodissa käytetään argumenttia syötteenä.
+            
+            try:
+                UserInput = int(UserInput)
+                return(UserInput)
+            except ValueError:  
+                print("Syöte ei kokonaisluku")
+            UserInput = input(question) 
             
     def AskUserInputFloat(self,question):
         
-        # Testimoodissa käytetään argumenttia syötteenä.
         if self.TestMode:
             UserInput = question
         else:
             UserInput = input(question)
         
-        try:
-            UserInput = float(UserInput)
-            return(UserInput)
-        except ValueError:  
-            return False
+        while True:
+            # Testimoodissa käytetään argumenttia syötteenä.
+            
+            
+            try:
+                UserInput = float(UserInput)
+                return(UserInput)
+            except ValueError:  
+                print("Syöte ei desimaaliluku")
+            UserInput = input(question)
               
     def MainMenu(self):
         
-        while 1:
-            print("1. Varastotilanne")
-            print("2. Raaka-aineet")
-            print("3. Reseptit")
-            print("4. Haku")
-            print("5. Tallenna")
-            print("6. Lataa")
-            print("0. Sulje ohjelma")
+        while True:
+            UserChoice = self.RunMenu(self.MainMenuTitles)
             
-            # Pyydetään käyttäjältä inputtia, kunnes saadaan validi vastaus. 
-            # TÄmän jälkeen break, jotta tulostetaan menu uudelleen
-            while 1:
-                UserInput = self.AskUserInputText("Valintasi > ")
-                print("\n")
-                if UserInput == "1":
-                    self.StorageMenu()
-                    break;
-                elif UserInput == "2":
-                    self.IngredientsMenu()
-                    break;
-                elif UserInput == "3":
-                    self.RecipesMenu()
-                    break;
-                elif UserInput == "4":
-                    self.SearchMenu()
-                    break;
-                elif UserInput == "5":
-                    self.SaveMenu()
-                    break
-                elif UserInput == "6":
-                    self.LoadMenu()
-                    break
-                elif UserInput == "0":
-                    return 0
-                else:
-                    print("Virheellinen valinta.")    
+            if UserChoice == 1:
+                self.StorageMenu()
+            elif UserChoice == 2:
+                self.IngredientsMenu()
+            elif UserChoice == 3:
+                self.RecipesMenu()
+            elif UserChoice == 4:
+                self.SearchMenu()
+            elif UserChoice == 5:
+                self.SaveMenu()
+            elif UserChoice == 6:
+                self.LoadMenu()
+            elif UserChoice == 7:
+                return 0 
 
     def StorageMenu(self):
         while 1:
