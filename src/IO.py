@@ -121,7 +121,7 @@ class IO(object):
         
     #################################################################################
         
-    def loadRecipesList(self, inputLines):
+    def loadRecipesList(self, inputLines, ingredientsList):
 
         '''
         TESTAAMATTA
@@ -133,7 +133,7 @@ class IO(object):
         self.time = False
         self.instructions = False
         self.ingredients = False
-        self.recipes = []
+        self.recipesList = []
         
         self.succesCount = 0
         self.errorCount = 0
@@ -169,28 +169,29 @@ class IO(object):
                             
                             if headerParts[0].strip().lower() == 'date':
                                 self.recipe.setDate(headerParts[1].strip())
-                                self_date = True
+                                self.date = True
                                 
                             elif headerParts[0].strip().lower() == 'name':
                                 self.recipe.setName(headerParts[1].strip())
                                 self.name = headerParts[1].strip()
                             
                             elif headerParts[0].strip().lower() == 'time':
-                                self.recipe.set_time(headerParts[1].strip())
+                                self.recipe.setTime(headerParts[1].strip())
                                 self.time = True
                                 
-                            elif headerParts[0].strip().lower() == 'instructions':
-                                self.recipe.add_instruction(headerParts[1].strip())
+                            elif headerParts[0].strip().lower() == 'instruction':
+                                self.recipe.addInstruction(headerParts[1].strip())
                                 self.instructions = True
                             
                             elif headerParts[0].strip().lower() == 'ingredient':
-                                self.recipe.set_ingredient(headerParts[1].strip())
-                                self.ingredients = True
+                                if self.recipe.addIngredient(headerParts[1].strip(), ingredientsList):
+                                    self.ingredients = True
+                                else: break
                                     
                             currentLine = inputLines.readline()
                             headerParts = currentLine.split(":")    
                             
-                        if not self.name or self.date or self.time or self.instructions or self.ingredients:
+                        if not self.name or not self.date or not self.time or not self.instructions or not self.ingredients:
                             self.errorCount += 1
                             if self.name:
                                 print("Seuraavan reseptin lukeminen epäonnistui:", self.name)
@@ -198,11 +199,12 @@ class IO(object):
                                 print("Reseptin luku epäonnistui, jatketaan silti.")
                         else:
                             self.succesCount += 1
-                            self.ingredientList.append(self.ingredient)
+                            self.recipesList.append(self.recipe)
                             self.date = False
                             self.name = False
-                            self.unit = False
-                            self.quantity = False
+                            self.time = False
+                            self.instructions = False
+                            self.ingredients = False
                         
                         
                 else:
@@ -210,7 +212,7 @@ class IO(object):
                     headerParts = currentLine.split(" ")
                     
             
-            return self.recipes,self.succesCount,self.errorCount
+            return self.recipesList,self.succesCount,self.errorCount
 
             
         except IOError:
@@ -266,7 +268,7 @@ class IO(object):
                             
                             elif headerParts[0].strip().lower() == 'date':
                                 self.recipe.setDate(headerParts[1].strip())
-                                self_date = True
+                                self.date = True
                                 
                             
                                     
