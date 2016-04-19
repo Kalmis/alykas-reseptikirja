@@ -3,6 +3,7 @@
 
 from recipe import Recipe
 from ingredient import Ingredient
+from corrupted_file_errors import *
 
 
 class IO(object):
@@ -56,29 +57,29 @@ class IO(object):
                                 break
                             
                             if header_parts[0].strip().lower() == 'date':
-                                self.ingredient.set_date(header_part[1].strip())
+                                self.ingredient.set_date(header_parts[1].strip())
                                 self_date = True
                                 
                             elif header_parts[0].strip().lower() == 'name':
-                                self.ingredient.set_name(header_part[1].strip())
+                                self.ingredient.set_name(header_parts[1].strip())
                                 self.name = True
                             
                             elif header_parts[0].strip().lower() == 'density':
-                                self.ingredient.set_density(header_part[1].strip())
+                                self.ingredient.set_density(header_parts[1].strip())
                             
                             elif header_parts[0].strip().lower() == 'quantity':
-                                self.ingredient.set_quantity(header_part[1].strip())
+                                self.ingredient.set_quantity(header_parts[1].strip())
                                 self.quantity = True
                                 
                             elif header_parts[0].strip().lower() == 'unit':
-                                self.ingredient.set_unit(header_part[1].strip())
+                                self.ingredient.set_unit(header_parts[1].strip())
                                 self.unit = True
                             
                             elif header_parts[0].strip().lower() == 'recipe':
-                                self.ingredient.set_recipe(header_part[1].strip())
+                                self.ingredient.set_recipe(header_parts[1].strip())
                             
                             elif header_parts[0].strip().lower() == 'allergen':
-                                self.ingredient.add_allergen(header_part[1].strip())
+                                self.ingredient.add_allergen(header_parts[1].strip())
                                     
                             current_line = input.readline()
                             header_parts = current_line.split(":")    
@@ -87,7 +88,7 @@ class IO(object):
                             if self.name:
                                 print("Seuraavan raaka-aineen lukeminen ep�onnistui:", self.name)
                             else:
-                                 print("Raaka-aineen luku ep�onnistui, jatketaan silti.")
+                                print("Raaka-aineen luku ep�onnistui, jatketaan silti.")
                         else:
                             self.ingredient_list.append(self.ingredient)
                             self.date = False
@@ -158,23 +159,23 @@ class IO(object):
                                 break
                             
                             if header_parts[0].strip().lower() == 'date':
-                                self.recipe.set_date(header_part[1].strip())
+                                self.recipe.set_date(header_parts[1].strip())
                                 self_date = True
                                 
                             elif header_parts[0].strip().lower() == 'name':
-                                self.recipe.set_name(header_part[1].strip())
+                                self.recipe.set_name(header_parts[1].strip())
                                 self.name = True
                             
                             elif header_parts[0].strip().lower() == 'time':
-                                self.recipe.set_time(header_part[1].strip())
+                                self.recipe.set_time(header_parts[1].strip())
                                 self.time = True
                                 
                             elif header_parts[0].strip().lower() == 'instructions':
-                                self.recipe.add_instruction(header_part[1].strip())
+                                self.recipe.add_instruction(header_parts[1].strip())
                                 self.instructions = True
                             
                             elif header_parts[0].strip().lower() == 'ingredient':
-                                self.recipe.set_ingredient(header_part[1].strip())
+                                self.recipe.set_ingredient(header_parts[1].strip())
                                 self.ingredients = True
                                     
                             current_line = input.readline()
@@ -184,7 +185,7 @@ class IO(object):
                             if self.name:
                                 print("Seuraavan reseptin lukeminen ep�onnistui:", self.name)
                             else:
-                                 print("Reseptin luku ep�onnistui, jatketaan silti.")
+                                print("Reseptin luku ep�onnistui, jatketaan silti.")
                         else:
                             self.ingredient_list.append(self.ingredient)
                             self.date = False
@@ -252,7 +253,7 @@ class IO(object):
                                 pass
                             
                             elif header_parts[0].strip().lower() == 'date':
-                                self.recipe.set_date(header_part[1].strip())
+                                self.recipe.set_date(header_parts[1].strip())
                                 self_date = True
                                 
                             
@@ -261,7 +262,7 @@ class IO(object):
                             header_parts = current_line.split(":")    
                         
                             else:
-                                 print("Reseptin luku ep�onnistui, jatketaan silti.")
+                                print("Reseptin luku ep�onnistui, jatketaan silti.")
                         else:
                             self.ingredient_list.append(self.ingredient)
                             self.date = False
