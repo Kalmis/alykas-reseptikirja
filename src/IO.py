@@ -12,7 +12,7 @@ class IO(object):
     Input output luokka, hoitaa kaiken tarvittavan luettavan eri funktioilla.
     '''
 
-    def loadIngredients(self, input):
+    def loadIngredients(self, inputLines):
 
         '''
         TESTAAMATTA
@@ -33,7 +33,7 @@ class IO(object):
 
     
 
-            currentLine = input.readline()
+            currentLine = inputLines.readline()
             headerParts = currentLine.split(" ")
 
             # Process the data we just read.
@@ -43,13 +43,13 @@ class IO(object):
 
 
 
-            currentLine = input.readline()
+            currentLine = inputLines.readline()
             headerParts = currentLine.split(" ")
             while currentLine != '':
          
                 if headerParts[0].strip().lower() == '#ingredient':
                         self.ingredient = Ingredient()
-                        currentLine = input.readline()
+                        currentLine = inputLines.readline()
                         headerParts = currentLine.split(":")    
                         while currentLine != '':
                             
@@ -58,7 +58,7 @@ class IO(object):
                             
                             if headerParts[0].strip().lower() == 'date':
                                 self.ingredient.setDate(headerParts[1].strip())
-                                self_date = True
+                                self.date = True
                                 
                             elif headerParts[0].strip().lower() == 'name':
                                 self.ingredient.setName(headerParts[1].strip())
@@ -81,14 +81,14 @@ class IO(object):
                             elif headerParts[0].strip().lower() == 'allergen':
                                 self.ingredient.addAllergen(headerParts[1].strip())
                                     
-                            currentLine = input.readline()
+                            currentLine = inputLines.readline()
                             headerParts = currentLine.split(":")    
                             
-                        if not self.name or self.unit or self.quantity or self.date:
+                        if not self.name or not self.unit or not self.quantity or not self.date:
                             if self.name:
-                                print("Seuraavan raaka-aineen lukeminen ep�onnistui:", self.name)
+                                print("Seuraavan raaka-aineen lukeminen epäonnistui:", self.name)
                             else:
-                                print("Raaka-aineen luku ep�onnistui, jatketaan silti.")
+                                print("Raaka-aineen luku epäonnistui, jatketaan seuraavaan.")
                         else:
                             self.ingredientList.append(self.ingredient)
                             self.date = False
@@ -98,7 +98,7 @@ class IO(object):
                         
                         
                 else:
-                    currentLine = input.readline()
+                    currentLine = inputLines.readline()
                     headerParts = currentLine.split(" ")
                     
             
@@ -113,7 +113,7 @@ class IO(object):
         
     #################################################################################
         
-    def recipeList(self, input):
+    def loadRecipesList(self, inputLines):
 
         '''
         TESTAAMATTA
@@ -125,7 +125,7 @@ class IO(object):
         self.time = False
         self.instructions = False
         self.ingredients = False
-        self.recipeList = []
+        self.recipes = []
         
         
  
@@ -135,7 +135,7 @@ class IO(object):
 
     
 
-            currentLine = input.readline()
+            currentLine = inputLines.readline()
             headerParts = currentLine.split(" ")
 
             # Process the data we just read.
@@ -145,13 +145,13 @@ class IO(object):
 
 
 
-            currentLine = input.readline()
+            currentLine = inputLines.readline()
             headerParts = currentLine.split(" ")
             while currentLine != '':
          
                 if headerParts[0].strip().lower() == '#recipe':
                         self.recipe = Recipe()
-                        currentLine = input.readline()
+                        currentLine = inputLines.readline()
                         headerParts = currentLine.split(":")    
                         while currentLine != '':
                             
@@ -178,7 +178,7 @@ class IO(object):
                                 self.recipe.set_ingredient(headerParts[1].strip())
                                 self.ingredients = True
                                     
-                            currentLine = input.readline()
+                            currentLine = inputLines.readline()
                             headerParts = currentLine.split(":")    
                             
                         if not self.name or self.date or self.time or self.instructions or self.ingredients:
@@ -195,7 +195,7 @@ class IO(object):
                         
                         
                 else:
-                    currentLine = input.readline()
+                    currentLine = inputLines.readline()
                     headerParts = currentLine.split(" ")
                     
             
@@ -209,7 +209,7 @@ class IO(object):
         ########################################################################
         
         
-    def loadStorage(self, input):
+    def loadStorage(self, inputLines):
 
         '''
         KESKEN
@@ -226,7 +226,7 @@ class IO(object):
 
     
 
-            currentLine = input.readline()
+            currentLine = inputLines.readline()
             headerParts = currentLine.split(" ")
 
             # Process the data we just read.
@@ -236,13 +236,13 @@ class IO(object):
 
 
 
-            currentLine = input.readline()
+            currentLine = inputLines.readline()
             headerParts = currentLine.split(" ")
             while currentLine != '':
          
                 if headerParts[0].strip().lower() == '#storage':
                         self.recipe = Recipe()
-                        currentLine = input.readline()
+                        currentLine = inputLines.readline()
                         headerParts = currentLine.split(":")    
                         while currentLine != '':
                             
@@ -258,7 +258,7 @@ class IO(object):
                                 
                             
                                     
-                            currentLine = input.readline()
+                            currentLine = inputLines.readline()
                             headerParts = currentLine.split(":")    
                         
                             #=================================================== Wat is tis?
@@ -274,7 +274,7 @@ class IO(object):
                         
                         
                 else:
-                    currentLine = input.readline()
+                    currentLine = inputLines.readline()
                     headerParts = currentLine.split(" ")
                     
             
@@ -284,3 +284,4 @@ class IO(object):
 
 
             raise CorruptedStorageFileError("Jokin meni aivan totaalisen pieleen.")
+
