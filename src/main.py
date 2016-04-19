@@ -1,11 +1,50 @@
 # -*- coding: utf-8 -*-
 
-class Main:
+class Main(object):
     
     def __init__(self):
         
-        print("Käynnistetään ohjelma. Ehkäpä autom sisäänluku ym. tässä?")
         
+        
+        print("Käynnistetään ohjelma. Ehkäpä autom sisäänluku ym. tässä?")
+        # Testimoodi pois päältä oletuksena. Testimoodissa mm. AskUserInput metodit käyttävät kysymystä syötteenä.
+        self.TestMode = False
+        
+    
+    
+    def AskUserInputText(self,question):
+        
+        UserInput = input(question)
+        return UserInput    
+    
+    def AskUserInputInt(self,question):
+        
+        if self.TestMode:
+            UserInput = question
+        else:
+            UserInput = input(question)
+        
+        try:
+            UserInput = int(UserInput)
+            return(UserInput)
+        except ValueError:  
+            print("Syöte ei ole kokonaisluku")
+            
+            
+    def AskUserInputFloat(self,question):
+        
+        if self.TestMode:
+            UserInput = question
+        else:
+            UserInput = input(question)
+        
+        try:
+            UserInput = float(UserInput)
+            return(UserInput)
+        except ValueError:  
+            print("Syöte ei ole desimaaliluku")
+              
+    
         
     def MainMenu(self):
         
@@ -22,28 +61,28 @@ class Main:
             # Pyydetään käyttäjältä inputtia, kunnes saadaan validi vastaus. 
             # TÄmän jälkeen break, jotta tulostetaan menu uudelleen
             while 1:
-                valinta = input("Valintasi > ")
+                UserInput = self.AskUserInputText("Valintasi > ")
                 print("\n")
-                if valinta == "1":
+                if UserInput == "1":
                     self.StorageMenu()
                     break;
-                elif valinta == "2":
+                elif UserInput == "2":
                     self.IngredientsMenu()
                     break;
-                elif valinta == "3":
+                elif UserInput == "3":
                     self.RecipesMenu()
                     break;
-                elif valinta == "4":
+                elif UserInput == "4":
                     self.SearchMenu()
                     break;
-                elif valinta == "5":
+                elif UserInput == "5":
                     self.SaveMenu()
                     break
-                elif valinta == "6":
+                elif UserInput == "6":
                     self.LoadMenu()
                     break
-                elif valinta == "0":
-                    return(0)
+                elif UserInput == "0":
+                    return 0
                 else:
                     print("Virheellinen valinta.")    
                 
@@ -60,16 +99,16 @@ class Main:
             # Pyydetään käyttäjältä inputtia, kunnes saadaan validi vastaus. 
             # TÄmän jälkeen break, jotta tulostetaan menu uudelleen
             while 1:
-                valinta = input("Valintasi > ")
+                UserInput = self.AskUserInputText("Valintasi > ")
                 print("\n")
-                if valinta == "1":
+                if UserInput == "1":
                     print("Lisätietoja")
                     break;
-                elif valinta == "2":
+                elif UserInput == "2":
                     print("Varastotilanne")
                     break;
-                elif valinta == "0":
-                    return(0)
+                elif UserInput == "0":
+                    return 0 
                 else:
                     print("Virheellinen valinta.")   
         
