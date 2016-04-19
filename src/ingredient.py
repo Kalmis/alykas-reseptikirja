@@ -18,12 +18,6 @@ class Ingredient():
     TL = 6
     NIP = 7
     
-
-    
-    '''
-    Asetetaan oliota luodessa kaikki paikalleen.
-    
-    '''
     
     def __init__(self):
         
@@ -63,23 +57,38 @@ class Ingredient():
     def addAllergen(self,allergen):
         self.allergens.append(allergen)
     
-    def returnName(self):
+    def getName(self):
         return self.name 
+        
+    def getDate(self):
+        return self.date
+    
+    def getDensity(self):
+        return self.density
+    
+    def getQuantity(self):
+        return self.quantity
+    
+    def getUnit(self):
+        return self.unit
+    
+    def getAllergens(self):
+        return self.allergens
             
-            
-    def loadRecipe(self,recipeList):
+    def loadRecipe(self,loadRecipesList):
         '''
         Jos ja kun False, niin resepti olisi, mutta ei ladattu.
         Etsit��n Resepti olio listasta raaka-aine olioon talletettua
         nime� totteleva olio ja asetetaan se reseptiksi.
+        ?????????? wat
         '''
         if(self.recipeLoaded == False):
-            for i in recipeList:
+            for i in loadRecipesList:             
                 if i.returnName == self.recipe:
                     self.recipe = i
                     self.recipeLoaded = True
                     return True
-            # Resepti� kyseisell� nimell� ei l�ytynyt.
+            # Reseptiä kyseisellä nimellä ei löytynyt.
             return False
         else:
             return None # Ei ladattavaa
