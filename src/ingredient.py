@@ -38,10 +38,18 @@ class Ingredient():
         self.name = name
     
     def setDensity(self,density):
-        self.density = float(density)
+        try:
+            self.density = float(density)
+            return True
+        except ValueError:
+            return False
         
     def setQuantity(self,quantity):
-        self.quantity = int(quantity)
+        try:
+            self.quantity = int(quantity)
+            return True
+        except ValueError:
+            return False
         
     def setUnit(self,unit):
         '''
