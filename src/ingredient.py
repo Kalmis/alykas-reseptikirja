@@ -92,7 +92,7 @@ class Ingredient():
         '''
         if(self.recipeLoaded == False):
             for i in loadRecipesList:             
-                if i.returnName == self.recipe:
+                if i.getName == self.recipe:
                     self.recipe = i
                     self.recipeLoaded = True
                     return True
