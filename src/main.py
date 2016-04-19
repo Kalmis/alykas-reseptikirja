@@ -20,20 +20,20 @@ class Main():
             # Pyydetään käyttäjältä inputtia, kunnes saadaan validi vastaus. 
             # TÄmän jälkeen break, jotta tulostetaan menu uudelleen
             while 1:
-                valinta = int(input("Valintasi > "))
-                if valinta == 1:
+                valinta = input("Valintasi > ")
+                if valinta == "1":
                     self.StorageMenu()
                     break;
-                elif valinta == 2:
+                elif valinta == "2":
                     self.IngredientsMenu()
                     break;
-                elif valinta == 3:
+                elif valinta == "3":
                     self.RecipesMenu()
                     break;
-                elif valinta == 4:
+                elif valinta == "4":
                     self.SearchMenu()
                     break;
-                elif valinta == 0:
+                elif valinta == "0":
                     return(0)
                 else:
                     print("Virheellinen valinta.")    
