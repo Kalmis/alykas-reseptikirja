@@ -54,10 +54,10 @@ class Ingredient:
         self.recipe = recipe
         self.recipeLoaded = False
         
-    def loadRecipe(self,loadRecipesList):
+    def loadRecipe(self,loadRecipes):
 
         if(self.recipeLoaded == False):
-            for i in loadRecipesList:             
+            for i in loadRecipes:             
                 if i.getName == self.recipe:
                     self.recipe = i
                     self.recipeLoaded = True

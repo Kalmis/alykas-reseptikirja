@@ -102,7 +102,7 @@ class Test(unittest.TestCase):
         
         ingredientsList = [ingredient1,ingredient2]
  
-        recipesList,succesCount,errorCount = self.IO.loadRecipesList(self.input_file,ingredientsList)
+        recipesList,succesCount,errorCount = self.IO.loadRecipes(self.input_file,ingredientsList)
         self.input_file.close()
         self.assertEqual(1,succesCount,"Väärä määrä onnistuneita lukuja")
         self.assertEqual(0, errorCount, "Väärä määrä epäonnistuneita lukuja")
@@ -116,9 +116,43 @@ class Test(unittest.TestCase):
             self.assertIs(ingredient1, recipe.getIngredients()[0].getIngredient(), "Ensimmäinen raaka-aine ei täsmää haluttua oliota")
             self.assertIs(ingredient2, recipe.getIngredients()[1].getIngredient(), "Toinen raaka-aine ei täsmää haluttua oliota")
 
-        
+    def testLoadStorage(self):
+         
+        self.input_file = StringIO()
+        self.input_file.write('STORAGELIST\n')
+        self.input_file.write('raakis1;353;kg\n')
+        self.input_file.write('raakisett\n')
+        self.input_file.write('raakis2;1;kg\n')
 
         
+         
+        self.input_file.seek(0, 0) 
+        
+        ingredient1 = Ingredient()
+        ingredient1.setDate("18.4.2016")
+        ingredient1.setName("raakis1")
+        ingredient1.setDensity(1)
+        
+        ingredient2 = Ingredient()
+        ingredient2.setDate("19.4.2016")
+        ingredient2.setName("raakis2")
+        ingredient2.setDensity(3)
+
+        
+        ingredientsList = [ingredient1,ingredient2]
+ 
+        storageList,succesCount,errorCount = self.IO.loadStorage(self.input_file,ingredientsList)
+        self.input_file.close()
+        self.assertEqual(2,succesCount,"Väärä määrä onnistuneita lukuja")
+        self.assertEqual(1, errorCount, "Väärä määrä epäonnistuneita lukuja")
+        self.assertEqual(succesCount, len(storageList), "Lista eripituinen kuin onnistuneet lukemiset")
+        
+        if len(storageList) > 0:
+            self.assertIs(ingredient1, storageList[0].getIngredient(), "Ensimmäinen raaka-aine ei täsmää haluttua oliota")
+            self.assertIs(ingredient2, storageList[1].getIngredient(), "Toinen raaka-aine ei täsmää haluttua oliota")
+
+        
+       
 if __name__ == "__main__":
     unittest.main()
         

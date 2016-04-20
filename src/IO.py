@@ -110,7 +110,7 @@ class IO(object):
         
     #################################################################################
         
-    def loadRecipesList(self, inputLines, ingredientsList):
+    def loadRecipes(self, inputLines, ingredientsList):
 
         '''
         TESTAAMATTA
@@ -229,16 +229,18 @@ class IO(object):
         ########################################################################
         
         
-    def loadStorage(self, inputLines):
+    def loadStorage(self, inputLines, ingredientsList):
 
         '''
-        KESKEN
+        TESTAAMATTA
         Varaston lukeminen tiedostosta.
         '''
 
-
+        self.success = None
+        self.storageList = []
         
-        
+        self.succesCount = 0
+        self.errorCount = 0
  
         currentLine = ''
 
@@ -247,61 +249,47 @@ class IO(object):
     
 
             currentLine = inputLines.readline()
-            headerParts = currentLine.split(" ")
+            headerParts = currentLine.split(";")
 
             # Process the data we just read.
 
             if headerParts[0].strip() != "STORAGELIST":
                 raise CorruptedRecipeFileError("Unknown file type")
-
-
-
-            currentLine = inputLines.readline()
-            headerParts = currentLine.split(" ")
-            while currentLine != '':
          
-                if headerParts[0].strip().lower() == '#storage':
-                        self.recipe = Recipe()
-                        currentLine = inputLines.readline()
-                        headerParts = currentLine.split(":")    
-                        while currentLine != '':
-                            
-                            if currentLine[0] == '#':
-                                break
-                            
-                            elif len(headerParts < 3):
-                                pass
-                            
-                            elif headerParts[0].strip().lower() == 'date':
-                                self.recipe.setDate(headerParts[1].strip())
-                                self.date = True
-                                
-                            
-                                    
-                            currentLine = inputLines.readline()
-                            headerParts = currentLine.split(":")    
-                        
-                            #=================================================== Wat is tis?
-                            # else:
-                            #     print("Reseptin luku ep�onnistui, jatketaan silti.")
-                            #===================================================
-                        else:
-                            self.ingredientList.append(self.ingredient)
-                            self.date = False
-                            self.name = False
-                            self.unit = False
-                            self.quantity = False
-                        
-                        
-                else:
-                    currentLine = inputLines.readline()
-                    headerParts = currentLine.split(" ")
+            currentLine = inputLines.readline()
+            headerParts = currentLine.split(";")   
+            while currentLine != '':
+                
+                if len(headerParts) >2:
+                    self.ingredientContainer = IngredientContainer()
+                    if not self.ingredientContainer.setIngredient(headerParts[0].strip(), ingredientsList):
+                        self.ingredients = False
+                    else:
+                        self.ingredientContainer.setQuantity(headerParts[1].strip())
+                        self.ingredientContainer.setUnit(headerParts[2].strip())
+                        self.success = True
+                    
+                if not self.success:
+                    self.errorCount += 1
+                    print("Varastorivin luku epäonnistui, jatketaan silti.")
+                    self.success = None
+                elif self.success:
+                    self.succesCount += 1
+                    self.storageList.append(self.ingredientContainer)
+                    self.success = None
+                    
+                currentLine = inputLines.readline()
+                headerParts = currentLine.split(";")   
+                
+                    
                     
             
-    
+            return self.storageList,self.succesCount,self.errorCount
+
             
         except IOError:
 
 
-            raise CorruptedStorageFileError("Jokin meni aivan totaalisen pieleen.")
-
+            raise CorruptedRecipeFileError("Jokin meni aivan totaalisen pieleen.")
+                             
+        ########################################################################
