@@ -20,9 +20,9 @@ class Main(object):
 		for i in menuTitles:
 			print(i)
 		while True:
-			UserInput = self.askUserInputInt("Valintasi > ")
-			if UserInput >= 0 and UserInput < len(menuTitles):
-				return UserInput
+			userInput = self.askUserInputInt("Valintasi > ")
+			if userInput >= 0 and userInput < len(menuTitles):
+				return userInput
 			else:
 				print("Virheellinen valinta")
 

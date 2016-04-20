@@ -40,8 +40,6 @@ class Test(unittest.TestCase):
         self.input_file.write('Date             : 18.4.2015\n')
         self.input_file.write('Name             : Kala\n')
         self.input_file.write('\nDensity            : 1\n')
-        self.input_file.write('\nQuantity            : 2 \n')
-        self.input_file.write('\nUnit     : kg\n')
         self.input_file.write('\nRecipe     : \n')
         self.input_file.write('\nAllergen     : Laktoosi\n')
         self.input_file.write('\nAllergen     : Maissi\n')
@@ -50,44 +48,24 @@ class Test(unittest.TestCase):
         self.input_file.write('Date             : 18.4.2015\n')
         self.input_file.write('Name             : Kala2\n')
         self.input_file.write('\nDensity            : asd\n')
-        self.input_file.write('\nQuantity            : 2 \n')
-        self.input_file.write('\nUnit     : kg\n')
         self.input_file.write('\nRecipe     : \n')
         self.input_file.write('\nAllergen     : Laktoosi\n')
         self.input_file.write('\nAllergen     : Maissi\n')
         
-        self.input_file.write('#Ingredient\n')
-        self.input_file.write('Date             : 18.4.2015\n')
-        self.input_file.write('Name             : Kala3\n')
-        self.input_file.write('\nDensity            : 1\n')
-        self.input_file.write('\nQuantity            : kasd \n')
-        self.input_file.write('\nUnit     : kg\n')
-        self.input_file.write('\nRecipe     : \n')
-        self.input_file.write('\nAllergen     : Laktoosi\n')
-        self.input_file.write('\nAllergen     : Maissi\n')
-        
-        self.input_file.write('#Ingredient\n')
-        self.input_file.write('Date             : 18.4.2015\n')
-        self.input_file.write('Name             : Lehmä\n')
-        self.input_file.write('\nDensity            : 3\n')
-        self.input_file.write('\nQuantity            : 5 \n')
-        self.input_file.write('\nUnit     : g\n')
-        self.input_file.write('\nRecipe     : \n')
-        self.input_file.write('\nAllergen     : Laktoosi\n')
         self.input_file.seek(0, 0) 
+
+
 
         ingredientsList,succesCount,errorCount = self.IO.loadIngredients(self.input_file)
         self.input_file.close()
-        self.assertEqual(2,succesCount,"Väärä määrä onnistuneita lukuja")
-        self.assertEqual(2, errorCount, "Väärä määrä epäonnistuneita lukuja")
+        self.assertEqual(1,succesCount,"Väärä määrä onnistuneita lukuja")
+        self.assertEqual(1, errorCount, "Väärä määrä epäonnistuneita lukuja")
         self.assertEqual(succesCount, len(ingredientsList), "Lista eripituinen kuin onnistuneet lukemiset")
         if len(ingredientsList) > 0:
             ingredient = ingredientsList[0]
             self.assertEqual("18.4.2015", ingredient.getDate(), "Raaka-aineen päivä ei täsmää")
             self.assertEqual("Kala", ingredient.getName(), "Raaka-aineen nimi ei täsmää")
             self.assertEqual(1, ingredient.getDensity(), "Raaka-aineen tiheys ei täsmää")
-            self.assertEqual(2, ingredient.getQuantity(), "Raaka-aineen määrä ei täsmää")
-            self.assertEqual("kg", ingredient.getUnit(), "Raaka-aineen yksikkö ei täsmää")
             self.assertEqual(["Laktoosi","Maissi"], ingredient.getAllergens(), "Raaka-aineen allergeenit eivät täsmää")
 
         
@@ -102,11 +80,12 @@ class Test(unittest.TestCase):
         self.input_file.write('#Recipe\n')
         self.input_file.write('Date             : 19.4.2015\n')
         self.input_file.write('\nName            : Kalakeitto\n')
+        self.input_file.write('\nOutcome            : 4: portion\n')
         self.input_file.write('\nTime            : 65 \n')
         self.input_file.write('\nInstruction     : Ota kala\n')
         self.input_file.write('\nInstruction     : Paista kala')
-        self.input_file.write('\nIngredient     : raakis1')
-        self.input_file.write('\nIngredient     : raakis2')
+        self.input_file.write('\nIngredient     : raakis1 : 500 : g')
+        self.input_file.write('\nIngredient     : raakis2 : 1 : kg')
          
         self.input_file.seek(0, 0) 
         
@@ -114,15 +93,12 @@ class Test(unittest.TestCase):
         ingredient1.setDate("18.4.2016")
         ingredient1.setName("raakis1")
         ingredient1.setDensity(1)
-        ingredient1.setQuantity(1)
-        ingredient1.setUnit("kg")
         
         ingredient2 = Ingredient()
         ingredient2.setDate("19.4.2016")
         ingredient2.setName("raakis2")
         ingredient2.setDensity(3)
-        ingredient2.setQuantity(2)
-        ingredient2.setUnit("g")
+
         
         ingredientsList = [ingredient1,ingredient2]
  
@@ -137,8 +113,8 @@ class Test(unittest.TestCase):
             self.assertEqual("19.4.2015", recipe.getDate(), "Raaka-aineen päivä ei täsmää")
             self.assertEqual("Kalakeitto", recipe.getName(), "Raaka-aineen nimi ei täsmää")
             self.assertEqual(["Ota kala", "Paista kala"], recipe.getInstructions(), "Raaka-aineen tiheys ei täsmää")
-            self.assertIs(ingredient1, recipe.getIngredients()[0], "Ensimmäinen raaka-aine ei täsmää haluttua oliota")
-            self.assertIs(ingredient2, recipe.getIngredients()[1], "Toinen raaka-aine ei täsmää haluttua oliota")
+            self.assertIs(ingredient1, recipe.getIngredients()[0].getIngredient(), "Ensimmäinen raaka-aine ei täsmää haluttua oliota")
+            self.assertIs(ingredient2, recipe.getIngredients()[1].getIngredient(), "Toinen raaka-aine ei täsmää haluttua oliota")
 
         
 

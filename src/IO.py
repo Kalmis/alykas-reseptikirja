@@ -2,7 +2,7 @@
 
 
 from recipe import Recipe
-from ingredient import Ingredient
+from ingredient import Ingredient, IngredientContainer
 from corrupted_file_errors import *
 
 
@@ -21,9 +21,7 @@ class IO(object):
 
         self.date = False
         self.name = False
-        self.unit = False
         self.density = False
-        self.quantity = False
         self.ingredientList = []
         
         self.succesCount = 0
@@ -72,14 +70,6 @@ class IO(object):
                                     self.density = True
                                 else: break
                             
-                            elif headerParts[0].strip().lower() == 'quantity':
-                                if self.ingredient.setQuantity(headerParts[1].strip()):
-                                    self.quantity = True
-                                else: break
-                                
-                            elif headerParts[0].strip().lower() == 'unit':
-                                self.ingredient.setUnit(headerParts[1].strip())
-                                self.unit = True
                             
                             elif headerParts[0].strip().lower() == 'recipe':
                                 self.ingredient.setRecipe(headerParts[1].strip())
@@ -90,7 +80,7 @@ class IO(object):
                             currentLine = inputLines.readline()
                             headerParts = currentLine.split(":")    
                             
-                        if not self.name or not self.unit or not self.density or not self.quantity or not self.date:
+                        if not self.name or not self.density or not self.date:
                             self.errorCount +=1
                             if self.name:
                                 print("Seuraavan raaka-aineen lukeminen epäonnistui:", self.name)
@@ -101,8 +91,7 @@ class IO(object):
                             self.ingredientList.append(self.ingredient)
                             self.date = False
                             self.name = False
-                            self.unit = False
-                            self.quantity = False
+                            self.density = False
                         
                         
                 else:
@@ -133,6 +122,7 @@ class IO(object):
         self.time = False
         self.instructions = False
         self.ingredients = False
+        self.outcome = False
         self.recipesList = []
         
         self.succesCount = 0
@@ -183,15 +173,30 @@ class IO(object):
                                 self.recipe.addInstruction(headerParts[1].strip())
                                 self.instructions = True
                             
+                            elif headerParts[0].strip().lower() == 'outcome':
+                                if len(headerParts) != 3: break
+                                self.recipe.setOutcomeSize(headerParts[1].strip())
+                                self.recipe.setOutcomeUnit(headerParts[2].strip())
+                                self.outcome = True
+                            
                             elif headerParts[0].strip().lower() == 'ingredient':
-                                if self.recipe.addIngredient(headerParts[1].strip(), ingredientsList):
+                                if len(headerParts) != 4: 
+                                    self.ingredients = False
+                                    break
+                                self.ingredientContainer = IngredientContainer()
+                                if self.ingredientContainer.setIngredient(headerParts[1].strip(), ingredientsList):
                                     self.ingredients = True
-                                else: break
+                                else:
+                                    self.ingredients = False 
+                                    break
+                                self.ingredientContainer.setQuantity(headerParts[2].strip())
+                                self.ingredientContainer.setUnit(headerParts[3].strip())
+                                self.recipe.addIngredient(self.ingredientContainer)
                                     
                             currentLine = inputLines.readline()
                             headerParts = currentLine.split(":")    
                             
-                        if not self.name or not self.date or not self.time or not self.instructions or not self.ingredients:
+                        if not self.name or not self.date or not self.time or not self.instructions or not self.ingredients or not self.outcome:
                             self.errorCount += 1
                             if self.name:
                                 print("Seuraavan reseptin lukeminen epäonnistui:", self.name)
@@ -205,6 +210,7 @@ class IO(object):
                             self.time = False
                             self.instructions = False
                             self.ingredients = False
+                            self.outcome = False
                         
                         
                 else:

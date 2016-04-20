@@ -1,18 +1,27 @@
 # -*- coding: utf-8 -*-
 
+
+
 class Recipe():
     
     def __init__(self):
-        
         self.date = None
         self.name = None
         self.instructions = []
         self.time = None
+        self.outcomeSize = None
+        self.outcomeUnit = None
         self.ingredients = []
         
                 
     def setName(self, name):
         self.name = name
+        
+    def setOutcomeSize(self, outcomeSize):
+        self.outcomeSize = outcomeSize
+        
+    def setOutcomeUnit(self, outcomeUnit):
+        self.outcomeUnit = outcomeUnit
     
     def setDate(self,date):
         self.date = date
@@ -37,17 +46,9 @@ class Recipe():
         return self.instructions
     
         
-    def addIngredient(self, ingredient, ingredientsList):
-        # ingredientsList on lista raaka-aine olioista
-        # ingredients on lista raaka-aineista tekstinä
-        for i in ingredientsList:
-                if i.getName().strip().lower() == ingredient.lower():
-                    self.ingredients.append(i)
-                    return True
-                else:
-                    # Raaka-ainetta kyseisellä nimellä ei löytynyt.
-                    pass
-        return False
+    def addIngredient(self, ingredientContainer):
+        self.ingredients.append(ingredientContainer)
 
     def getIngredients(self):
         return self.ingredients
+    
