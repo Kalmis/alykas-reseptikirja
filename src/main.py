@@ -11,7 +11,6 @@ class Main(object):
 	
 	def __init__(self):
 		
-		#TODO: Automaattinen aineiston sisäänluku ja niiden tallentaminen listoihin
 		# Testimoodi pois päältä oletuksena. Testimoodissa mm. AskUserInput metodit käyttävät kysymystä syötteenä.
 		self.testMode = False
 		self.mainMenuTitles = ["1. Varastotilanne", "2. Raaka-aineet", "3. Reseptit","4. Haku","5. Tallenna", "6. Lataa", "0. Sulje ohjelma"]
@@ -88,7 +87,32 @@ class Main(object):
 			print("Tuntematon tyyppi")
 			return -1
 		
+	def askNameAndPrintMoreInfo(self, listType):
 		
+		if listType == INGREDIENTS:
+			userInput = self.askUserInputText("Raaka-aineen nimi > ")
+			searchList = self.ingredientsList
+		elif listType == RECIPES:
+			userInput = self.askUserInputText("Reseptin nimi > ")
+			searchList = self.recipesList
+		elif listType == STORAGE:
+			userInput = self.askUserInputText("Varastoidun raaka-aineen nimi > ")
+			searchList = self.storageList			
+		else:
+			print("Tuntematon tyyppi")
+			return -1
+		result = self.searchFromList(userInput, searchList)
+		if result != 0:
+			print(result)
+		else:
+			print("Vastaavuutta ei löytynyt.")
+	
+	def searchFromList(self, searchFor, list):
+		
+		for i in list:
+			if searchFor.strip().lower() == i.getName().strip().lower():
+				return i
+		return 0
 	
 	def runMenu(self, menuTitles):
 		
@@ -160,7 +184,7 @@ class Main(object):
 		while True:
 			userChoice = self.runMenu(self.storageMenuTitles)
 			if userChoice == 1:
-				print("Lisätietoja")
+				self.askNameAndPrintMoreInfo(STORAGE)
 			elif userChoice == 2:
 				self.printList(STORAGE)
 			elif userChoice == 0:
@@ -170,7 +194,7 @@ class Main(object):
 		while True:
 			userChoice = self.runMenu(self.ingredientsMenuTitles)
 			if userChoice == 1:
-				print("Lisätietoja")
+				self.askNameAndPrintMoreInfo(INGREDIENTS)
 			elif userChoice == 2:
 				self.printList(INGREDIENTS)
 			elif userChoice == 0:
@@ -181,7 +205,7 @@ class Main(object):
 		while 1:
 			userChoice = self.runMenu(self.recipesMenuTitles)
 			if userChoice == 1:
-				print("Lisätietoja")
+				self.askNameAndPrintMoreInfo(RECIPES)
 			elif userChoice == 2:
 				self.printList(RECIPES)
 			elif userChoice == 0:

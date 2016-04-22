@@ -48,6 +48,14 @@ class Recipe():
     def getInstructions(self):
         return self.instructions
     
+    def getInstructionsStr(self):
+        instructions = ''
+        a = 1
+        for i in self.instructions:
+            instructions += str(a) +". " + i + "\n"
+            a += 1
+        return instructions
+    
         
     def addIngredient(self, ingredientContainer):
         self.ingredients.append(ingredientContainer)
@@ -55,6 +63,17 @@ class Recipe():
     def getIngredients(self):
         return self.ingredients
     
+    def getIngredientsStr(self):
+        ingredients = ''
+        for i in self.ingredients:
+            ingredients += i.__str__() + "\n"
+        return ingredients
+    
     def getOutcomeStr(self):
         return '' + self.outcomeSize + ' ' + self.outcomeUnit
     
+    
+    def __str__(self):
+        return '' + self.getName()+", " + self.getTimeStr() + ", " + self.getOutcomeStr() + ". \nIngredients: \n" + \
+            self.getIngredientsStr() + "Instructions: \n" + self.getInstructionsStr() 
+        

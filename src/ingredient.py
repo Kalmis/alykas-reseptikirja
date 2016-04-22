@@ -60,6 +60,12 @@ class Ingredient:
         self.recipe = recipe
         self.recipeLoaded = False
         
+    def getRecipe(self):
+        if self.recipeLoaded:
+            return self.recipe
+        else:
+            return ''
+        
     def loadRecipe(self,loadRecipes):
 
         if(self.recipeLoaded == False):
@@ -72,6 +78,10 @@ class Ingredient:
             return False
         else:
             return None # Ei ladattavaa
+        
+    def __str__(self):
+        return '' + self.getName() + ", tiheys: " + str(self.getDensity()) + ". Allergeenit: " + self.getAllergensStr() + ". Resepti: " + self.getRecipe()
+    
 
 class IngredientContainer:
     
@@ -121,6 +131,15 @@ class IngredientContainer:
     def getName(self):
         return self.ingredient.getName()
     
+    def getAllergensStr(self):
+        return self.ingredient.getAllergensStr()
+    
+    def getRecipe(self):
+        return self.ingredient.getRecipe()
+    
+    def __str__(self):
+        return '' + self.getName() +", " + str(self.getQuantity()) + " " + self.getUnit() + ". Allergeenit: " + self.getAllergensStr() + \
+             ". Resepti: " + self.getRecipe() 
 
                 
                    
