@@ -42,6 +42,9 @@ class Recipe():
     def getTime(self):
         return self.time
     
+    def getTimeStr(self):
+        return '' + self.time + " Min"
+    
     def getInstructions(self):
         return self.instructions
     
@@ -51,4 +54,7 @@ class Recipe():
 
     def getIngredients(self):
         return self.ingredients
+    
+    def getOutcomeStr(self):
+        return '' + self.outcomeSize + ' ' + self.outcomeUnit
     

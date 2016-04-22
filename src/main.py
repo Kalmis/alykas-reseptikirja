@@ -3,6 +3,10 @@ from IO import IO
 from corrupted_file_errors import *
 import codecs
 
+INGREDIENTS = 1
+RECIPES = 2
+STORAGE = 3
+
 class Main(object):
 	
 	def __init__(self):
@@ -17,20 +21,48 @@ class Main(object):
 		self.searchMenuTitles = ["1. Kerro lisätietoja reseptistä", "2. Reseptit, joissa raaka-aine esiintyy", "3. Sopii allergikolle", "4. Reseptit, joihin varastotarvikkeet riittävät", "5. Reseptit, joista puuttuu N-määrä raaka-aineita varastosta", "6. Reseptit, joista löytyy N-määrä raaka-aineita varastosta", "0. Takaisin"]
 		self.saveMenuTitles =  ["1. Tallenna kaikki", "2. Tallenna reseptit", "3. Tallenna raaka-aineet", "4. Tallenna varasto", "0. Takaisin"]
 		self.loadMenuTitles =  ["1. Lataa kaikki", "2. Lataa reseptit", "3. Lataa raaka-aineet", "4. Lataa varasto", "0. Takaisin"]
-		self.storagefile='storage.csv'
+		self.storageFile='storage.csv'
 		self.recipesFile='resepti.txt'
 		self.ingredientsFile='raaka_aine.txt'
 		self.IO = IO()
+		self.ingredientsList = []
+		self.recipesList = []
+		self.storageList = []
 		
+		self.loadFromFileToList(INGREDIENTS)
+		self.loadFromFileToList(RECIPES)
+		self.loadFromFileToList(STORAGE)
+		
+
+		
+	def openFileUTF8(self,file):
 		
 		try:
-			asd = self.openFile(self.ingredientsFile)
-			self.ingredientsList, self.ingredientsSuccess, self.ingredientsError = self.IO.loadIngredients(asd)
-			asd2 = self.openFile(self.recipesFile)
-			self.recipesList, self.recipesSuccess, self.recipesError = self.IO.loadRecipes(asd2, self.ingredientsList)
-			asd3 = self.openFile(self.storagefile)
-			self.storageList, self.storageSuccess, self.storageError = self.IO.loadStorage(asd3, self.ingredientsList)
+			fileIO = codecs.open(file, "r", "utf-8")
+			return fileIO
+		except IOError:
+			print("Tiedoston",file,"avaaminen ei onnistu.") 
+			return 0
+	
+	def loadFromFileToList(self, listType):
 		
+		try:		
+			if listType == INGREDIENTS:
+				self.ingredientsList = []
+				fileIO = self.openFileUTF8(self.ingredientsFile)
+				self.ingredientsList, self.ingredientsSuccess, self.ingredientsError = self.IO.loadIngredients(fileIO)
+			elif listType == RECIPES:
+				self.recipesList = []
+				fileIO = self.openFileUTF8(self.recipesFile)
+				self.recipesList, self.recipesSuccess, self.recipesError = self.IO.loadRecipes(fileIO, self.ingredientsList)
+			elif listType == STORAGE:
+				self.storageList = []
+				fileIO = self.openFileUTF8(self.storageFile)
+				self.storageList, self.storageSuccess, self.storageError = self.IO.loadStorage(fileIO, self.ingredientsList)
+			else:
+				print("Tuntematon tyyppi")
+				return -1
+				
 		except CorruptedIngredientsFileError:
 			print("Raaka-aineiden luku epäonnistui")
 			exit()
@@ -39,16 +71,24 @@ class Main(object):
 			exit()
 		except CorruptedRecipesFileError:
 			print("Reseptien luku epäonnistui")
-			exit()
+			exit()	
+				
+	def printList(self, listType):
 		
-	def openFile(self,file):
+		if listType == INGREDIENTS:
+			for i in self.ingredientsList:
+				print(i.getName()+", Allergeenit: ", i.getAllergensStr())
+		elif listType == RECIPES:
+			for i in self.recipesList:
+				print(i.getName(), i.getTimeStr()+",", i.getOutcomeStr())
+		elif listType == STORAGE:
+			for i in self.storageList:
+				print(i.getName() + ",", i.getQuantity(), i.getUnit())
+		else:
+			print("Tuntematon tyyppi")
+			return -1
 		
-		try:
-			fileIO = codecs.open(file, "r", "utf-8")
-			return fileIO
-		except IOError:
-			print("Tiedoston",file,"avaaminen ei onnistu. Ohjelma paattyy.") 
-			return 0
+		
 	
 	def runMenu(self, menuTitles):
 		
@@ -122,7 +162,7 @@ class Main(object):
 			if userChoice == 1:
 				print("Lisätietoja")
 			elif userChoice == 2:
-				print("Varastotilanne")
+				self.printList(STORAGE)
 			elif userChoice == 0:
 				return 0 
 		
@@ -132,7 +172,7 @@ class Main(object):
 			if userChoice == 1:
 				print("Lisätietoja")
 			elif userChoice == 2:
-				print("Lista raaka-aineista")
+				self.printList(INGREDIENTS)
 			elif userChoice == 0:
 				return 0   
 		
@@ -143,7 +183,7 @@ class Main(object):
 			if userChoice == 1:
 				print("Lisätietoja")
 			elif userChoice == 2:
-				print("Lista resepteistä")
+				self.printList(RECIPES)
 			elif userChoice == 0:
 				return 0   
 		
@@ -186,13 +226,15 @@ class Main(object):
 		while 1:
 			userChoice = self.runMenu(self.loadMenuTitles)
 			if userChoice == 1:
-				print("kaikki")
+				self.loadFromFileToList(INGREDIENTS)
+				self.loadFromFileToList(RECIPES)
+				self.loadFromFileToList(STORAGE)
 			elif userChoice == 2:
-				print("reseptit")
+				self.loadFromFileToList(RECIPES)
 			elif userChoice == 3:
-				print("raaka-aineet")
+				self.loadFromFileToList(INGREDIENTS)
 			elif userChoice == 4:
-				print("varasto")
+				self.loadFromFileToList(STORAGE)
 			elif userChoice == 0:
 				return 0 
 		

@@ -46,6 +46,12 @@ class Ingredient:
     
     def getAllergens(self):
         return self.allergens
+    
+    def getAllergensStr(self):
+        allergens =''
+        for i in self.allergens:
+            allergens = i 
+        return allergens
             
     def addAllergen(self,allergen):
         self.allergens.append(allergen)
@@ -111,6 +117,9 @@ class IngredientContainer:
     
     def getIngredient(self):
         return self.ingredient
+    
+    def getName(self):
+        return self.ingredient.getName()
     
 
                 

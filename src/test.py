@@ -66,7 +66,7 @@ class Test(unittest.TestCase):
             self.assertEqual("18.4.2015", ingredient.getDate(), "Raaka-aineen päivä ei täsmää")
             self.assertEqual("Kala", ingredient.getName(), "Raaka-aineen nimi ei täsmää")
             self.assertEqual(1, ingredient.getDensity(), "Raaka-aineen tiheys ei täsmää")
-            self.assertEqual(["Laktoosi","Maissi"], ingredient.getAllergens(), "Raaka-aineen allergeenit eivät täsmää")
+            self.assertEqual(["Laktoosi","Maissi"], ingredient.getAllergensStr(), "Raaka-aineen allergeenit eivät täsmää")
 
         
         
