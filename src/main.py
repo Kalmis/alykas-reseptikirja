@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+from IO import IO
+from corrupted_file_errors import *
+import codecs
 
 class Main(object):
 	
@@ -14,6 +17,38 @@ class Main(object):
 		self.searchMenuTitles = ["1. Kerro lisätietoja reseptistä", "2. Reseptit, joissa raaka-aine esiintyy", "3. Sopii allergikolle", "4. Reseptit, joihin varastotarvikkeet riittävät", "5. Reseptit, joista puuttuu N-määrä raaka-aineita varastosta", "6. Reseptit, joista löytyy N-määrä raaka-aineita varastosta", "0. Takaisin"]
 		self.saveMenuTitles =  ["1. Tallenna kaikki", "2. Tallenna reseptit", "3. Tallenna raaka-aineet", "4. Tallenna varasto", "0. Takaisin"]
 		self.loadMenuTitles =  ["1. Lataa kaikki", "2. Lataa reseptit", "3. Lataa raaka-aineet", "4. Lataa varasto", "0. Takaisin"]
+		self.storagefile='storage.csv'
+		self.recipesFile='resepti.txt'
+		self.ingredientsFile='raaka_aine.txt'
+		self.IO = IO()
+		
+		
+		try:
+			asd = self.openFile(self.ingredientsFile)
+			self.ingredientsList, self.ingredientsSuccess, self.ingredientsError = self.IO.loadIngredients(asd)
+			asd2 = self.openFile(self.recipesFile)
+			self.recipesList, self.recipesSuccess, self.recipesError = self.IO.loadRecipes(asd2, self.ingredientsList)
+			asd3 = self.openFile(self.storagefile)
+			self.storageList, self.storageSuccess, self.storageError = self.IO.loadStorage(asd3, self.ingredientsList)
+		
+		except CorruptedIngredientsFileError:
+			print("Raaka-aineiden luku epäonnistui")
+			exit()
+		except CorruptedStorageFileError:
+			print("Varaston luku epäonnistui")
+			exit()
+		except CorruptedRecipesFileError:
+			print("Reseptien luku epäonnistui")
+			exit()
+		
+	def openFile(self,file):
+		
+		try:
+			fileIO = codecs.open(file, "r", "utf-8")
+			return fileIO
+		except IOError:
+			print("Tiedoston",file,"avaaminen ei onnistu. Ohjelma paattyy.") 
+			return 0
 	
 	def runMenu(self, menuTitles):
 		

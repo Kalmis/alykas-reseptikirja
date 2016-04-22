@@ -4,15 +4,15 @@ Created on 19.4.2016
 @author: Kalmis
 '''
 
-class CorruptedIngredientFileError(Exception):
+class CorruptedIngredientsFileError(Exception):
 
     def __init__(self, message):
-        super(CorruptedIngredientFileError, self).__init__(message)
+        super(CorruptedIngredientsFileError, self).__init__(message)
         
-class CorruptedRecipeFileError(Exception):
+class CorruptedRecipesFileError(Exception):
 
     def __init__(self, message):
-        super(CorruptedRecipeFileError, self).__init__(message)
+        super(CorruptedRecipesFileError, self).__init__(message)
         
 class CorruptedStorageFileError(Exception):
 

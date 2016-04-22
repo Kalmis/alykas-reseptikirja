@@ -1,0 +1,56 @@
+INGREDIENTLIST
+#Ingredient
+
+Date 		: 18.4.2015
+Name    	: Kala
+Density		: 0.5
+
+#Ingredient
+
+Date 		: 18.4.2015
+Name    	: Maito
+Density		: 1
+Allergen 	: Laktoosi
+
+#Ingredient
+
+Date 		: 18.4.2015
+Name    	: Vehnajauho
+Density		: 1
+Allergen 	: Gluteeni
+
+#Ingredient
+
+Date 		: 18.4.2015
+Name    	: Pizzataikina
+Density		: 1.2
+Allergen 	: Gluteeni
+Allergen	: Laktoosi
+Recipe		: Pizzataikina
+
+#Ingredient
+
+Date 		: 18.4.2015
+Name    	: Jauheliha
+Density		: 1
+
+#Ingredient
+
+Date 		: 18.4.2015
+Name    	: Tomaattimurska
+Density		: 1
+Allergen 	: Tomaatti
+
+#Ingredient
+
+Date 		: 18.4.2016
+Name    	: Juusto
+Density		: 1
+Allergen 	: Laktoosi
+
+#Ingredient
+
+Date 		: 18.4.2015
+Name    	: Oregano
+Density		: 1
+

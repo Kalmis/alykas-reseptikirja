@@ -40,7 +40,7 @@ class IO(object):
             # Process the data we just read.
 
             if headerParts[0].strip() != "INGREDIENTLIST":
-                raise CorruptedIngredientFileError("Unknown file type")
+                raise CorruptedIngredientsFileError("Unknown file type")
 
 
 
@@ -105,7 +105,7 @@ class IO(object):
         except IOError:
 
 
-            raise CorruptedIngredientFileError("Jokin meni aivan totaalisen pieleen.")
+            raise CorruptedIngredientsFileError("Jokin meni aivan totaalisen pieleen.")
      
         
     #################################################################################
@@ -140,7 +140,7 @@ class IO(object):
             # Process the data we just read.
 
             if headerParts[0].strip() != "RECIPELIST":
-                raise CorruptedRecipeFileError("Unknown file type")
+                raise CorruptedRecipesFileError("Unknown file type")
 
 
 
@@ -224,7 +224,7 @@ class IO(object):
         except IOError:
 
 
-            raise CorruptedRecipeFileError("Jokin meni aivan totaalisen pieleen.")
+            raise CorruptedRecipesFileError("Jokin meni aivan totaalisen pieleen.")
                              
         ########################################################################
         
@@ -254,7 +254,7 @@ class IO(object):
             # Process the data we just read.
 
             if headerParts[0].strip() != "STORAGELIST":
-                raise CorruptedRecipeFileError("Unknown file type")
+                raise CorruptedRecipesFileError("Unknown file type")
          
             currentLine = inputLines.readline()
             headerParts = currentLine.split(";")   
@@ -290,6 +290,6 @@ class IO(object):
         except IOError:
 
 
-            raise CorruptedRecipeFileError("Jokin meni aivan totaalisen pieleen.")
+            raise CorruptedRecipesFileError("Jokin meni aivan totaalisen pieleen.")
                              
         ########################################################################
