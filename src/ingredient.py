@@ -2,15 +2,6 @@
 
 from recipe import Recipe
 
-KG = 0
-G = 1
-DL = 2
-L = 3
-PC = 4
-TBSP = 5
-TSP = 6
-PORTION = 7
-
 class Ingredient:
     
     def __init__(self):
@@ -95,7 +86,6 @@ class IngredientContainer:
         
         
     def setIngredient(self,ingredient,ingredientsList):
-        
         for i in ingredientsList:
                 if i.getName().strip().lower() == ingredient.lower():
                     self.ingredient = i
@@ -107,16 +97,12 @@ class IngredientContainer:
     
     def setQuantity(self,quantity):
         try:
-            self.quantity = int(quantity)
+            self.quantity = float(quantity)
             return True
         except ValueError:
             return False
         
     def setUnit(self,unit):
-        '''
-        IMPELEMNTOI
-        '''
-    
         self.unit = unit
     
     def getQuantity(self):

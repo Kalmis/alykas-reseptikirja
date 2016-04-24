@@ -70,7 +70,6 @@ class IO(object):
                                     self.density = True
                                 else: break
                             
-                            
                             elif headerParts[0].strip().lower() == 'recipe':
                                 self.ingredient.setRecipe(headerParts[1].strip())
                             

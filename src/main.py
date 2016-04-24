@@ -63,14 +63,19 @@ class Main(object):
 				return -1
 				
 		except CorruptedIngredientsFileError:
+			fileIO.close()
 			print("Raaka-aineiden luku epäonnistui")
 			exit()
 		except CorruptedStorageFileError:
+			fileIO.close()
 			print("Varaston luku epäonnistui")
 			exit()
 		except CorruptedRecipesFileError:
+			fileIO.close()
 			print("Reseptien luku epäonnistui")
 			exit()	
+			
+		fileIO.close()
 				
 	def printList(self, listType):
 		
