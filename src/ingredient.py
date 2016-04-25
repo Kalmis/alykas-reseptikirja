@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 
-from recipe import Recipe
-
 class Ingredient:
     
     def __init__(self):
@@ -57,6 +55,11 @@ class Ingredient:
         else:
             return ''
         
+        
+    def getRecipeLoaded(self):
+        return self.recipeLoaded
+    
+    
     def loadRecipe(self,loadRecipes):
 
         if(self.recipeLoaded == False):
@@ -122,6 +125,16 @@ class IngredientContainer:
     
     def getRecipe(self):
         return self.ingredient.getRecipe()
+    
+    def getDensity(self):
+        return self.ingredient.getDensity()
+    
+    def hasRecipe(self):
+        if self.ingredient.getRecipeLoaded():
+            return True
+        else:
+            return False
+        
     
     def __str__(self):
         return '' + self.getName() +", " + str(self.getQuantity()) + " " + self.getUnit() + ". Allergeenit: " + self.getAllergensStr() + \

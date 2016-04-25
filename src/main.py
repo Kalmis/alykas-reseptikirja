@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from IO import IO
 from corrupted_file_errors import *
+from search import Search
 import codecs
 
 INGREDIENTS = 1
@@ -13,6 +14,7 @@ class Main(object):
 		
 		# Testimoodi pois päältä oletuksena. Testimoodissa mm. AskUserInput metodit käyttävät kysymystä syötteenä.
 		self.testMode = False
+		
 		self.mainMenuTitles = ["1. Varastotilanne", "2. Raaka-aineet", "3. Reseptit","4. Haku","5. Tallenna", "6. Lataa", "0. Sulje ohjelma"]
 		self.storageMenuTitles = ["1. Kerro lisätietoja raaka-aineesta", "2. Näytä varastotilanne", "0. Takaisin"]
 		self.ingredientsMenuTitles = ["1. Kerro lisätietoja raaka-aineesta", "2. Listaa raaka-aineet", "0. Takaisin"]
@@ -20,13 +22,18 @@ class Main(object):
 		self.searchMenuTitles = ["1. Kerro lisätietoja reseptistä", "2. Reseptit, joissa raaka-aine esiintyy", "3. Sopii allergikolle", "4. Reseptit, joihin varastotarvikkeet riittävät", "5. Reseptit, joista puuttuu N-määrä raaka-aineita varastosta", "6. Reseptit, joista löytyy N-määrä raaka-aineita varastosta", "0. Takaisin"]
 		self.saveMenuTitles =  ["1. Tallenna kaikki", "2. Tallenna reseptit", "3. Tallenna raaka-aineet", "4. Tallenna varasto", "0. Takaisin"]
 		self.loadMenuTitles =  ["1. Lataa kaikki", "2. Lataa reseptit", "3. Lataa raaka-aineet", "4. Lataa varasto", "0. Takaisin"]
+		
 		self.storageFile='storage.csv'
 		self.recipesFile='resepti.txt'
 		self.ingredientsFile='raaka_aine.txt'
 		self.IO = IO()
+		
+		
 		self.ingredientsList = []
 		self.recipesList = []
 		self.storageList = []
+		
+		self.search = Search()
 		
 		self.loadFromFileToList(INGREDIENTS)
 		self.loadFromFileToList(RECIPES)
@@ -77,17 +84,17 @@ class Main(object):
 			
 		fileIO.close()
 				
-	def printList(self, listType):
+	def printList(self, listToPrint, listType):
 		
 		if listType == INGREDIENTS:
-			for i in self.ingredientsList:
+			for i in listToPrint:
 				print(i.getName()+", Allergeenit: ", i.getAllergensStr())
 		elif listType == RECIPES:
-			for i in self.recipesList:
+			for i in listToPrint:
 				print(i.getName(), i.getTimeStr()+",", i.getOutcomeStr())
 		elif listType == STORAGE:
-			for i in self.storageList:
-				print(i.getName() + ",", i.getQuantity(), i.getUnit())
+			for i in listToPrint:
+				print(i.getName() + ",", i.getQuantity(), i.getUnit()) 
 		else:
 			print("Tuntematon tyyppi")
 			return -1
@@ -191,7 +198,7 @@ class Main(object):
 			if userChoice == 1:
 				self.askNameAndPrintMoreInfo(STORAGE)
 			elif userChoice == 2:
-				self.printList(STORAGE)
+				self.printList(self.storageList, STORAGE)
 			elif userChoice == 0:
 				return 0 
 		
@@ -201,7 +208,7 @@ class Main(object):
 			if userChoice == 1:
 				self.askNameAndPrintMoreInfo(INGREDIENTS)
 			elif userChoice == 2:
-				self.printList(INGREDIENTS)
+				self.printList(self.ingredientsList, INGREDIENTS)
 			elif userChoice == 0:
 				return 0   
 		
@@ -212,7 +219,7 @@ class Main(object):
 			if userChoice == 1:
 				self.askNameAndPrintMoreInfo(RECIPES)
 			elif userChoice == 2:
-				self.printList(RECIPES)
+				self.printList(self.recipesList, RECIPES)
 			elif userChoice == 0:
 				return 0   
 		
@@ -221,17 +228,22 @@ class Main(object):
 		while 1:
 			userChoice = self.runMenu(self.searchMenuTitles)
 			if userChoice == 1:
-				print("Lisätietoja")
+				self.askNameAndPrintMoreInfo(RECIPES)
 			elif userChoice == 2:
 				print("reseptejä")
 			elif userChoice == 3:
 				print("allergikko")
 			elif userChoice == 4:
-				print("reseptejä")
+				recipesFound = self.search.searcForhRecipesNIngredientsInStorage(self.recipesList, 0, self.storageList, False)
+				self.printList(recipesFound, RECIPES)
 			elif userChoice == 5:
-				print("Reseptejä")
+				N = self.askUserInputInt("Monta raaka-ainetta saa puuttua varastosta > ")
+				recipesFound = self.search.searcForhRecipesNIngredientsInStorage(self.recipesList, N, self.storageList, True)
+				self.printList(recipesFound, RECIPES)
 			elif userChoice == 6:
-				print("Reseptejä")
+				N = self.askUserInputInt("Monta raaka-ainetta löydyttävä varastosta > ")
+				recipesFound = self.search.searcForhRecipesNIngredientsInStorage(self.recipesList, N, self.storageList, False)
+				self.printList(recipesFound, RECIPES)
 			elif userChoice == 0:
 				return 0   
 		
