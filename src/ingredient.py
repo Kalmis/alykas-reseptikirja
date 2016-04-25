@@ -53,7 +53,7 @@ class Ingredient:
         if self.recipeLoaded:
             return self.recipe
         else:
-            return ''
+            return False
         
         
     def getRecipeLoaded(self):

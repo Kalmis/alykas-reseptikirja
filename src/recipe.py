@@ -72,6 +72,11 @@ class Recipe():
     def getOutcomeStr(self):
         return '' + self.outcomeSize + ' ' + self.outcomeUnit
     
+    def getOutcomeSize(self):
+        return self.outcomeSize
+        
+    def getOutcomeUnit(self):
+        return self.outcomeUnit
     
     def __str__(self):
         return '' + self.getName()+", " + self.getTimeStr() + ", " + self.getOutcomeStr() + ". \nIngredients: \n" + \

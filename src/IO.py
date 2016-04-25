@@ -4,6 +4,7 @@
 from recipe import Recipe
 from ingredient import Ingredient, IngredientContainer
 from corrupted_file_errors import *
+import os
 
 
 class IO(object):
@@ -290,5 +291,81 @@ class IO(object):
 
 
             raise CorruptedRecipesFileError("Jokin meni aivan totaalisen pieleen.")
+        
+        
+    def saveRecipes(self,fileName, recipesList):
+
+        tempFileName = "temp.rec"
+        try:
+            os.remove(tempFileName)
+        except FileNotFoundError:
+            pass
+        with open(tempFileName, "w+") as tempFile:
+            tempFile.write("RECIPELIST\n")
+            for recipe in recipesList:
+                tempFile.write("\n#Recipe\n")
+                tempFile.write("Date                   : " + recipe.getDate() +"\n")
+                tempFile.write("Name                   : " + recipe.getName() +"\n")
+                tempFile.write("Time                   : " + str(recipe.getTime()) +"\n")
+                tempFile.write("Outcome                : " +  str(recipe.getOutcomeSize()) + " : " + recipe.getOutcomeUnit() + "\n")
+                for ingredient in recipe.getIngredients():
+                    tempFile.write("Ingredient             : " + ingredient.getName() + " : " + str(ingredient.getQuantity()) + " : " + ingredient.getUnit() + "\n")
+                for instruction in recipe.getInstructions():
+                    tempFile.write("Instruction            : " + instruction + "\n")
+        tempFile.close()
+        try:
+            os.remove(fileName)
+        except FileNotFoundError:
+            pass
+        os.rename(tempFileName, fileName)
+
+    
+    def saveIngredients(self,fileName, ingredientsList):
+
+        tempFileName = "temp.ing"
+        try:
+            os.remove(tempFileName)
+        except FileNotFoundError:
+            pass
+        with open(tempFileName, "w+") as tempFile:
+            tempFile.write("INGREDIENTLIST\n")
+            for ingredient in ingredientsList:
+                tempFile.write("\n#Ingredient\n")
+                tempFile.write("Date                   : " + ingredient.getDate() +"\n")
+                tempFile.write("Name                   : " + ingredient.getName() +"\n")
+                tempFile.write("Density                : " + str(ingredient.getDensity()) +"\n")
+                for allergen in ingredient.getAllergens():
+                    tempFile.write("Allergen               : " + allergen + "\n")
+                if ingredient.getRecipe():
+                    tempFile.write("Recipe: " + ingredient.getRecipe().getName()+ "\n")
+        tempFile.close()
+        try:
+            os.remove(fileName)
+        except FileNotFoundError:
+            pass
+        os.rename(tempFileName, fileName)
+
+    def saveStorage(self,fileName, storageList):
+
+        tempFileName = "temp.sto"
+        try:
+            os.remove(tempFileName)
+        except FileNotFoundError:
+            pass
+        with open(tempFileName, "w+") as tempFile:
+            tempFile.write("STORAGELIST\n")
+            for ingredient in storageList:
+                tempFile.write(ingredient.getName())
+                tempFile.write(";")
+                tempFile.write(str(ingredient.getQuantity()))
+                tempFile.write(";")
+                tempFile.write(ingredient.getUnit())
+                tempFile.write("\n")
+        tempFile.close()
+        try:
+            os.remove(fileName)
+        except FileNotFoundError:
+            pass
+        os.rename(tempFileName, fileName)    
                              
         ########################################################################

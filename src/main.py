@@ -250,13 +250,15 @@ class Main(object):
 		while 1:
 			userChoice = self.runMenu(self.saveMenuTitles)
 			if userChoice == 1:
-				print("kaikki")
+				self.IO.saveRecipes(self.recipesFile, self.recipesList)
+				self.IO.saveIngredients(self.ingredientsFile, self.ingredientsList)
+				self.IO.saveStorage(self.storageFile, self.storageList)
 			elif userChoice == 2:
-				print("reseptit")
+				self.IO.saveRecipes(self.recipesFile, self.recipesList)
 			elif userChoice == 3:
-				print("raaka-aineet")
+				self.IO.saveIngredients(self.ingredientsFile, self.ingredientsList)
 			elif userChoice == 4:
-				print("varasto")
+				self.IO.saveStorage(self.storageFile, self.storageList)
 			elif userChoice == 0:
 				return 0 
 

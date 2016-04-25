@@ -1,9 +1,9 @@
-STORAGELIST;;
+STORAGELIST
 Kala;1.2;kg
-Maito;35;l
-Vehnajauho;2;kg
-Pizzataikina;350;g
-Jauheliha;2;kg
-Tomaattimurska;400;g
+Maito;35.0;l
+Vehnajauho;2.0;kg
+Pizzataikina;350.0;g
+Jauheliha;2.0;kg
+Tomaattimurska;400.0;g
 Juusto;0.8;kg
-Oregano;1;kg
+Oregano;1.0;kg
