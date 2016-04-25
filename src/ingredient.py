@@ -134,7 +134,8 @@ class IngredientContainer:
             return True
         else:
             return False
-        
+    def getAllergens(self):
+        return self.ingredient.getAllergens()
     
     def __str__(self):
         return '' + self.getName() +", " + str(self.getQuantity()) + " " + self.getUnit() + ". Allergeenit: " + self.getAllergensStr() + \

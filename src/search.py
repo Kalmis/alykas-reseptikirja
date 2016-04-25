@@ -62,4 +62,39 @@ class Search:
             return True
         else:
             return False
+        
+    def searchFromList(self, searchFor, searchList):
+        
+        for i in searchList:
+            if searchFor.strip().lower() == i.getName().strip().lower():
+                return i
+        return 0
                         
+    def searchIncludesIngredient(self,ingredientStr, recipesList):
+        
+        recipesFound = []
+        
+        for recipe in recipesList:
+            for ingredientRecipe in recipe.getIngredients():
+                if ingredientRecipe.getName().strip().lower() == ingredientStr.strip().lower():
+                    recipesFound.append(recipe)
+                    break
+        return recipesFound
+    
+    
+    def searchNoAllergen(self,allergenStr,recipesList):
+        recipesFound = []
+        
+        for recipe in recipesList:
+            found = False
+            for ingredientRecipe in recipe.getIngredients():
+                for allergen in ingredientRecipe.getAllergens():
+                    if allergen.strip().lower() == allergenStr.strip().lower():
+                        found = True
+                        break
+                if found:
+                    break
+            if not found:
+                recipesFound.append(recipe)
+        
+        return recipesFound

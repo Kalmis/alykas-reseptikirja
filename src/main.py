@@ -113,18 +113,12 @@ class Main(object):
 		else:
 			print("Tuntematon tyyppi")
 			return -1
-		result = self.searchFromList(userInput, searchList)
+		result = self.search.searchFromList(userInput, searchList)
 		if result != 0:
 			print(result)
 		else:
 			print("Vastaavuutta ei löytynyt.")
 	
-	def searchFromList(self, searchFor, list):
-		
-		for i in list:
-			if searchFor.strip().lower() == i.getName().strip().lower():
-				return i
-		return 0
 	
 	def runMenu(self, menuTitles):
 		
@@ -230,9 +224,13 @@ class Main(object):
 			if userChoice == 1:
 				self.askNameAndPrintMoreInfo(RECIPES)
 			elif userChoice == 2:
-				print("reseptejä")
+				ingredientStr = self.askUserInputText("Raaka-aine > ")
+				recipesFound = self.search.searchIncludesIngredient(ingredientStr, self.recipesList)
+				self.printList(recipesFound, RECIPES)
 			elif userChoice == 3:
-				print("allergikko")
+				allergenStr = self.askUserInputText("Allergeeni > ")
+				recipesFound = self.search.searchNoAllergen(allergenStr, self.recipesList)
+				self.printList(recipesFound, RECIPES)
 			elif userChoice == 4:
 				recipesFound = self.search.searcForhRecipesNIngredientsInStorage(self.recipesList, 0, self.storageList, False)
 				self.printList(recipesFound, RECIPES)
