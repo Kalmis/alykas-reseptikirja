@@ -39,7 +39,7 @@ class Ingredient:
     def getAllergensStr(self):
         allergens =''
         for i in self.allergens:
-            allergens = i 
+            allergens += i 
         return allergens
             
     def addAllergen(self,allergen):
@@ -48,6 +48,12 @@ class Ingredient:
     def setRecipe(self,recipe):
         self.recipe = recipe
         self.recipeLoaded = False
+        
+    def getRecipeStr(self):
+        if self.recipeLoaded:
+            return self.recipe.getName()
+        else:
+            return  ''
         
     def getRecipe(self):
         if self.recipeLoaded:
@@ -60,11 +66,11 @@ class Ingredient:
         return self.recipeLoaded
     
     
-    def loadRecipe(self,loadRecipes):
+    def loadRecipe(self,recipesList):
 
         if(self.recipeLoaded == False):
-            for i in loadRecipes:             
-                if i.getName == self.recipe:
+            for i in recipesList:             
+                if i.getName().strip().lower() == self.recipe.strip().lower():
                     self.recipe = i
                     self.recipeLoaded = True
                     return True
@@ -74,7 +80,7 @@ class Ingredient:
             return None # Ei ladattavaa
         
     def __str__(self):
-        return '' + self.getName() + ", tiheys: " + str(self.getDensity()) + ". Allergeenit: " + self.getAllergensStr() + ". Resepti: " + self.getRecipe()
+        return '' + self.getName() + ", tiheys: " + str(self.getDensity()) + ". Allergeenit: " + self.getAllergensStr() + ". Resepti: " + self.getRecipeStr()
     
 
 class IngredientContainer:

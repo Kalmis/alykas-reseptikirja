@@ -38,6 +38,7 @@ class Main(object):
 		self.loadFromFileToList(INGREDIENTS)
 		self.loadFromFileToList(RECIPES)
 		self.loadFromFileToList(STORAGE)
+		self.IO.loadRecipesForIngredients(self.ingredientsList, self.recipesList)
 		
 
 		
@@ -270,10 +271,12 @@ class Main(object):
 				self.loadFromFileToList(INGREDIENTS)
 				self.loadFromFileToList(RECIPES)
 				self.loadFromFileToList(STORAGE)
+				self.IO.loadRecipesForIngredients(self.ingredientsList, self.recipesList)
 			elif userChoice == 2:
 				self.loadFromFileToList(RECIPES)
 			elif userChoice == 3:
 				self.loadFromFileToList(INGREDIENTS)
+				self.IO.loadRecipesForIngredients(self.ingredientsList, self.recipesList)
 			elif userChoice == 4:
 				self.loadFromFileToList(STORAGE)
 			elif userChoice == 0:

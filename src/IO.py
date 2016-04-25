@@ -337,7 +337,7 @@ class IO(object):
                 for allergen in ingredient.getAllergens():
                     tempFile.write("Allergen               : " + allergen + "\n")
                 if ingredient.getRecipe():
-                    tempFile.write("Recipe: " + ingredient.getRecipe().getName()+ "\n")
+                    tempFile.write("Recipe                 : " + ingredient.getRecipeStr()+ "\n")
         tempFile.close()
         try:
             os.remove(fileName)
@@ -367,5 +367,11 @@ class IO(object):
         except FileNotFoundError:
             pass
         os.rename(tempFileName, fileName)    
-                             
+              
+              
+    def loadRecipesForIngredients(self,ingredientsList,recipesList):
+        
+        for ingredient in ingredientsList:
+            ingredient.loadRecipe(recipesList)
+                           
         ########################################################################
