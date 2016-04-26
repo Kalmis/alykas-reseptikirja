@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import datetime
+from corrupted_file_errors import *
 
 class Ingredient:
     
@@ -16,26 +17,20 @@ class Ingredient:
         try:
             datetime.datetime.strptime(date,'%d.%m.%Y')
             self.date = date
-            return True
         except ValueError:
-            print("Päivämäärää ei voitu tallentaa")
-            return False
+            raise SetAttributeError("Päivämäärää ei voitu tallentaa")
         
     def setName(self,name):
         if len(name) > 2:
             self.name = name
-            return True
         else:
-            print("Nimen tulee olla yli 2 merkkiä pitkä")
-            return False
+            raise SetAttributeError("Nimen tulee olla yli 2 merkkiä pitkä")
     
     def setDensity(self,density):
         try:
             self.density = float(density)
-            return True
         except ValueError:
-            print("Tiheyden täytyy olla desimaaliluku")
-            return False
+            raise SetAttributeError("Tiheyden täytyy olla desimaaliluku")
         
     def getName(self):
         return self.name 
@@ -50,31 +45,30 @@ class Ingredient:
         return self.allergens
     
     def getAllergensStr(self):
-        allergens =''
+        allergens ="  "
+        if len(self.allergens)>0:
+            allergens = ", Allergeenit: "
         for i in self.allergens:
-            allergens += i 
+            allergens += i + ", "
+        allergens = allergens[:-2]
         return allergens
             
     def addAllergen(self,allergen):
         if len(allergen)>2:
             self.allergens.append(allergen)
-            return True
         else:
-            print("Allergeenin täytyy olla yli 2 merkkiä pitkä.")
-            return False
+            raise SetAttributeError("Allergeenin täytyy olla yli 2 merkkiä pitkä.")
 
     def setRecipe(self,recipe):
         if len(recipe) > 2:
             self.recipe = recipe
             self.recipeLoaded = False
-            return True
         else:
-            print("Reseptin tulee olla yli 2 merkkiä pitkä.")
-            return False
+            raise SetAttributeError("Reseptin tulee olla yli 2 merkkiä pitkä.")
         
     def getRecipeStr(self):
         if self.recipeLoaded:
-            return self.recipe.getName()
+            return ", Resepti: " + self.recipe.getName()
         else:
             return  ''
         
@@ -98,12 +92,12 @@ class Ingredient:
                     self.recipeLoaded = True
                     return True
             # Reseptiä kyseisellä nimellä ei löytynyt.
-            return False
+            raise SetAttributeError("Reseptin lataaminen epäonnistui")
         else:
             return None # Ei ladattavaa
         
     def __str__(self):
-        return '' + self.getName() + ", tiheys: " + str(self.getDensity()) + ". Allergeenit: " + self.getAllergensStr() + ". Resepti: " + self.getRecipeStr()
+        return '' + self.getName() + ", tiheys: " + str(self.getDensity())  + self.getAllergensStr() + self.getRecipeStr()
     
 
 class IngredientContainer:
@@ -130,18 +124,14 @@ class IngredientContainer:
     def setQuantity(self,quantity):
         try:
             self.quantity = float(quantity)
-            return True
         except ValueError:
-            print("Määrän tulee olla desimaaliluku")
-            return False
+            raise SetAttributeError("Määrän tulee olla desimaaliluku")
         
     def setUnit(self, unit):
         if len(unit) > 0:
-            self.outcomeUnit = unit
-            return True
+            self.unit = unit
         else:
-            print("Lopputuloksen yksikkö ei voi olla tyhjä")
-            return False
+            raise SetAttributeError("Lopputuloksen yksikkö ei voi olla tyhjä")
     
     def getQuantity(self):
         return self.quantity
@@ -161,6 +151,9 @@ class IngredientContainer:
     def getRecipe(self):
         return self.ingredient.getRecipe()
     
+    def getRecipeStr(self):
+        return self.ingredient.getRecipeStr()
+    
     def getDensity(self):
         return self.ingredient.getDensity()
     
@@ -173,8 +166,7 @@ class IngredientContainer:
         return self.ingredient.getAllergens()
     
     def __str__(self):
-        return '' + self.getName() +", " + str(self.getQuantity()) + " " + self.getUnit() + ". Allergeenit: " + self.getAllergensStr() + \
-             ". Resepti: " + self.getRecipe() 
+        return '' + self.getName() +", " + str(self.getQuantity()) + " " + self.getUnit()  + self.getAllergensStr() + self.getRecipeStr() 
 
                 
                    

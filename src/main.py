@@ -89,7 +89,7 @@ class Main(object):
 		
 		if listType == INGREDIENTS:
 			for i in listToPrint:
-				print(i.getName()+", Allergeenit: ", i.getAllergensStr())
+				print(i.getName()+ i.getAllergensStr())
 		elif listType == RECIPES:
 			for i in listToPrint:
 				print(i.getName(), i.getTimeStr()+",", i.getOutcomeStr())

@@ -23,8 +23,7 @@ class IO(object):
         self.date = False
         self.name = False
         self.density = False
-        self.allergen = True # Ei pakollinen. Virheellisiä tietoja sisältävää raaka-ainetta ei lueta.
-        self.recipe = True # Ei pakollinen. Virheellisiä tietoja sisältävää raaka-ainetta ei lueta.
+        self.success = True
         self.ingredientList = []
         
         self.succesCount = 0
@@ -56,41 +55,40 @@ class IO(object):
                         currentLine = inputLines.readline()
                         headerParts = currentLine.split(":")    
                         while currentLine != '':
-                            
-                            if currentLine[0] == '#':
-                                break
-                            
-                            if headerParts[0].strip().lower() == 'date':
-                                if self.ingredient.setDate(headerParts[1].strip()):
-                                    self.date = True
-                                else:
+                            try:
+                                if currentLine[0] == '#':
                                     break
                                 
-                            elif headerParts[0].strip().lower() == 'name':
-                                if self.ingredient.setName(headerParts[1].strip()):
-                                    self.name = headerParts[1].strip()
-                                else:
-                                    break
-                            
-                            elif headerParts[0].strip().lower() == 'density':
-                                if self.ingredient.setDensity(headerParts[1].strip()):
-                                    self.density = True
-                                else: break
-                            
-                            elif headerParts[0].strip().lower() == 'recipe':
-                                if not self.ingredient.setRecipe(headerParts[1].strip()):
-                                    self.recipe = False
-                                    break
-                            
-                            elif headerParts[0].strip().lower() == 'allergen':
-                                if not self.ingredient.addAllergen(headerParts[1].strip()):
-                                    self.allergen = False
-                                    break
+                                if headerParts[0].strip().lower() == 'date':
+                                    self.ingredient.setDate(headerParts[1].strip())
+                                    self.date = True
+
                                     
-                            currentLine = inputLines.readline()
-                            headerParts = currentLine.split(":")    
+                                elif headerParts[0].strip().lower() == 'name':
+                                    self.ingredient.setName(headerParts[1].strip())
+                                    self.name = headerParts[1].strip()
+
+                                
+                                elif headerParts[0].strip().lower() == 'density':
+                                    self.ingredient.setDensity(headerParts[1].strip())
+                                    self.density = True
+
+                                
+                                elif headerParts[0].strip().lower() == 'recipe':
+                                    self.ingredient.setRecipe(headerParts[1].strip())
+                                
+                                elif headerParts[0].strip().lower() == 'allergen':
+                                    self.ingredient.addAllergen(headerParts[1].strip())
+
+                                        
+                                currentLine = inputLines.readline()
+                                headerParts = currentLine.split(":")   
+                            except SetAttributeError as e:
+                                print(str(e))
+                                self.success = False
+                                break 
                             
-                        if not self.name or not self.density or not self.date or not self.allergen or not self.recipe:
+                        if not self.name or not self.density or not self.date or not self.success:
                             self.errorCount +=1
                             if self.name:
                                 print("Seuraavan raaka-aineen lukeminen epäonnistui:", self.name)
@@ -102,6 +100,7 @@ class IO(object):
                             self.date = False
                             self.name = False
                             self.density = False
+                            self.success = True
                         
                         
                 else:
@@ -163,54 +162,50 @@ class IO(object):
                         currentLine = inputLines.readline()
                         headerParts = currentLine.split(":")    
                         while currentLine != '':
-                            
-                            if currentLine[0] == '#':
-                                break
-                            
-                            if headerParts[0].strip().lower() == 'date':
-                                if self.recipe.setDate(headerParts[1].strip()):
+                            try:
+                                if currentLine[0] == '#':
+                                    break
+                                
+                                if headerParts[0].strip().lower() == 'date':
+                                    self.recipe.setDate(headerParts[1].strip())
                                     self.date = True
-                                else:
-                                    break
-                                
-                            elif headerParts[0].strip().lower() == 'name':
-                                if self.recipe.setName(headerParts[1].strip()):
+                                    
+                                elif headerParts[0].strip().lower() == 'name':
+                                    self.recipe.setName(headerParts[1].strip())
                                     self.name = headerParts[1].strip()
-                                else: 
-                                    break
-                            
-                            elif headerParts[0].strip().lower() == 'time':
-                                if self.recipe.setTime(headerParts[1].strip()):
+                                
+                                elif headerParts[0].strip().lower() == 'time':
+                                    self.recipe.setTime(headerParts[1].strip())
                                     self.time = True
-                                else:
-                                    break
-                                
-                            elif headerParts[0].strip().lower() == 'instruction':
-                                if self.recipe.addInstruction(headerParts[1].strip()):
+
+                                    
+                                elif headerParts[0].strip().lower() == 'instruction':
+                                    self.recipe.addInstruction(headerParts[1].strip())
                                     self.instructions = True
-                                else:
-                                    break
-                            
-                            elif headerParts[0].strip().lower() == 'outcome':
-                                if len(headerParts) != 3: break
-                                if self.recipe.setOutcomeSize(headerParts[1].strip()) and self.recipe.setOutcomeUnit(headerParts[2].strip()):
-                                    self.outcome = True
-                                else:
-                                    break
-                            
-                            elif headerParts[0].strip().lower() == 'ingredient':
-                                if len(headerParts) != 4: 
-                                    self.ingredients = False
-                                    break
-                                self.ingredientContainer = IngredientContainer()
-                                if not self.ingredientContainer.setIngredient(headerParts[1].strip(), ingredientsList):
-                                    self.ingredients = False 
-                                    break
-                                if self.ingredientContainer.setQuantity(headerParts[2].strip()) and self.ingredientContainer.setUnit(headerParts[3].strip()) and self.recipe.addIngredient(self.ingredientContainer):
-                                    self.ingredients = True
                                 
-                            currentLine = inputLines.readline()
-                            headerParts = currentLine.split(":")    
+                                elif headerParts[0].strip().lower() == 'outcome':
+                                    if len(headerParts) != 3: break
+                                    self.recipe.setOutcomeSize(headerParts[1].strip()) 
+                                    self.recipe.setOutcomeUnit(headerParts[2].strip())
+                                    self.outcome = True
+                                
+                                elif headerParts[0].strip().lower() == 'ingredient':
+                                    if len(headerParts) != 4: 
+                                        self.ingredients = False
+                                        break
+                                    self.ingredientContainer = IngredientContainer()
+                                    self.ingredientContainer.setIngredient(headerParts[1].strip(), ingredientsList)
+                                    self.ingredientContainer.setQuantity(headerParts[2].strip())
+                                    self.ingredientContainer.setUnit(headerParts[3].strip())
+                                    self.recipe.addIngredient(self.ingredientContainer)
+                                    self.ingredients = True
+                                    
+                                currentLine = inputLines.readline()
+                                headerParts = currentLine.split(":")    
+                                
+                            except SetAttributeError as e:
+                                print(str(e))
+                                break
                             
                         if not self.name or not self.date or not self.time or not self.instructions or not self.ingredients or not self.outcome:
                             self.errorCount += 1
@@ -275,14 +270,16 @@ class IO(object):
             currentLine = inputLines.readline()
             headerParts = currentLine.split(";")   
             while currentLine != '':
-                
-                if len(headerParts) >2:
-                    self.ingredientContainer = IngredientContainer()
-                    if not self.ingredientContainer.setIngredient(headerParts[0].strip(), ingredientsList):
-                        self.ingredients = False
-                    else:
-                        if self.ingredientContainer.setQuantity(headerParts[1].strip()) and self.ingredientContainer.setUnit(headerParts[2].strip()):
-                            self.success = True
+                try:
+                    if len(headerParts) >2:
+                        self.ingredientContainer = IngredientContainer()
+                        self.ingredientContainer.setIngredient(headerParts[0].strip(), ingredientsList)
+                        self.ingredientContainer.setQuantity(headerParts[1].strip()) 
+                        self.ingredientContainer.setUnit(headerParts[2].strip())
+                        self.success = True
+                except SetAttributeError as e:
+                    print(str(e))
+                    self.success = False
                     
                 if not self.success:
                     self.errorCount += 1

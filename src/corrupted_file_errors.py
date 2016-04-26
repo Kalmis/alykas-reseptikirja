@@ -5,16 +5,13 @@ Created on 19.4.2016
 '''
 
 class CorruptedIngredientsFileError(Exception):
-
-    def __init__(self, message):
-        super(CorruptedIngredientsFileError, self).__init__(message)
+    pass
         
 class CorruptedRecipesFileError(Exception):
-
-    def __init__(self, message):
-        super(CorruptedRecipesFileError, self).__init__(message)
+    pass
         
 class CorruptedStorageFileError(Exception):
+    pass
 
-    def __init__(self, message):
-        super(CorruptedStorageFileError, self).__init__(message)
+class SetAttributeError(Exception):
+    pass

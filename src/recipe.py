@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import datetime
+from corrupted_file_errors import *
 
 
 class Recipe():
@@ -18,43 +19,33 @@ class Recipe():
     def setName(self,name):
         if len(name) > 2:
             self.name = name
-            return True
         else:
-            print("Nimen tulee olla yli 2 merkkiä pitkä")
-            return False
+            raise SetAttributeError("Nimen tulee olla yli 2 merkkiä pitkä")
         
     def setOutcomeSize(self, outcomeSize):
         try:
             self.outcomeSize = float(outcomeSize)
-            return True
         except ValueError:
-            print("Lopputuloksen tulee olla desimaaliluku")
-            return False
+            raise SetAttributeError("Lopputuloksen tulee olla desimaaliluku")
         
     def setOutcomeUnit(self, outcomeUnit):
         if len(outcomeUnit) > 0:
             self.outcomeUnit = outcomeUnit
-            return True
         else:
-            print("Lopputuloksen yksikkö ei voi olla tyhjä")
-            return False
+            raise SetAttributeError("Lopputuloksen yksikkö ei voi olla tyhjä")
     
     def setDate(self,date):
         try:
             datetime.datetime.strptime(date,'%d.%m.%Y')
             self.date = date
-            return True
         except ValueError:
-            print("Päivämäärää ei voitu tallentaa")
-            return False
+            raise SetAttributeError("Päivämäärää ei voitu tallentaa")
         
     def addInstruction(self,instruction):
         if len(instruction) > 2:
             self.instructions.append(instruction) 
-            return True
         else:
-            print("Ohjeen tulisi olla yli 2 merkkiä pitkä")
-            return False
+            raise SetAttributeError("Ohjeen tulisi olla yli 2 merkkiä pitkä")
         
     def addIngredient(self, ingredientContainer):
         self.ingredients.append(ingredientContainer)
@@ -63,10 +54,8 @@ class Recipe():
     def setTime(self,time):
         try:
             self.time = int(time)
-            return True
         except ValueError:
-            print("Ajan täytyy olla kokonaisluku (min)")
-            return False
+            raise SetAttributeError("Ajan täytyy olla kokonaisluku (min)")
     
     def getName(self):
         return self.name
@@ -78,7 +67,7 @@ class Recipe():
         return self.time
     
     def getTimeStr(self):
-        return '' + self.time + " Min"
+        return '' + str(self.time) + " Min"
     
     def getInstructions(self):
         return self.instructions
@@ -102,7 +91,7 @@ class Recipe():
         return ingredients
     
     def getOutcomeStr(self):
-        return '' + self.outcomeSize + ' ' + self.outcomeUnit
+        return '' + str(self.outcomeSize) + ' ' + self.outcomeUnit
     
     def getOutcomeSize(self):
         return self.outcomeSize
