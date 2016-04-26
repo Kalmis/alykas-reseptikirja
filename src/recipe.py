@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import datetime
 
 
 class Recipe():
@@ -14,24 +15,58 @@ class Recipe():
         self.ingredients = []
         
                 
-    def setName(self, name):
-        self.name = name
+    def setName(self,name):
+        if len(name) > 2:
+            self.name = name
+            return True
+        else:
+            print("Nimen tulee olla yli 2 merkkiä pitkä")
+            return False
         
     def setOutcomeSize(self, outcomeSize):
-        self.outcomeSize = outcomeSize
+        try:
+            self.outcomeSize = float(outcomeSize)
+            return True
+        except ValueError:
+            print("Lopputuloksen tulee olla desimaaliluku")
+            return False
         
     def setOutcomeUnit(self, outcomeUnit):
-        self.outcomeUnit = outcomeUnit
+        if len(outcomeUnit) > 0:
+            self.outcomeUnit = outcomeUnit
+            return True
+        else:
+            print("Lopputuloksen yksikkö ei voi olla tyhjä")
+            return False
     
     def setDate(self,date):
-        self.date = date
+        try:
+            datetime.datetime.strptime(date,'%d.%m.%Y')
+            self.date = date
+            return True
+        except ValueError:
+            print("Päivämäärää ei voitu tallentaa")
+            return False
         
     def addInstruction(self,instruction):
-        self.instructions.append(instruction) 
+        if len(instruction) > 2:
+            self.instructions.append(instruction) 
+            return True
+        else:
+            print("Ohjeen tulisi olla yli 2 merkkiä pitkä")
+            return False
         
-    #TODO: tämän pitäis varmaan olla float?
+    def addIngredient(self, ingredientContainer):
+        self.ingredients.append(ingredientContainer)
+        return True
+    
     def setTime(self,time):
-        self.time = time
+        try:
+            self.time = int(time)
+            return True
+        except ValueError:
+            print("Ajan täytyy olla kokonaisluku (min)")
+            return False
     
     def getName(self):
         return self.name
@@ -56,9 +91,6 @@ class Recipe():
             a += 1
         return instructions
     
-        
-    def addIngredient(self, ingredientContainer):
-        self.ingredients.append(ingredientContainer)
 
     def getIngredients(self):
         return self.ingredients

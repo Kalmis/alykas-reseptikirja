@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import datetime
 
 class Ingredient:
     
@@ -12,16 +13,28 @@ class Ingredient:
 
     
     def setDate(self,date):
-        self.date = date
+        try:
+            datetime.datetime.strptime(date,'%d.%m.%Y')
+            self.date = date
+            return True
+        except ValueError:
+            print("Päivämäärää ei voitu tallentaa")
+            return False
         
     def setName(self,name):
-        self.name = name
+        if len(name) > 2:
+            self.name = name
+            return True
+        else:
+            print("Nimen tulee olla yli 2 merkkiä pitkä")
+            return False
     
     def setDensity(self,density):
         try:
             self.density = float(density)
             return True
         except ValueError:
+            print("Tiheyden täytyy olla desimaaliluku")
             return False
         
     def getName(self):
@@ -43,11 +56,21 @@ class Ingredient:
         return allergens
             
     def addAllergen(self,allergen):
-        self.allergens.append(allergen)
+        if len(allergen)>2:
+            self.allergens.append(allergen)
+            return True
+        else:
+            print("Allergeenin täytyy olla yli 2 merkkiä pitkä.")
+            return False
 
     def setRecipe(self,recipe):
-        self.recipe = recipe
-        self.recipeLoaded = False
+        if len(recipe) > 2:
+            self.recipe = recipe
+            self.recipeLoaded = False
+            return True
+        else:
+            print("Reseptin tulee olla yli 2 merkkiä pitkä.")
+            return False
         
     def getRecipeStr(self):
         if self.recipeLoaded:
@@ -109,10 +132,16 @@ class IngredientContainer:
             self.quantity = float(quantity)
             return True
         except ValueError:
+            print("Määrän tulee olla desimaaliluku")
             return False
         
-    def setUnit(self,unit):
-        self.unit = unit
+    def setUnit(self, unit):
+        if len(unit) > 0:
+            self.outcomeUnit = unit
+            return True
+        else:
+            print("Lopputuloksen yksikkö ei voi olla tyhjä")
+            return False
     
     def getQuantity(self):
         return self.quantity
