@@ -50,6 +50,7 @@ class Ingredient:
             allergens = ", Allergeenit: "
         for i in self.allergens:
             allergens += i + ", "
+        #Lopussa ei tarvitse olla ", ", joten poistetaan ne.
         allergens = allergens[:-2]
         return allergens
             
