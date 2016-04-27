@@ -122,7 +122,7 @@ class Main(object):
 	
 	
 	def runMenu(self, menuTitles):
-		
+		print("")
 		for i in menuTitles:
 			print(i)
 		while True:
