@@ -42,7 +42,7 @@ class IO(object):
             # Process the data we just read.
 
             if headerParts[0].strip() != "INGREDIENTLIST":
-                raise CorruptedIngredientsFileError("Unknown file type")
+                raise CorruptedFileError("Unknown file type")
 
 
 
@@ -114,7 +114,7 @@ class IO(object):
         except IOError:
 
 
-            raise CorruptedIngredientsFileError("Jokin meni aivan totaalisen pieleen.")
+            raise CorruptedFileError("Raaka-aine tiedosto korruptoitunut")
      
         
     #################################################################################
@@ -149,7 +149,7 @@ class IO(object):
             # Process the data we just read.
 
             if headerParts[0].strip() != "RECIPELIST":
-                raise CorruptedRecipesFileError("Unknown file type")
+                raise CorruptedFileError("Unknown file type")
 
 
 
@@ -235,7 +235,7 @@ class IO(object):
         except IOError:
 
 
-            raise CorruptedRecipesFileError("Jokin meni aivan totaalisen pieleen.")
+            raise CorruptedFileError("Reseptitiedosto korruptoitunut")
                              
         ########################################################################
         
@@ -265,7 +265,7 @@ class IO(object):
             # Process the data we just read.
 
             if headerParts[0].strip() != "STORAGELIST":
-                raise CorruptedRecipesFileError("Unknown file type")
+                raise CorruptedFileError("Unknown file type")
          
             currentLine = inputLines.readline()
             headerParts = currentLine.split(";")   
@@ -302,7 +302,7 @@ class IO(object):
         except IOError:
 
 
-            raise CorruptedRecipesFileError("Jokin meni aivan totaalisen pieleen.")
+            raise CorruptedFileError("Varastotiedosto korruptoitunut")
         
         
     def saveRecipes(self,fileName, recipesList):

@@ -28,7 +28,7 @@ class Ingredient:
     
     def setDensity(self,density):
         try:
-            self.density = float(density)
+            self.density = float(str(density).replace(",", "."))
         except ValueError:
             raise SetAttributeError("Tiheyden täytyy olla desimaaliluku")
         
@@ -41,15 +41,19 @@ class Ingredient:
     def getDensity(self):
         return self.density
     
+    def getDensityGUI(self):
+        return str(self.density).replace(".", ",")
+    
     def getAllergens(self):
         return self.allergens
     
     def getAllergensGUI(self):
-        allergens ="  "
+        allergens=''
         for i in self.allergens:
             allergens += i + ", "
         #Lopussa ei tarvitse olla ", ", joten poistetaan ne.
-        allergens = allergens[:-2]
+        if len(allergens)>2:
+            allergens = allergens[:-2]
         return allergens
     
     def getAllergensStr(self):
@@ -61,6 +65,9 @@ class Ingredient:
         #Lopussa ei tarvitse olla ", ", joten poistetaan ne.
         allergens = allergens[:-2]
         return allergens
+    
+    def removeAllergens(self):
+        self.allergens = []
             
     def addAllergen(self,allergen):
         if len(allergen)>2:
@@ -75,6 +82,10 @@ class Ingredient:
         else:
             raise SetAttributeError("Reseptin tulee olla yli 2 merkkiä pitkä.")
         
+    def removeRecipe(self):
+        self.recipeLoaded = None
+        self.recipe = None
+    
     def getRecipeGUI(self):
         if self.recipeLoaded:
             return self.recipe.getName()

@@ -24,7 +24,7 @@ class Recipe():
         
     def setOutcomeSize(self, outcomeSize):
         try:
-            self.outcomeSize = float(outcomeSize)
+            self.outcomeSize = float(str(outcomeSize).replace(",", "."))
         except ValueError:
             raise SetAttributeError("Lopputuloksen tulee olla desimaaliluku")
         
@@ -66,6 +66,9 @@ class Recipe():
     def getTime(self):
         return self.time
     
+    def getTimeGUI(self):
+        return str(self.time)
+    
     def getTimeStr(self):
         return '' + str(self.time) + " Min"
     
@@ -90,11 +93,20 @@ class Recipe():
             ingredients += i.__str__() + "\n"
         return ingredients
     
+    def getIngredientsGUI(self):
+        ingredients = []
+        for i in self.ingredients:
+            ingredients.append(i.getName())
+        return ingredients
+    
     def getOutcomeStr(self):
         return '' + str(self.outcomeSize).replace(".", ",") + ' ' + self.outcomeUnit
     
     def getOutcomeSize(self):
         return self.outcomeSize
+    
+    def getOutcomeSizeGUI(self):
+        return str(self.outcomeSize).replace(".", ",")
         
     def getOutcomeUnit(self):
         return self.outcomeUnit

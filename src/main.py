@@ -70,18 +70,11 @@ class Main(object):
 				print("Tuntematon tyyppi")
 				return -1
 				
-		except CorruptedIngredientsFileError:
+		except CorruptedFileError as e:
 			fileIO.close()
-			print("Raaka-aineiden luku epäonnistui")
+			print(str(e))
 			exit()
-		except CorruptedStorageFileError:
-			fileIO.close()
-			print("Varaston luku epäonnistui")
-			exit()
-		except CorruptedRecipesFileError:
-			fileIO.close()
-			print("Reseptien luku epäonnistui")
-			exit()	
+
 			
 		fileIO.close()
 				
