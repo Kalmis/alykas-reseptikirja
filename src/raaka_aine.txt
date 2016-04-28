@@ -20,10 +20,9 @@ Allergen               : Gluteeni
 #Ingredient
 Date                   : 18.4.2015
 Name                   : Pizzataikina
-Density                : 1.2
+Density                : 1.5
 Allergen               : Gluteeni
-Allergen               : Laktoosi
-Recipe: Kala pizza
+Allergen		 : Laktoosi
 
 #Ingredient
 Date                   : 18.4.2015
