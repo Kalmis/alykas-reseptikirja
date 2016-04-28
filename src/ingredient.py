@@ -44,6 +44,14 @@ class Ingredient:
     def getAllergens(self):
         return self.allergens
     
+    def getAllergensGUI(self):
+        allergens ="  "
+        for i in self.allergens:
+            allergens += i + ", "
+        #Lopussa ei tarvitse olla ", ", joten poistetaan ne.
+        allergens = allergens[:-2]
+        return allergens
+    
     def getAllergensStr(self):
         allergens ="  "
         if len(self.allergens)>0:
@@ -67,6 +75,11 @@ class Ingredient:
         else:
             raise SetAttributeError("Reseptin tulee olla yli 2 merkkiä pitkä.")
         
+    def getRecipeGUI(self):
+        if self.recipeLoaded:
+            return self.recipe.getName()
+        else:
+            return  ''   
     def getRecipeStr(self):
         if self.recipeLoaded:
             return ", Resepti: " + self.recipe.getName()
@@ -124,7 +137,7 @@ class IngredientContainer:
     
     def setQuantity(self,quantity):
         try:
-            self.quantity = float(quantity)
+            self.quantity = float(quantity.replace(",","."))
         except ValueError:
             raise SetAttributeError("Määrän tulee olla desimaaliluku")
         
@@ -136,6 +149,9 @@ class IngredientContainer:
     
     def getQuantity(self):
         return self.quantity
+    
+    def getQuantityStr(self):
+        return str(self.quantity).replace(".", ",")
     
     def getUnit(self):
         return self.unit
