@@ -55,12 +55,15 @@ class Ingredient:
             raise SetAttributeError("Tiheyden täytyy olla desimaaliluku")
         
     def getName(self):
+        ''' Palauttaa nimen'''
         return self.name 
         
     def getDate(self):
+        ''' Palauttaa luontipäivän'''
         return self.date
     
     def getDensity(self):
+        ''' Palauttaa tiheyden floattina'''
         return self.density
     
     def getDensityGUI(self):
@@ -68,6 +71,7 @@ class Ingredient:
         return str(self.density).replace(".", ",")
     
     def getAllergens(self):
+        ''' Palauttaa allergeenit listana'''
         return self.allergens
     
     def getAllergensGUI(self):
@@ -242,12 +246,15 @@ class IngredientContainer:
         return str(self.quantity).replace(".", ",")
     
     def getUnit(self):
+        ''' Palauttaa määrän yksikön'''
         return self.unit
     
     def getIngredient(self):
+        ''' Palauttaa raaka-aine olion'''
         return self.ingredient
     
     def getName(self):
+        ''' Palauttaa raaka-aineen nimen'''
         return self.ingredient.getName()
     
     def getAllergensStr(self):

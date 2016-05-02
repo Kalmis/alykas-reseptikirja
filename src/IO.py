@@ -15,14 +15,23 @@ import os
 class IO(object):
     
     '''
-    Input output luokka, hoitaa kaiken tarvittavan luettavan eri funktioilla.
+    Input output luokka, jolla ladataan raaka-aineet, reseptit ja varastolistaus tiedostoista. Tämän lisäksi nämä voidaan tallentaa tiedostoihin annetusta listasta.
     '''
 
     def loadIngredients(self, inputLines):
 
         '''
-        TESTAAMATTA
-        Raaka-aineiden lukeminen tiedostosta.
+        Tämä metodi lukee raaka-aineet tiedostosta ja palauttaa ne listana.
+        
+        Args:
+            inputLines: tiedoston kahva (fileIO), josta tiedot luetaan.
+        
+        Returns:
+            ingredientList: Raaka-aine oliot listana
+            successCount: Montako luettiin onnistuneesti sisään
+            errorCount: Montako jäi virheeseen luettaessa
+        Raises:
+            CorruptedFileError: Jos kohdataan tuntematon tiedostotyyppi
         '''
 
         self.date = False
@@ -127,8 +136,18 @@ class IO(object):
     def loadRecipes(self, inputLines, ingredientsList):
 
         '''
-        TESTAAMATTA
-        Reseptien lukeminen tiedostosta.
+        Tämä metodi lukee reseptit tiedostosta ja palauttaa ne listana.
+                
+        Args:
+            inputLines: tiedoston kahva (fileIO), josta tiedot luetaan.
+            ingredientList: Tunnetut raaka-aineet listana
+        
+        Returns:
+            recipesList: Resepti oliot listana
+            successCount: Montako luettiin onnistuneesti sisään
+            errorCount: Montako jäi virheeseen luettaessa
+        Raises:
+            CorruptedFileError: Jos kohdataan tuntematon tiedostotyyppi
         '''
 
         self.date = False
@@ -248,8 +267,18 @@ class IO(object):
     def loadStorage(self, inputLines, ingredientsList):
 
         '''
-        TESTAAMATTA
-        Varaston lukeminen tiedostosta.
+        Tämä metodi lukee varastolistauksen tiedostosta ja palauttaa ne listana.
+                
+        Args:
+            inputLines: tiedoston kahva (fileIO), josta tiedot luetaan.
+            ingredientList: Tunnetut raaka-aineet listana
+        
+        Returns:
+            storageList: Raaka-aine oliot listana
+            successCount: Montako luettiin onnistuneesti sisään
+            errorCount: Montako jäi virheeseen luettaessa
+        Raises:
+            CorruptedFileError: Jos kohdataan tuntematon tiedostotyyppi
         '''
 
         self.success = None
@@ -311,6 +340,15 @@ class IO(object):
         
         
     def saveRecipes(self,fileName, recipesList):
+        
+        '''
+        Tämä metodi tallentaa reseptit tiedostoon ohjelman luettavassa muodossa. Tiedot tallennetaan ensin temp.rec tiedostoon, jonka jälkeen kyseinen tiedosto nimetään uudelleen halutun nimiseksi.
+                
+        Args:
+            fileName: Tiedostonimi, johon reseptit tallennetaan
+            recipesList: Resepti oliot listana
+
+        '''
 
         tempFileName = "temp.rec"
         try:
@@ -338,7 +376,14 @@ class IO(object):
 
     
     def saveIngredients(self,fileName, ingredientsList):
+        '''
+        Tämä metodi tallentaa raaka-aineet tiedostoon ohjelman luettavassa muodossa. Tiedot tallennetaan ensin temp.ing tiedostoon, jonka jälkeen kyseinen tiedosto nimetään uudelleen halutun nimiseksi.
+                
+        Args:
+            fileName: Tiedostonimi, johon raaka-aineet tallennetaan
+            ingredientList: Raaka-aine oliot listana
 
+        '''
         tempFileName = "temp.ing"
         try:
             os.remove(tempFileName)
@@ -363,7 +408,14 @@ class IO(object):
         os.rename(tempFileName, fileName)
 
     def saveStorage(self,fileName, storageList):
+        '''
+        Tämä metodi tallentaa varastossa olevat raaka-aineet tiedostoon ohjelman luettavassa muodossa. Tiedot tallennetaan ensin temp.sto tiedostoon, jonka jälkeen kyseinen tiedosto nimetään uudelleen halutun nimiseksi.
+                
+        Args:
+            fileName: Tiedostonimi, johon varaston raaka-aineet tallennetaan
+            storageList: Varaston raaka-aine oliot listana
 
+        '''
         tempFileName = "temp.sto"
         try:
             os.remove(tempFileName)
@@ -387,8 +439,14 @@ class IO(object):
               
               
     def loadRecipesForIngredients(self,ingredientsList,recipesList):
+        ''' 
+        Tällä metodilla voidaan ladata kaikkien raaka-aineiden reseptit. Käytännössä tämä metodi kutsuu raaka-aineen loadrecipe() metodia
+        
+        Args:
+            ingredientList: Raaka-aine oliot listana
+            recipesList: Reseptio oliot listana
+        '''
         
         for ingredient in ingredientsList:
             ingredient.loadRecipe(recipesList)
                            
-        ########################################################################
