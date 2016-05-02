@@ -11,7 +11,7 @@ import sys
 from GUIDesign import Ui_MainWindow
 from PyQt5.QtWidgets import QDesktopWidget, QApplication,QMainWindow, QTableWidgetItem, QMessageBox
 from PyQt5.QtGui import QDoubleValidator, QRegExpValidator, QIntValidator
-from PyQt5.QtCore import QRegExp
+from PyQt5.QtCore import QRegExp, Qt
 
 
 from IO import IO
@@ -53,6 +53,10 @@ class MainGUI(QMainWindow, Ui_MainWindow):
         self.buttonSaveRecipeInstruction.clicked.connect(self.saveRecipesInstructionsEdit)
         
         #Haku näkymä
+        
+        self.buttonSearch.clicked.connect(self.populateSearchTable)
+        self.checkMissingN.stateChanged.connect(self.checkStateChanged)
+        self.checkFoundN.stateChanged.connect(self.checkStateChanged)
         
         #Asetukset näkymä
         self.buttonLoadAll.clicked.connect(self.loadFromFileToList)
@@ -101,7 +105,16 @@ class MainGUI(QMainWindow, Ui_MainWindow):
         self.recipeIngredientUnit.setValidator(min1tomax10char)
         
         self.recipeInstruction.setValidator(min2char)
-        
+    
+    def checkStateChanged(self,state):
+        # 
+        if state != Qt.Checked:
+            pass
+        elif self.sender() == self.checkFoundN:
+            self.checkMissingN.setChecked(False)
+        elif self.sender() == self.checkMissingN:
+            self.checkFoundN.setChecked(False)
+            
        
     def populateStorageEditFields(self,mi):
         if mi.row() >= len(self.storageList):
@@ -191,6 +204,40 @@ class MainGUI(QMainWindow, Ui_MainWindow):
             self.recipeInstructionToEdit = mi.row()        
   
         
+    def populateSearchTable(self):
+
+        searchList = self.recipesList
+        if self.checkName.isChecked():
+            searchList = self.search.searchFromList(self.searchName.text(), searchList)
+        if self.checkAllergen.isChecked():
+            searchList = self.search.searchNoAllergen(self.searchAllergen.text(), searchList)
+        if self.checkIngredient.isChecked():
+            searchList = self.search.searchIncludesIngredient(self.searchIngredient.text(), searchList)
+        if self.checkFoundN.isChecked():
+            searchList = self.search.searcForhRecipesNIngredientsInStorage(searchList, self.spinFoundN.value(), self.storageList, False)
+        elif self.checkMissingN.isChecked():
+            searchList = self.search.searcForhRecipesNIngredientsInStorage(searchList, self.spinMissingN, self.storageList, True)
+        
+        if len(searchList)>0:
+            self.searchTable.setRowCount(len(searchList))
+            self.searchTable.setColumnCount(4)
+            self.searchTable.setHorizontalHeaderLabels(["Nimi","Aika","Lopputulos", "Allergeenit"])
+            for r, recipe in enumerate(searchList):
+                name = QTableWidgetItem(recipe.getName())
+                time = QTableWidgetItem(recipe.getTimeStr())
+                outcome = QTableWidgetItem(str(recipe.getOutcomeStr()))
+                allergens = QTableWidgetItem(str(recipe.getAllergensDistinctGUI()))
+                self.searchTable.setItem(r,0,name)
+                self.searchTable.setItem(r,1,time)
+                self.searchTable.setItem(r,2,outcome)
+                self.searchTable.setItem(r,3,allergens)
+        else:
+            self.statusBar().showMessage("Reseptejä ei löytynyt hakuehdoilla")
+            self.searchTable.clearContents()
+
+            
+    
+    
     def saveRecipesEdit(self):
         if self.recipeName.hasAcceptableInput() and self.recipeTime.hasAcceptableInput() and self.recipeOutcomeSize.hasAcceptableInput() and self.recipeOutcomeUnit.hasAcceptableInput() and self.recipeToEdit is not None:
             try:
@@ -284,6 +331,7 @@ class MainGUI(QMainWindow, Ui_MainWindow):
         self.storageList = []
         
         self.search = Search()
+        
         self.loadFromFileToList() # Sender on None, joten luetaan kaikki
         self.IO.loadRecipesForIngredients(self.ingredientsList, self.recipesList)
 

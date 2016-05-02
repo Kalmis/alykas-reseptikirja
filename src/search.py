@@ -64,11 +64,13 @@ class Search:
             return False
         
     def searchFromList(self, searchFor, searchList):
+        recipesFound = []
         
         for i in searchList:
             if searchFor.strip().lower() == i.getName().strip().lower():
-                return i
-        return 0
+                recipesFound.append(i)
+                return recipesFound
+        return recipesFound
                         
     def searchIncludesIngredient(self,ingredientStr, recipesList):
         
