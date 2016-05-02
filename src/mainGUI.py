@@ -18,7 +18,7 @@ from PyQt5.QtCore import QRegExp, Qt
 
 from IO import IO
 from recipe import Recipe
-from ingredient import Ingredient, IngredientContainer
+from ingredient import IngredientContainer
 from corrupted_file_errors import *
 from search import Search
 import codecs
@@ -36,9 +36,26 @@ class MainGUI(QMainWindow, Ui_MainWindow):
         self.setupUi(self)
         self.initSettingsAndLists()
         self.initTablesAndLists()
+        self.initToEditVariables()
         self.initLineEdits()
         self.initButtons()
-        self.populateAllTables()
+        self.populateAllMainTables()
+    
+    def initSettingsAndLists(self):
+        self.storageFile='storage.csv'
+        self.recipesFile='resepti.txt'
+        self.ingredientsFile='raaka_aine.txt'
+        self.IO = IO()
+        
+        
+        self.ingredientsList = []
+        self.recipesList = []
+        self.storageList = []
+        
+        self.search = Search()
+        
+        self.loadFromFileToList() # Sender on None, joten luetaan kaikki
+        self.IO.loadRecipesForIngredients(self.ingredientsList, self.recipesList)
     
     def initButtons(self):
         
@@ -56,6 +73,10 @@ class MainGUI(QMainWindow, Ui_MainWindow):
         self.buttonSaveRecipeIngredient.clicked.connect(self.saveRecipesIngredientEdit)
         self.buttonSaveRecipeInstruction.clicked.connect(self.saveRecipesInstructionsEdit)
         self.buttonCreateNewRecipe.clicked.connect(self.showCreateNewRecipeDialog)
+        self.buttonNewRecipeIngredient.clicked.connect(self.addNewRecipeIngredient)
+        self.buttonNewRecipeInstruction.clicked.connect(self.addNewRecipeInstruction)
+        self.buttonDeleteRecipeIngredient.clicked.connect(self.deleteRecipeIngredient)
+        self.buttonDeleteRecipeInstruction.clicked.connect(self.deleteRecipeInstruction)
         
         #Haku näkymä
         
@@ -82,7 +103,7 @@ class MainGUI(QMainWindow, Ui_MainWindow):
         #Reseptinäkymä
         self.recipesTable.clicked.connect(self.populateRecipesEditFields)
         self.recipeIngredientsTable.clicked.connect(self.populateRecipesIngredientEditFields)
-        self.recipeInstructionsTable.clicked.connect(self.populateRecipesInsturctionsEditFields)
+        self.recipeInstructionsTable.clicked.connect(self.populateRecipesInstructionsEditFields)
     
     def initLineEdits(self):
         # Validaattoreiden asettaminen
@@ -110,6 +131,13 @@ class MainGUI(QMainWindow, Ui_MainWindow):
         self.recipeIngredientUnit.setValidator(min1tomax10char)
         
         self.recipeInstruction.setValidator(min2char)
+        
+    def initToEditVariables(self):
+        self.ingredientToEdit = None
+        self.recipeToEdit = None
+        self.recipeIngredientToEdit = None
+        self.recipeInstructionToEdit = None
+        self.storageToEdit = None
     
     def initDialogLineEdits(self):
         min2char = QRegExpValidator(QRegExp("^[\w\s]{2,}$"))
@@ -127,139 +155,11 @@ class MainGUI(QMainWindow, Ui_MainWindow):
         self.recipeDialog.dialogUnit.setValidator(min1tomax10char)
         
         self.recipeDialog.dialogInstruction.setValidator(min2char)
-    
-    def showCreateNewRecipeDialog(self):
-        
-        self.dialog = QDialog()
-        self.recipeDialog = Ui_Dialog()
-        self.recipeDialog.setupUi(self.dialog)        
-        if self.dialog.exec_():
-            self.saveNewRecipe()
-        else:
-            self.statusBar().showMessage("Tallennus keskeytetty")
 
-    def saveNewRecipe(self):
-        if self.recipeDialog.dialogName.hasAcceptableInput() and self.recipeDialog.dialogInstruction.hasAcceptableInput() and self.recipeDialog.dialogIngredient.hasAcceptableInput() and self.recipeDialog.dialogOutcomeSize.hasAcceptableInput() and self.recipeDialog.dialogOutcomeUnit.hasAcceptableInput() and self.recipeDialog.DialogQuantity.hasAcceptableInput() and self.recipeDialog.dialogTime.hasAcceptableInput() and self.recipeDialog.dialogUnit.hasAcceptableInput():
-            recipe = Recipe()
-            try:
-                today = datetime.date.today()
-                recipe.setName(self.recipeDialog.dialogName.text())
-                recipe.setDate(today.strftime("%d.%m.%Y"))
-                recipe.setTime(self.recipeDialog.dialogTime.text())
-                recipe.addInstruction(self.recipeDialog.dialogInstruction.text())
-                recipe.setOutcomeSize(self.recipeDialog.dialogOutcomeSize.text())
-                recipe.setOutcomeUnit(self.recipeDialog.dialogOutcomeUnit.text())
-                
-                ingredient = IngredientContainer()
-                ingredient.setIngredient(self.recipeDialog.dialogIngredient.text(), self.ingredientsList)
-                ingredient.setQuantity(self.recipeDialog.DialogQuantity.text())
-                ingredient.setUnit(self.recipeDialog.dialogUnit.text())
-                recipe.addIngredient(ingredient)
-                self.recipesList.append(recipe)
-                self.statusBar().showMessage("Reseptin tallennus onnistui")
-                self.populateRecipesTable()
-            except SetAttributeError as e:
-                QMessageBox.warning(self, "Virhe tallentaessa", str(e), QMessageBox.Ok, QMessageBox.Ok)
-                
-                
-    
-    def checkStateChanged(self,state):
-        # Jos rasti otettiin pois, niin toisen tilaa ei tarvitse vaihtaa
-        if state != Qt.Checked:
-            pass
-        elif self.sender() == self.checkFoundN:
-            self.checkMissingN.setChecked(False)
-        elif self.sender() == self.checkMissingN:
-            self.checkFoundN.setChecked(False)
-            
-       
-    def populateStorageEditFields(self,mi):
-        if mi.row() >= len(self.storageList):
-            QMessageBox.warning(self, "Riviä ei voitu valita", "Päivitä listaus!", QMessageBox.Ok, QMessageBox.Ok)
-            self.storageToEdit = None
-        else:
-            ingredient = self.storageList[mi.row()]
-            self.storageName.setText(ingredient.getName())
-            self.storageQuantity.setText(str(ingredient.getQuantityStr()))
-            self.storageUnit.setText(ingredient.getUnit())
-            self.storageToEdit = mi.row()
-            
-    def populateIngredientsEditFields(self,mi):
-        if mi.row() >= len(self.ingredientsList):
-            QMessageBox.warning(self, "Riviä ei voitu valita", "Päivitä listaus!", QMessageBox.Ok, QMessageBox.Ok)
-            self.ingredientToEdit = None
-        else:
-            ingredient = self.ingredientsList[mi.row()]
-            self.ingredientName.setText(ingredient.getName())
-            self.ingredientDensity.setText(ingredient.getDensityGUI())
-            self.ingredientAllergens.setText(ingredient.getAllergensGUI())
-            self.ingredientRecipe.setText(ingredient.getRecipeGUI())
-            self.ingredientToEdit = mi.row()
-            
-    def populateRecipesEditFields(self,mi):
-        if mi.row() >= len(self.ingredientsList):
-            QMessageBox.warning(self, "Riviä ei voitu valita", "Päivitä listaus!", QMessageBox.Ok, QMessageBox.Ok)
-            self.recipeToEdit = None
-        else:
-            recipe = self.recipesList[mi.row()]
-            self.recipeToEdit = mi.row()
-
-            
-            #Yleisien tietojen populoiminen
-            self.recipeName.setText(recipe.getName())
-            self.recipeTime.setText(recipe.getTimeGUI())
-            self.recipeOutcomeSize.setText(recipe.getOutcomeSizeGUI())
-            self.recipeOutcomeUnit.setText(recipe.getOutcomeUnit())
-            
-            #Aputaulujen populointi
-            self.populateRecipesIngredientsTable()
-            self.populateRecipesInstructionsTable()
-            
-            
-        
-    def populateRecipesInstructionsTable(self):
-        recipe = self.recipesList[self.recipeToEdit]
-        self.recipeInstructionsTable.setRowCount(len(recipe.getInstructions()))
-        self.recipeInstructionsTable.setColumnCount(1)
-        self.recipeInstructionsTable.setHorizontalHeaderLabels(["Ohje"])
-        for r, instruction in enumerate(recipe.getInstructions()):
-            self.recipeInstructionsTable.setItem(r,0,QTableWidgetItem(instruction))
-            
-    def populateRecipesIngredientsTable(self):
-        recipe = self.recipesList[self.recipeToEdit]
-        self.recipeIngredientsTable.setRowCount(len(recipe.getIngredients()))
-        self.recipeIngredientsTable.setColumnCount(3)
-        self.recipeIngredientsTable.setHorizontalHeaderLabels(["Nimi","Määrä","Yksikkö"])
-        for r, ingredient in enumerate(recipe.getIngredients()):
-            name = QTableWidgetItem(ingredient.getName())
-            quantity = QTableWidgetItem(str(ingredient.getQuantityStr()))
-            unit = QTableWidgetItem(ingredient.getUnit())
-            self.recipeIngredientsTable.setItem(r,0,name)
-            self.recipeIngredientsTable.setItem(r,1,quantity)
-            self.recipeIngredientsTable.setItem(r,2,unit) 
-            
-    def populateRecipesIngredientEditFields(self,mi):
-        ingredients = self.recipesList[self.recipeToEdit].getIngredients()
-        if mi.row() >= len(ingredients):
-            QMessageBox.warning(self, "Riviä ei voitu valita", "Päivitä listaus!", QMessageBox.Ok, QMessageBox.Ok)
-            self.recipeIngredientToEdit = None
-        else:
-            ingredient = ingredients[mi.row()]
-            self.recipeIngredientName.setText(ingredient.getName())
-            self.recipeIngredientQuantity.setText(str(ingredient.getQuantityStr()))
-            self.recipeIngredientUnit.setText(ingredient.getUnit())
-            self.recipeIngredientToEdit = mi.row()        
-        
-    def populateRecipesInsturctionsEditFields(self, mi):
-        instructions = self.recipesList[self.recipeToEdit].getInstructions()
-        if mi.row() >= len(instructions):
-            QMessageBox.warning(self, "Riviä ei voitu valita", "Päivitä listaus!", QMessageBox.Ok, QMessageBox.Ok)
-            self.recipeInstructionToEdit = None
-        else:
-            instruction = instructions[mi.row()]
-            self.recipeInstruction.setText(instruction)        
-            self.recipeInstructionToEdit = mi.row()        
-  
+    def populateAllMainTables(self):
+        self.populateStorageTable()
+        self.populateIngredientsTable()
+        self.populateRecipesTable()
         
     def populateSearchTable(self):
 
@@ -291,10 +191,248 @@ class MainGUI(QMainWindow, Ui_MainWindow):
         else:
             self.statusBar().showMessage("Reseptejä ei löytynyt hakuehdoilla")
             self.searchTable.clearContents()
+                
+    def populateStorageTable(self):
+        self.storageTable.setRowCount(len(self.storageList))
+        self.storageTable.setColumnCount(3)
+        self.storageTable.setHorizontalHeaderLabels(["Nimi","Määrä","Yksikkö"])
+        for r, ingredient in enumerate(self.storageList):
+            name = QTableWidgetItem(ingredient.getName())
+            quantity = QTableWidgetItem(str(ingredient.getQuantityStr()))
+            unit = QTableWidgetItem(ingredient.getUnit())
+            self.storageTable.setItem(r,0,name)
+            self.storageTable.setItem(r,1,quantity)
+            self.storageTable.setItem(r,2,unit)
+        self.statusBar().showMessage("Varastolistaus päivitetty")
+        
+    def populateStorageEditFields(self,mi):
+        if mi.row() >= len(self.storageList):
+            QMessageBox.warning(self, "Riviä ei voitu valita", "Päivitä listaus!", QMessageBox.Ok, QMessageBox.Ok)
+            self.storageToEdit = None
+        else:
+            ingredient = self.storageList[mi.row()]
+            self.storageName.setText(ingredient.getName())
+            self.storageQuantity.setText(str(ingredient.getQuantityStr()))
+            self.storageUnit.setText(ingredient.getUnit())
+            self.storageToEdit = mi.row()
 
+    def populateIngredientsTable(self):
+        self.ingredientsTable.setRowCount(len(self.ingredientsList))
+        self.ingredientsTable.setColumnCount(4)
+        self.ingredientsTable.setHorizontalHeaderLabels(["Nimi","Allergeenit","Resepti", "Tiheys"])
+        for r, ingredient in enumerate(self.ingredientsList):
+            name = QTableWidgetItem(ingredient.getName())
+            allergens = QTableWidgetItem(str(ingredient.getAllergensGUI()))
+            recipe = QTableWidgetItem(ingredient.getRecipeGUI())
+            density = QTableWidgetItem(str(ingredient.getDensity()))
+            self.ingredientsTable.setItem(r,0,name)
+            self.ingredientsTable.setItem(r,1,allergens)
+            self.ingredientsTable.setItem(r,2,recipe)
+            self.ingredientsTable.setItem(r,3,density)
+        self.statusBar().showMessage("Raaka-ainelistaus päivitetty")
+        
+    def populateIngredientsEditFields(self,mi):
+        if mi.row() >= len(self.ingredientsList):
+            QMessageBox.warning(self, "Riviä ei voitu valita", "Päivitä listaus!", QMessageBox.Ok, QMessageBox.Ok)
+            self.ingredientToEdit = None
+        else:
+            ingredient = self.ingredientsList[mi.row()]
+            self.ingredientName.setText(ingredient.getName())
+            self.ingredientDensity.setText(ingredient.getDensityGUI())
+            self.ingredientAllergens.setText(ingredient.getAllergensGUI())
+            self.ingredientRecipe.setText(ingredient.getRecipeGUI())
+            self.ingredientToEdit = mi.row()
+           
+    def populateRecipesTable(self):
+        self.recipesTable.setRowCount(len(self.recipesList))
+        self.recipesTable.setColumnCount(4)
+        self.recipesTable.setHorizontalHeaderLabels(["Nimi","Aika","Lopputulos", "Allergeenit"])
+        for r, recipe in enumerate(self.recipesList):
+            name = QTableWidgetItem(recipe.getName())
+            time = QTableWidgetItem(recipe.getTimeStr())
+            outcome = QTableWidgetItem(str(recipe.getOutcomeStr()))
+            allergens = QTableWidgetItem(str(recipe.getAllergensDistinctGUI()))
+            self.recipesTable.setItem(r,0,name)
+            self.recipesTable.setItem(r,1,time)
+            self.recipesTable.setItem(r,2,outcome)
+            self.recipesTable.setItem(r,3,allergens)
+        self.statusBar().showMessage("Reseptilistaus päivitetty")
+        
+    def populateRecipesInstructionsTable(self):
+        recipe = self.recipesList[self.recipeToEdit]
+        self.recipeInstructionsTable.clear()
+        self.recipeInstructionsTable.setRowCount(len(recipe.getInstructions()))
+        self.recipeInstructionsTable.setColumnCount(1)
+        self.recipeInstructionsTable.setHorizontalHeaderLabels(["Ohje"])
+        for r, instruction in enumerate(recipe.getInstructions()):
+            self.recipeInstructionsTable.setItem(r,0,QTableWidgetItem(instruction))
             
+    def populateRecipesIngredientsTable(self):
+        recipe = self.recipesList[self.recipeToEdit]
+        self.recipeIngredientsTable.clear()
+        self.recipeIngredientsTable.setRowCount(len(recipe.getIngredients()))
+        self.recipeIngredientsTable.setColumnCount(3)
+        self.recipeIngredientsTable.setHorizontalHeaderLabels(["Nimi","Määrä","Yksikkö"])
+        for r, ingredient in enumerate(recipe.getIngredients()):
+            name = QTableWidgetItem(ingredient.getName())
+            quantity = QTableWidgetItem(str(ingredient.getQuantityStr()))
+            unit = QTableWidgetItem(ingredient.getUnit())
+            self.recipeIngredientsTable.setItem(r,0,name)
+            self.recipeIngredientsTable.setItem(r,1,quantity)
+            self.recipeIngredientsTable.setItem(r,2,unit) 
+            
+    def populateRecipesEditFields(self,mi):
+        if mi.row() >= len(self.ingredientsList):
+            QMessageBox.warning(self, "Riviä ei voitu valita", "Päivitä listaus!", QMessageBox.Ok, QMessageBox.Ok)
+            self.recipeToEdit = None
+        else:
+            recipe = self.recipesList[mi.row()]
+            self.recipeToEdit = mi.row()
+
+            #Yleisien tietojen populoiminen
+            self.recipeName.setText(recipe.getName())
+            self.recipeTime.setText(recipe.getTimeGUI())
+            self.recipeOutcomeSize.setText(recipe.getOutcomeSizeGUI())
+            self.recipeOutcomeUnit.setText(recipe.getOutcomeUnit())
+            
+            #Muokkauskenttien nollaus
+            self.clearRecipeEditLineEdits()
+            
+            #Aputaulujen populointi
+            self.populateRecipesIngredientsTable()
+            self.populateRecipesInstructionsTable()
+            
+    def populateRecipesIngredientEditFields(self,mi):
+        ingredients = self.recipesList[self.recipeToEdit].getIngredients()
+        if mi.row() >= len(ingredients):
+            QMessageBox.warning(self, "Riviä ei voitu valita", "Päivitä listaus!", QMessageBox.Ok, QMessageBox.Ok)
+            self.recipeIngredientToEdit = None
+        else:
+            ingredient = ingredients[mi.row()]
+            self.recipeIngredientName.setText(ingredient.getName())
+            self.recipeIngredientQuantity.setText(str(ingredient.getQuantityStr()))
+            self.recipeIngredientUnit.setText(ingredient.getUnit())
+            self.recipeIngredientToEdit = mi.row()        
+       
+    def populateRecipesInstructionsEditFields(self, mi):
+        instructions = self.recipesList[self.recipeToEdit].getInstructions()
+        if mi.row() >= len(instructions):
+            QMessageBox.warning(self, "Riviä ei voitu valita", "Päivitä listaus!", QMessageBox.Ok, QMessageBox.Ok)
+            self.recipeInstructionToEdit = None
+        else:
+            instruction = instructions[mi.row()]
+            self.recipeInstruction.setText(instruction)        
+            self.recipeInstructionToEdit = mi.row()   
+                 
+    def clearRecipeEditLineEdits(self):
+        self.recipeIngredientToEdit = None
+        self.recipeInstructionToEdit = None
+        
+        self.recipeInstruction.clear()
+        
+        self.recipeIngredientName.clear()
+        self.recipeIngredientQuantity.clear()
+        self.recipeIngredientUnit.clear()    
+        
+    def showCreateNewRecipeDialog(self):
+        
+        self.dialog = QDialog()
+        self.recipeDialog = Ui_Dialog()
+        self.recipeDialog.setupUi(self.dialog)        
+        if self.dialog.exec_():
+            self.saveNewRecipe()
+            self.statusBar().showMessage("Reseptin tallennus onnistui")
+        else:
+            self.statusBar().showMessage("Tallennus keskeytetty")     
+        
+    def addNewRecipeInstruction(self):
+        if self.recipeInstruction.hasAcceptableInput():
+            try:
+                recipe = self.recipesList[self.recipeToEdit]
+                recipe.addInstruction(self.recipeInstruction.text())
+                self.populateRecipesInstructionsTable()
+                self.statusBar().showMessage("Ohje lisätty")
+            except SetAttributeError as e:
+                QMessageBox.warning(self, "Virhe tallentaessa", str(e), QMessageBox.Ok, QMessageBox.Ok)
+        else:
+            QMessageBox.warning(self, "Virhe tallentaessa", "Virheellinen syöte!", QMessageBox.Ok, QMessageBox.Ok)
+
     
+    def addNewRecipeIngredient(self):
+        if self.recipeIngredientName.hasAcceptableInput() and self.recipeIngredientQuantity.hasAcceptableInput() and self.recipeIngredientUnit.hasAcceptableInput():
+            try:
+                recipe = self.recipesList[self.recipeToEdit]
+                ingredient = IngredientContainer()
+                ingredient.setIngredient(self.recipeIngredientName.text(),self.ingredientsList)
+                ingredient.setQuantity(self.recipeIngredientQuantity.text())
+                ingredient.setUnit(self.recipeIngredientUnit.text())
+                recipe.addIngredient(ingredient)
+                self.populateRecipesIngredientsTable()
+                self.statusBar().showMessage("Raaka-aine lisätty")
+            except SetAttributeError as e:
+                QMessageBox.warning(self, "Virhe tallentaessa", str(e), QMessageBox.Ok, QMessageBox.Ok)
+        else:
+            QMessageBox.warning(self, "Virhe tallentaessa", "Virheellinen syöte!", QMessageBox.Ok, QMessageBox.Ok)
+
+    def deleteRecipeIngredient(self):
+        if self.recipeIngredientToEdit is not None and self.recipeToEdit is not None:
+            try:
+                recipe = self.recipesList[self.recipeToEdit]
+                recipe.deleteIngredient(self.recipeIngredientToEdit)
+                self.populateRecipesIngredientsTable()
+                self.statusBar().showMessage("Raaka-aine poistettu")
+            except SetAttributeError as e:
+                QMessageBox.warning(self, "Virhe tallentaessa", str(e), QMessageBox.Ok, QMessageBox.Ok)
+
+        else:
+            QMessageBox.warning(self, "Virhe tallentaessa", "Päivitä listaus ja valitse resepti sekä raaka-aine uudelleen!", QMessageBox.Ok, QMessageBox.Ok)
     
+    def deleteRecipeInstruction(self):
+        if self.recipeInstructionToEdit is not None and self.recipeToEdit is not None:
+            try:
+                recipe = self.recipesList[self.recipeToEdit]
+                recipe.deleteInstruction(self.recipeInstructionToEdit)
+                self.populateRecipesInstructionsTable()
+                self.statusBar().showMessage("Ohje poistettu")
+            except SetAttributeError as e:
+                QMessageBox.warning(self, "Virhe tallentaessa", str(e), QMessageBox.Ok, QMessageBox.Ok)
+
+        else:
+            QMessageBox.warning(self, "Virhe tallentaessa", "Päivitä listaus ja valitse resepti sekä ohje uudelleen!", QMessageBox.Ok, QMessageBox.Ok)
+
+
+    def checkStateChanged(self,state):
+        # Jos rasti otettiin pois, niin toisen tilaa ei tarvitse vaihtaa
+        if state != Qt.Checked:
+            pass
+        elif self.sender() == self.checkFoundN:
+            self.checkMissingN.setChecked(False)
+        elif self.sender() == self.checkMissingN:
+            self.checkFoundN.setChecked(False)
+            
+
+    def saveNewRecipe(self):
+        if self.recipeDialog.dialogName.hasAcceptableInput() and self.recipeDialog.dialogInstruction.hasAcceptableInput() and self.recipeDialog.dialogIngredient.hasAcceptableInput() and self.recipeDialog.dialogOutcomeSize.hasAcceptableInput() and self.recipeDialog.dialogOutcomeUnit.hasAcceptableInput() and self.recipeDialog.DialogQuantity.hasAcceptableInput() and self.recipeDialog.dialogTime.hasAcceptableInput() and self.recipeDialog.dialogUnit.hasAcceptableInput():
+            recipe = Recipe()
+            try:
+                today = datetime.date.today()
+                recipe.setName(self.recipeDialog.dialogName.text())
+                recipe.setDate(today.strftime("%d.%m.%Y"))
+                recipe.setTime(self.recipeDialog.dialogTime.text())
+                recipe.addInstruction(self.recipeDialog.dialogInstruction.text())
+                recipe.setOutcomeSize(self.recipeDialog.dialogOutcomeSize.text())
+                recipe.setOutcomeUnit(self.recipeDialog.dialogOutcomeUnit.text())
+                
+                ingredient = IngredientContainer()
+                ingredient.setIngredient(self.recipeDialog.dialogIngredient.text(), self.ingredientsList)
+                ingredient.setQuantity(self.recipeDialog.DialogQuantity.text())
+                ingredient.setUnit(self.recipeDialog.dialogUnit.text())
+                recipe.addIngredient(ingredient)
+                self.recipesList.append(recipe)
+                self.populateRecipesTable()
+            except SetAttributeError as e:
+                QMessageBox.warning(self, "Virhe tallentaessa", str(e), QMessageBox.Ok, QMessageBox.Ok)
+                 
     def saveRecipesEdit(self):
         if self.recipeName.hasAcceptableInput() and self.recipeTime.hasAcceptableInput() and self.recipeOutcomeSize.hasAcceptableInput() and self.recipeOutcomeUnit.hasAcceptableInput() and self.recipeToEdit is not None:
             try:
@@ -371,27 +509,7 @@ class MainGUI(QMainWindow, Ui_MainWindow):
         else:
             QMessageBox.warning(self, "Virhe tallentaessa", "Virheellinen syöte!", QMessageBox.Ok, QMessageBox.Ok)
     
-    def populateAllTables(self):
-        self.populateStorageTable()
-        self.populateIngredientsTable()
-        self.populateRecipesTable()
     
-    def initSettingsAndLists(self):
-        self.storageFile='storage.csv'
-        self.recipesFile='resepti.txt'
-        self.ingredientsFile='raaka_aine.txt'
-        self.IO = IO()
-        
-        
-        self.ingredientsList = []
-        self.recipesList = []
-        self.storageList = []
-        
-        self.search = Search()
-        
-        self.loadFromFileToList() # Sender on None, joten luetaan kaikki
-        self.IO.loadRecipesForIngredients(self.ingredientsList, self.recipesList)
-
     def openFileUTF8(self,file):
         
         try:
@@ -441,7 +559,7 @@ class MainGUI(QMainWindow, Ui_MainWindow):
                 return -1
         except CorruptedFileError as e:
             QMessageBox.warning(self, "Virhe sisäänluvussa", str(e), QMessageBox.Ok, QMessageBox.Ok)    
-            
+        
         fileIO.close()
         
     def saveToFile(self):
@@ -463,49 +581,7 @@ class MainGUI(QMainWindow, Ui_MainWindow):
         else:
             print("Kuka kutsuu SaveToFile?")
     
-    def populateStorageTable(self):
-        self.storageTable.setRowCount(len(self.storageList))
-        self.storageTable.setColumnCount(3)
-        self.storageTable.setHorizontalHeaderLabels(["Nimi","Määrä","Yksikkö"])
-        for r, ingredient in enumerate(self.storageList):
-            name = QTableWidgetItem(ingredient.getName())
-            quantity = QTableWidgetItem(str(ingredient.getQuantityStr()))
-            unit = QTableWidgetItem(ingredient.getUnit())
-            self.storageTable.setItem(r,0,name)
-            self.storageTable.setItem(r,1,quantity)
-            self.storageTable.setItem(r,2,unit)
-        self.statusBar().showMessage("Varastolistaus päivitetty")
 
-
-    def populateIngredientsTable(self):
-        self.ingredientsTable.setRowCount(len(self.ingredientsList))
-        self.ingredientsTable.setColumnCount(4)
-        self.ingredientsTable.setHorizontalHeaderLabels(["Nimi","Allergeenit","Resepti", "Tiheys"])
-        for r, ingredient in enumerate(self.ingredientsList):
-            name = QTableWidgetItem(ingredient.getName())
-            allergens = QTableWidgetItem(str(ingredient.getAllergensGUI()))
-            recipe = QTableWidgetItem(ingredient.getRecipeGUI())
-            density = QTableWidgetItem(str(ingredient.getDensity()))
-            self.ingredientsTable.setItem(r,0,name)
-            self.ingredientsTable.setItem(r,1,allergens)
-            self.ingredientsTable.setItem(r,2,recipe)
-            self.ingredientsTable.setItem(r,3,density)
-        self.statusBar().showMessage("Raaka-ainelistaus päivitetty")
-        
-    def populateRecipesTable(self):
-        self.recipesTable.setRowCount(len(self.recipesList))
-        self.recipesTable.setColumnCount(4)
-        self.recipesTable.setHorizontalHeaderLabels(["Nimi","Aika","Lopputulos", "Allergeenit"])
-        for r, recipe in enumerate(self.recipesList):
-            name = QTableWidgetItem(recipe.getName())
-            time = QTableWidgetItem(recipe.getTimeStr())
-            outcome = QTableWidgetItem(str(recipe.getOutcomeStr()))
-            allergens = QTableWidgetItem(str(recipe.getAllergensDistinctGUI()))
-            self.recipesTable.setItem(r,0,name)
-            self.recipesTable.setItem(r,1,time)
-            self.recipesTable.setItem(r,2,outcome)
-            self.recipesTable.setItem(r,3,allergens)
-        self.statusBar().showMessage("Reseptilistaus päivitetty")
 
         
 if __name__ == '__main__':

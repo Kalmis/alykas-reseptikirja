@@ -30,7 +30,7 @@
        <bool>false</bool>
       </property>
       <property name="currentIndex">
-       <number>2</number>
+       <number>4</number>
       </property>
       <widget class="QWidget" name="tab">
        <attribute name="title">
@@ -348,13 +348,6 @@
           <item row="2" column="1">
            <widget class="QLineEdit" name="recipeIngredientUnit"/>
           </item>
-          <item row="5" column="1">
-           <widget class="QPushButton" name="buttonDeleteRecipeIngredient">
-            <property name="text">
-             <string>Poista valittu</string>
-            </property>
-           </widget>
-          </item>
           <item row="4" column="1">
            <widget class="QPushButton" name="buttonSaveRecipeIngredient">
             <property name="text">
@@ -362,7 +355,14 @@
             </property>
            </widget>
           </item>
-          <item row="4" column="0">
+          <item row="6" column="1">
+           <widget class="QPushButton" name="buttonDeleteRecipeIngredient">
+            <property name="text">
+             <string>Poista valittu</string>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="1">
            <widget class="QPushButton" name="buttonNewRecipeIngredient">
             <property name="text">
              <string>Lisää uusi</string>
@@ -380,27 +380,6 @@
             </property>
            </widget>
           </item>
-          <item row="3" column="0">
-           <widget class="QPushButton" name="buttonNewRecipeInstruction">
-            <property name="text">
-             <string>Lisää uusi</string>
-            </property>
-           </widget>
-          </item>
-          <item row="3" column="1">
-           <widget class="QPushButton" name="buttonSaveRecipeInstruction">
-            <property name="text">
-             <string>Tallenna</string>
-            </property>
-           </widget>
-          </item>
-          <item row="4" column="1">
-           <widget class="QPushButton" name="buttonDeleteRecipeInstruction">
-            <property name="text">
-             <string>Poista valittu</string>
-            </property>
-           </widget>
-          </item>
           <item row="0" column="1">
            <widget class="QLineEdit" name="recipeInstruction">
             <property name="sizePolicy">
@@ -414,6 +393,27 @@
               <width>0</width>
               <height>0</height>
              </size>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="1">
+           <widget class="QPushButton" name="buttonSaveRecipeInstruction">
+            <property name="text">
+             <string>Tallenna</string>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="1">
+           <widget class="QPushButton" name="buttonDeleteRecipeInstruction">
+            <property name="text">
+             <string>Poista valittu</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="1">
+           <widget class="QPushButton" name="buttonNewRecipeInstruction">
+            <property name="text">
+             <string>Lisää uusi</string>
             </property>
            </widget>
           </item>
@@ -625,13 +625,6 @@
              </property>
             </widget>
            </item>
-           <item>
-            <widget class="QPushButton" name="buttonLoadSettings">
-             <property name="text">
-              <string>Asetukset</string>
-             </property>
-            </widget>
-           </item>
           </layout>
          </item>
          <item>
@@ -668,75 +661,6 @@
             <widget class="QPushButton" name="buttonSaveStorage">
              <property name="text">
               <string>Varastotilanne</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QPushButton" name="buttonSaveSettings">
-             <property name="text">
-              <string>Asetukset</string>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </item>
-         <item>
-          <layout class="QFormLayout" name="formLayout">
-           <item row="0" column="0">
-            <widget class="QLabel" name="label">
-             <property name="text">
-              <string>Tiedostot</string>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="0">
-            <widget class="QLabel" name="raakaAineetLabel">
-             <property name="text">
-              <string>Raaka-aineet</string>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="1">
-            <widget class="QLineEdit" name="ingredientsFileLineEdit">
-             <property name="text">
-              <string/>
-             </property>
-            </widget>
-           </item>
-           <item row="2" column="0">
-            <widget class="QLabel" name="reseptitLabel">
-             <property name="text">
-              <string>Reseptit</string>
-             </property>
-            </widget>
-           </item>
-           <item row="2" column="1">
-            <widget class="QLineEdit" name="recipesFileLineEdit"/>
-           </item>
-           <item row="3" column="0">
-            <widget class="QLabel" name="varastotilanneLabel">
-             <property name="text">
-              <string>Varastotilanne</string>
-             </property>
-            </widget>
-           </item>
-           <item row="3" column="1">
-            <widget class="QLineEdit" name="storageFileLineEdit"/>
-           </item>
-           <item row="4" column="0">
-            <widget class="QLabel" name="asetuksetLabel">
-             <property name="text">
-              <string>Asetukset</string>
-             </property>
-            </widget>
-           </item>
-           <item row="4" column="1">
-            <widget class="QLineEdit" name="settingsFileLineEdit"/>
-           </item>
-           <item row="5" column="1">
-            <widget class="QPushButton" name="buttonSaveFiles">
-             <property name="text">
-              <string>Tallenna</string>
              </property>
             </widget>
            </item>

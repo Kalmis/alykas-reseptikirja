@@ -25,7 +25,8 @@ if __name__ == '__main__':
                 exit()
             elif userInput == 2:
                 app = QApplication(sys.argv)
-                ex = MainGUI()
-                sys.exit(app.exec_()) 
+                program = MainGUI()
+                program.show()
+                sys.exit(app.exec_())  
             else:
                 userInput = input("Valitse käytettävä UI \n 1. Komentorivi \n 2. GUI") 

@@ -1,4 +1,9 @@
 # -*- coding: utf-8 -*-
+'''
+Created on 19.4.2016
+
+@author: Kalmis
+'''
 
 import datetime
 from corrupted_file_errors import *
@@ -46,10 +51,21 @@ class Recipe():
             self.instructions.append(instruction) 
         else:
             raise SetAttributeError("Ohjeen tulisi olla yli 2 merkkiä pitkä")
+    def deleteInstruction(self,index):
+        try:
+            del self.instructions[index]
+        except LookupError as e:
+            raise SetAttributeError("Ohjetta ei voitu poistaa")
         
     def addIngredient(self, ingredientContainer):
         self.ingredients.append(ingredientContainer)
         return True
+    
+    def deleteIngredient(self, index):
+        try:
+            del self.ingredients[index]
+        except LookupError as e:
+            raise SetAttributeError("Raaka-ainetta ei voitu poistaa")
     
     def setTime(self,time):
         try:

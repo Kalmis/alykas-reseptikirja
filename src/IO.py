@@ -1,5 +1,10 @@
 # -*- coding: utf-8 -*-
 
+'''
+Created on 19.4.2016
+
+@author: Kalmis
+'''
 
 from recipe import Recipe
 from ingredient import Ingredient, IngredientContainer
