@@ -160,9 +160,8 @@ class Ingredient:
         Returns:
             Onnistuessa: True
             Ei ladattavaa: None
-        
-        Raises:
-            SetAttributeError reseptin lataamisen epäonnistuessa, esim. reseptiä ei löydy annetusta listasta
+            Reseptiä nimellä ei löytynyt: False
+            
         '''
         if(self.recipeLoaded == False):
             for i in recipesList:             
@@ -171,7 +170,7 @@ class Ingredient:
                     self.recipeLoaded = True
                     return True
             # Reseptiä kyseisellä nimellä ei löytynyt.
-            raise SetAttributeError("Reseptin lataaminen epäonnistui")
+            return False
         else:
             return None # Ei ladattavaa
         
