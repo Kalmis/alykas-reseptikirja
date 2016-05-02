@@ -161,6 +161,9 @@ class Ui_MainWindow(object):
         self.buttonPopulateRecipes = QtWidgets.QPushButton(self.tab_3)
         self.buttonPopulateRecipes.setObjectName("buttonPopulateRecipes")
         self.formLayout_4.setWidget(5, QtWidgets.QFormLayout.FieldRole, self.buttonPopulateRecipes)
+        self.buttonCreateNewRecipe = QtWidgets.QPushButton(self.tab_3)
+        self.buttonCreateNewRecipe.setObjectName("buttonCreateNewRecipe")
+        self.formLayout_4.setWidget(6, QtWidgets.QFormLayout.FieldRole, self.buttonCreateNewRecipe)
         self.gridLayout.addLayout(self.formLayout_4, 0, 0, 1, 1)
         self.recipesTable = QtWidgets.QTableWidget(self.tab_3)
         self.recipesTable.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
@@ -402,7 +405,7 @@ class Ui_MainWindow(object):
         MainWindow.setStatusBar(self.statusbar)
 
         self.retranslateUi(MainWindow)
-        self.tabWidget.setCurrentIndex(3)
+        self.tabWidget.setCurrentIndex(2)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
@@ -429,6 +432,7 @@ class Ui_MainWindow(object):
         self.aikaLabel.setText(_translate("MainWindow", "Aika"))
         self.buttonSaveRecipesInfo.setText(_translate("MainWindow", "Tallenna"))
         self.buttonPopulateRecipes.setText(_translate("MainWindow", "Päivitä lista"))
+        self.buttonCreateNewRecipe.setText(_translate("MainWindow", "Uusi resepti"))
         self.raakaAineLabel_2.setText(_translate("MainWindow", "Raaka-aine"))
         self.mRLabel_2.setText(_translate("MainWindow", "Määrä"))
         self.yksikkLabel_3.setText(_translate("MainWindow", "Yksikkö"))

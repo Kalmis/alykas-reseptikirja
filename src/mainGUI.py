@@ -8,13 +8,17 @@ Created on 27.4.2016
 # -*- coding: utf-8 -*-
 
 import sys
+import datetime
 from GUIDesign import Ui_MainWindow
-from PyQt5.QtWidgets import QDesktopWidget, QApplication,QMainWindow, QTableWidgetItem, QMessageBox
+from createRecipe import Ui_Dialog
+from PyQt5.QtWidgets import QApplication,QMainWindow, QTableWidgetItem, QMessageBox, QDialog
 from PyQt5.QtGui import QDoubleValidator, QRegExpValidator, QIntValidator
 from PyQt5.QtCore import QRegExp, Qt
 
 
 from IO import IO
+from recipe import Recipe
+from ingredient import Ingredient, IngredientContainer
 from corrupted_file_errors import *
 from search import Search
 import codecs
@@ -51,6 +55,7 @@ class MainGUI(QMainWindow, Ui_MainWindow):
         self.buttonSaveRecipesInfo.clicked.connect(self.saveRecipesEdit)
         self.buttonSaveRecipeIngredient.clicked.connect(self.saveRecipesIngredientEdit)
         self.buttonSaveRecipeInstruction.clicked.connect(self.saveRecipesInstructionsEdit)
+        self.buttonCreateNewRecipe.clicked.connect(self.showCreateNewRecipeDialog)
         
         #Haku näkymä
         
@@ -106,8 +111,60 @@ class MainGUI(QMainWindow, Ui_MainWindow):
         
         self.recipeInstruction.setValidator(min2char)
     
+    def initDialogLineEdits(self):
+        min2char = QRegExpValidator(QRegExp("^[\w\s]{2,}$"))
+        min1tomax10char = QRegExpValidator(QRegExp("^[a-zA-Z]{1,10}$"))
+        float2decimals = QDoubleValidator(0.00,999999999.00,2)
+        onlyint = QIntValidator()
+        
+        self.recipeDialog.dialogName.setValidator(min2char)
+        self.recipeDialog.dialogTime.setValidator(onlyint)
+        self.recipeDialog.dialogOutcomeSize.setValidator(float2decimals)
+        self.recipeDialog.dialogOutcomeUnit.setValidator(min1tomax10char)
+        
+        self.recipeDialog.dialogIngredient.setValidator(min2char)
+        self.recipeDialog.DialogQuantity.setValidator(float2decimals)
+        self.recipeDialog.dialogUnit.setValidator(min1tomax10char)
+        
+        self.recipeDialog.dialogInstruction.setValidator(min2char)
+    
+    def showCreateNewRecipeDialog(self):
+        
+        self.dialog = QDialog()
+        self.recipeDialog = Ui_Dialog()
+        self.recipeDialog.setupUi(self.dialog)        
+        if self.dialog.exec_():
+            self.saveNewRecipe()
+        else:
+            self.statusBar().showMessage("Tallennus keskeytetty")
+
+    def saveNewRecipe(self):
+        if self.recipeDialog.dialogName.hasAcceptableInput() and self.recipeDialog.dialogInstruction.hasAcceptableInput() and self.recipeDialog.dialogIngredient.hasAcceptableInput() and self.recipeDialog.dialogOutcomeSize.hasAcceptableInput() and self.recipeDialog.dialogOutcomeUnit.hasAcceptableInput() and self.recipeDialog.DialogQuantity.hasAcceptableInput() and self.recipeDialog.dialogTime.hasAcceptableInput() and self.recipeDialog.dialogUnit.hasAcceptableInput():
+            recipe = Recipe()
+            try:
+                today = datetime.date.today()
+                recipe.setName(self.recipeDialog.dialogName.text())
+                recipe.setDate(today.strftime("%d.%m.%Y"))
+                recipe.setTime(self.recipeDialog.dialogTime.text())
+                recipe.addInstruction(self.recipeDialog.dialogInstruction.text())
+                recipe.setOutcomeSize(self.recipeDialog.dialogOutcomeSize.text())
+                recipe.setOutcomeUnit(self.recipeDialog.dialogOutcomeUnit.text())
+                
+                ingredient = IngredientContainer()
+                ingredient.setIngredient(self.recipeDialog.dialogIngredient.text(), self.ingredientsList)
+                ingredient.setQuantity(self.recipeDialog.DialogQuantity.text())
+                ingredient.setUnit(self.recipeDialog.dialogUnit.text())
+                recipe.addIngredient(ingredient)
+                self.recipesList.append(recipe)
+                self.statusBar().showMessage("Reseptin tallennus onnistui")
+                self.populateRecipesTable()
+            except SetAttributeError as e:
+                QMessageBox.warning(self, "Virhe tallentaessa", str(e), QMessageBox.Ok, QMessageBox.Ok)
+                
+                
+    
     def checkStateChanged(self,state):
-        # 
+        # Jos rasti otettiin pois, niin toisen tilaa ei tarvitse vaihtaa
         if state != Qt.Checked:
             pass
         elif self.sender() == self.checkFoundN:
