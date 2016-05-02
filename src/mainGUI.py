@@ -19,7 +19,7 @@ from PyQt5.QtCore import QRegExp, Qt
 from IO import IO
 from recipe import Recipe
 from ingredient import IngredientContainer
-from corrupted_file_errors import *
+from customErrors import *
 from search import Search
 import codecs
 

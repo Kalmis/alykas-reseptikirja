@@ -1,4 +1,9 @@
 # -*- coding: utf-8 -*-
+'''
+Created on 19.4.2016
+
+@author: Kalmis
+'''
 import datetime
 from customErrors import SetAttributeError
 

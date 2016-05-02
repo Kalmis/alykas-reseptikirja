@@ -1,6 +1,11 @@
 # -*- coding: utf-8 -*-
+'''
+Created on 19.4.2016
+
+@author: Kalmis
+'''
 from IO import IO
-from corrupted_file_errors import *
+from customErrors import *
 from search import Search
 import codecs
 

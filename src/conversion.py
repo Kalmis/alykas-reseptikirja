@@ -32,9 +32,9 @@ class Conversion:
         if unitFrom in self.notConvertableList or unitTo in self.notConvertableList:
             return None
         elif unitFrom in self.massDict.keys() and unitTo in self.massDict.keys():
-            return self.convertMassToMass(amount, unitFrom, unitTo)
+            return self.__convertMassToMass(amount, unitFrom, unitTo)
         elif unitFrom in self.volumeDict.keys() and unitTo in self.volumeDict.keys():
-            return self.convertVolumeToVolume(amount, unitFrom, unitTo)
+            return self.__convertVolumeToVolume(amount, unitFrom, unitTo)
         elif density is not None and unitFrom in self.volumeDict.keys() and unitTo in self.massDict.keys():
             pass
         elif density is not None and unitFrom in self.massDict.keys() and unitTo in self.volumeDict.keys():
@@ -54,10 +54,10 @@ class Conversion:
     
     def __convertMassToVolume(self,amount,unitFrom,unitTo,density):
         ''' Muuttaa massa yksikön tilavuus yksiköksi, esim. kg -> l. Hyödyntää kaavaa m = r*v'''
-        volumeM3 = self.convertMassToMass(amount, unitFrom, 'kg') * density
-        return self.convertVolumeToVolume(volumeM3, 'm3', unitTo)
+        volumeM3 = self.__convertMassToMass(amount, unitFrom, 'kg') * density
+        return self.__convertVolumeToVolume(volumeM3, 'm3', unitTo)
     
     def __convertVolumeToMass(self,amount,unitFrom,unitTo,density):
         ''' Muuttaa tilavuus yksikön massa yksiköksi, esim. l -> kg. Hyödyntää kaavaa v = m / r'''
-        massKG = self.convertVolumeToVolume(amount, unitFrom, 'm3') * density
-        return self.convertMassToMass(massKG, 'massKG', unitTo)
+        massKG = self.__convertVolumeToVolume(amount, unitFrom, 'm3') * density
+        return self.__convertMassToMass(massKG, 'massKG', unitTo)

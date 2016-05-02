@@ -6,7 +6,7 @@ Created on 19.4.2016
 '''
 
 import datetime
-from corrupted_file_errors import *
+from customErrors import SetAttributeError
 
 
 class Recipe():

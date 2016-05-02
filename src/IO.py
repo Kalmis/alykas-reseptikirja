@@ -8,7 +8,7 @@ Created on 19.4.2016
 
 from recipe import Recipe
 from ingredient import Ingredient, IngredientContainer
-from corrupted_file_errors import *
+from customErrors import *
 import os
 
 
