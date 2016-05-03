@@ -145,7 +145,6 @@ class MainGUI(QMainWindow, Ui_MainWindow):
         self.recipeIngredientQuantity.setValidator(float2decimals)
         self.recipeIngredientUnit.setValidator(min1tomax10char)
         
-        self.recipeInstruction.setValidator(min2char)
         
     def initToEditVariables(self):
         ''' Tässä metodissa alustetaan apumuuttujat, joilla pidetään kirjaa mikä rivi mistäkin taulukosta on valittuna. 
@@ -207,6 +206,8 @@ class MainGUI(QMainWindow, Ui_MainWindow):
             
         table.resizeColumnsToContents()
         table.resizeRowsToContents()
+        table.clear
+        table.horizontalHeader().setStretchLastSection(True)
         
     def populateSearchTable(self):
         ''' Tämä metodi populoi datan hakunäkymän taulukkoon. Tätä metodia kutsuu hakunäkymän "Hae" painike.
@@ -397,7 +398,7 @@ class MainGUI(QMainWindow, Ui_MainWindow):
             self.recipeInstructionToEdit = None
         else:
             instruction = instructions[mi.row()]
-            self.recipeInstruction.setText(instruction)        
+            self.recipeInstruction.setPlainText(instruction)        
             self.recipeInstructionToEdit = mi.row()   
                  
     def clearRecipeEditLineEdits(self):
@@ -440,7 +441,7 @@ class MainGUI(QMainWindow, Ui_MainWindow):
         if self.recipeInstruction.hasAcceptableInput():
             try:
                 recipe = self.recipesList[self.recipeToEdit]
-                recipe.addInstruction(self.recipeInstruction.text())
+                recipe.addInstruction(self.recipeInstruction.toPlainText())
                 self.populateRecipesInstructionsTable()
                 self.statusBar().showMessage("Ohje lisätty")
             except SetAttributeError as e:
@@ -595,14 +596,14 @@ class MainGUI(QMainWindow, Ui_MainWindow):
             QMessageBox.warning(self, "Virhe tallentaessa", "Virheellinen syöte!", QMessageBox.Ok, QMessageBox.Ok)
             
     def saveRecipesInstructionsEdit(self):
-        ''' Tämä metodi tarkistaa reseptin ohjeen tekstikentän arvon, jonka jälkeen muutokset tallennetaan reseptiin.
+        ''' Tämä metodi tallentaa annetun ohjetekstin reseptille.
         
         Oikea resepti sekä ohje löydetään self.recipeToEdit ja self.recipeInstructionToEdit muuttujien avulla.
         '''        
-        if self.recipeInstruction.hasAcceptableInput() and self.recipeToEdit is not None and self.recipeInstructionToEdit is not None:
+        if  self.recipeToEdit is not None and self.recipeInstructionToEdit is not None:
             try:
                 instructions = self.recipesList[self.recipeToEdit].getInstructions()
-                instructions[self.recipeInstructionToEdit] = self.recipeInstruction.text()
+                instructions[self.recipeInstructionToEdit] = self.recipeInstruction.toPlainText()
                 self.statusBar().showMessage("Ohje tallennettu")
                 self.populateRecipesInstructionsTable()
             except SetAttributeError as e:
@@ -616,7 +617,7 @@ class MainGUI(QMainWindow, Ui_MainWindow):
         
         Oikea raaka-aine löydetään self.storageToEdit muuttujan avulla.
         '''
-        if self.storageQuantity.hasAcceptableInput() and self.storageUnit.hasAcceptableInput() and self.storageToEdit is not None:
+        if self.recipeInstruction.isModified() and self.storageQuantity.hasAcceptableInput() and self.storageUnit.hasAcceptableInput() and self.storageToEdit is not None:
             try:
                 storage = self.storageList[self.storageToEdit]
                 storage.setQuantity(self.storageQuantity.text())
@@ -760,7 +761,7 @@ class MainGUI(QMainWindow, Ui_MainWindow):
             names.append(ingredient.getName())
             allergens.append(ingredient.getAllergensGUI())
             recipes.append(ingredient.getRecipeGUI())
-            densities.append(str(ingredient.getDensity()))
+            densities.append(ingredient.getDensityGUI())
         
         return [headers,names,allergens,recipes,densities]
     
