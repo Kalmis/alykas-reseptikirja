@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>927</width>
-    <height>831</height>
+    <height>958</height>
    </rect>
   </property>
   <property name="mouseTracking">
@@ -30,7 +30,7 @@
        <bool>false</bool>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>3</number>
       </property>
       <widget class="QWidget" name="tab">
        <attribute name="title">
@@ -389,42 +389,29 @@
             </property>
            </widget>
           </item>
-          <item row="0" column="1">
-           <widget class="QLineEdit" name="recipeInstruction">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="minimumSize">
-             <size>
-              <width>0</width>
-              <height>0</height>
-             </size>
-            </property>
-           </widget>
-          </item>
-          <item row="3" column="1">
+          <item row="4" column="1">
            <widget class="QPushButton" name="buttonSaveRecipeInstruction">
             <property name="text">
              <string>Tallenna</string>
             </property>
            </widget>
           </item>
-          <item row="5" column="1">
+          <item row="6" column="1">
            <widget class="QPushButton" name="buttonDeleteRecipeInstruction">
             <property name="text">
              <string>Poista valittu</string>
             </property>
            </widget>
           </item>
-          <item row="4" column="1">
+          <item row="5" column="1">
            <widget class="QPushButton" name="buttonNewRecipeInstruction">
             <property name="text">
              <string>Lisää uusi</string>
             </property>
            </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QPlainTextEdit" name="recipeInstruction"/>
           </item>
          </layout>
         </item>
@@ -439,6 +426,9 @@
           <property name="selectionBehavior">
            <enum>QAbstractItemView::SelectRows</enum>
           </property>
+          <attribute name="horizontalHeaderStretchLastSection">
+           <bool>true</bool>
+          </attribute>
          </widget>
         </item>
         <item row="1" column="3">

@@ -26,6 +26,14 @@ import codecs
 class MainGUI(QMainWindow, Ui_MainWindow):
     ''' Tämä luokka perii pyqt:n QMainWindow luokan sekä QT Designerilla luodun Ui_MainWindow luokan, joka on moduulissa GUIDesign.
     Ui_MainWindow luokka sisältää graafisen käyttöliittymän designin.
+    
+    Luokka sisältää paljon metodeja, joilla tehdään muutoksia, kun käyttöliittymällä tapahtuu muutoksia. Metodit voidaan jakaa karkeasti osiin
+    :init*: Luokan luomisen yhteydessä asetetaan nappuloiden toiminnallisuudet, ladataan tiedostoja ym.
+    :populate*: Piirretään data johonkin tauluun
+    :save*: Tallennetaan muuttunutta dataa
+    :add*: Lisätään uusi ohje/raaka-aine/ym.
+    :get*InDataListForTable: Metodit palauttavat niille annetun listan olennaisimmat tiedot "data" tyyppinä, joka voidaan antaa populateTableWith() metodille populoitavaksi
+    
     '''
     
     def __init__(self):
