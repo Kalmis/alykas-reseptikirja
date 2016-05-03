@@ -10,6 +10,21 @@ from customErrors import SetAttributeError
 
 
 class Recipe():
+    '''
+    Luokka reseptejä varten. Tämä luokka pitää sisällään kaikki reseptille ominaiset attribuutit sekä tarvittavat metodit niiden arvojen muuttamiseksi.
+    
+    Attributes:
+        self.date: Luontipäivä
+        self.name: Reseptin nimi
+        self.time: Reseptin tekemiseen menevä aika minuuttina (int)
+        self.instructions: Ohjeet (str[])
+        self.outcomeSize: Reseptin lopputuloksen koko, esim. 4 (kg)
+        self.outcomeUnit: Reseptin lopputuloksen yksikkö, esim (4) kg
+        self.ingredients: Raaka-aineet (object[])
+    
+    Raises:
+        Kaikki attribuuttien asettamiseen käytettävät metodit (set* & add*) heittävät SetAttributeErrorin, jos attribuutin arvon asetus epäonnistuu.
+    '''
     
     def __init__(self):
         self.date = None
@@ -22,24 +37,28 @@ class Recipe():
         
                 
     def setName(self,name):
+        ''' Validoi, että nimi on yli 2 merkkiä pitkä ja asettaa sen: self.name'''
         if len(name) > 2:
             self.name = name
         else:
             raise SetAttributeError("Nimen tulee olla yli 2 merkkiä pitkä")
         
     def setOutcomeSize(self, outcomeSize):
+        ''' Muuttaa desimaalipilkun pisteeksi ja settaa määrän floattina: self.outcomeSize'''
         try:
             self.outcomeSize = float(str(outcomeSize).replace(",", "."))
         except ValueError:
             raise SetAttributeError("Lopputuloksen tulee olla desimaaliluku")
         
     def setOutcomeUnit(self, outcomeUnit):
+        ''' Validoi, että yksikkö ei ole tyhjä ja asettaa sen: self.outcomeUnit'''
         if len(outcomeUnit) > 0:
             self.outcomeUnit = outcomeUnit
         else:
             raise SetAttributeError("Lopputuloksen yksikkö ei voi olla tyhjä")
     
     def setDate(self,date):
+        ''' Validoi päivämäärän ja asettaa sen stringinä: self.date'''
         try:
             datetime.datetime.strptime(date,'%d.%m.%Y')
             self.date = date
@@ -47,51 +66,64 @@ class Recipe():
             raise SetAttributeError("Päivämäärää ei voitu tallentaa")
         
     def addInstruction(self,instruction):
+        ''' Validoi, että ohje on yli 2 merkkiä pitkä ja lisää sen self.instruction[] listaan'''
         if len(instruction) > 2:
             self.instructions.append(instruction) 
         else:
             raise SetAttributeError("Ohjeen tulisi olla yli 2 merkkiä pitkä")
+        
     def deleteInstruction(self,index):
+        ''' Poistaa reseptiltä ohjeen. Argumenttina annetaan ohjeen sijainti listassa (index)'''
         try:
             del self.instructions[index]
         except LookupError as e:
             raise SetAttributeError("Ohjetta ei voitu poistaa")
         
     def addIngredient(self, ingredientContainer):
+        ''' Lisää raaka-aineen(Container) self.ingredients[] listaan'''
         self.ingredients.append(ingredientContainer)
         return True
     
     def deleteIngredient(self, index):
+        ''' Poistaa reseptiltä raaka-aineen. Argumenttina annetaan ohjeen sijainti listassa (index)'''
         try:
             del self.ingredients[index]
         except LookupError as e:
             raise SetAttributeError("Raaka-ainetta ei voitu poistaa")
     
     def setTime(self,time):
+        ''' Asettaa reseptin tekemiseen menevän ajan (min) inttinä: self.time'''
         try:
             self.time = int(time)
         except ValueError:
             raise SetAttributeError("Ajan täytyy olla kokonaisluku (min)")
     
     def getName(self):
+        ''' Palauttaa reseptin nimen'''
         return self.name
     
     def getDate(self):
+        ''' Palauttaa reseptin luontipäivän'''
         return self.date
     
     def getTime(self):
+        ''' Palauttaa reseptin tekemiseen menevän ajan inttinä'''
         return self.time
     
     def getTimeGUI(self):
+        ''' Palauttaa reseptin tekemiseen menevän ajan stringinä'''
         return str(self.time)
     
     def getTimeStr(self):
+        ''' Palauttaa reseptin tekemiseen menevän ajan stringinä, jonka lopussa on " Min"'''
         return '' + str(self.time) + " Min"
     
     def getInstructions(self):
+        ''' Palauttaa ohjeet listana'''
         return self.instructions
     
     def getInstructionsStr(self):
+        ''' Palauttaa ohjeet stringinä, jokainen ohje omalla rivillä ja edessä ohjeen järjestysnumero eli järjestys listassa'''
         instructions = ''
         a = 1
         for i in self.instructions:
@@ -101,33 +133,41 @@ class Recipe():
     
 
     def getIngredients(self):
+        ''' Palauttaa reseptin raaka-aine oliot listana'''
         return self.ingredients
     
     def getIngredientsStr(self):
+        ''' Palauttaa reseptin raaka-aineet stringinä, hyödyntää raaka-aine luokan __str__() metodia'''
         ingredients = ''
         for i in self.ingredients:
             ingredients += i.__str__() + "\n"
         return ingredients
     
     def getIngredientsGUI(self):
+        ''' Palauttaa raaka-aineiden nimet listana'''
         ingredients = []
         for i in self.ingredients:
             ingredients.append(i.getName())
         return ingredients
     
     def getOutcomeStr(self):
+        ''' Palauttaa reseptin lopputuloksen desimaalipilkulla muodossa "<määrä> <yksikkö>"'''
         return '' + str(self.outcomeSize).replace(".", ",") + ' ' + self.outcomeUnit
     
     def getOutcomeSize(self):
+        ''' Palauttaa lopputuloksen floattina'''
         return self.outcomeSize
     
     def getOutcomeSizeGUI(self):
+        ''' Palauttaa lopputuloksen stringinä desimaalipilkulla'''
         return str(self.outcomeSize).replace(".", ",")
         
     def getOutcomeUnit(self):
+        ''' Palauttaa lopputuloksen yksikön'''
         return self.outcomeUnit
     
     def getAllergensDistinctGUI(self):
+        ''' Palauttaa reseptien raaka-aineiden stringinä pilkulla erotettuna. Allergeeni esiintyy listassa vain kerran, vaikka se olisi monessa raaka-aineessa.'''
         allergens = []
         for ingredient in self.ingredients:
             for allergen in ingredient.getAllergens():
