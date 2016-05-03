@@ -148,12 +148,11 @@ class Ingredient:
     def getRecipeLoaded(self):
         ''' Palauttaa self.recipeLoaded arvon. None = Ei reseptiä, True = Resepti olio ladattu, False = Reseptiä ei vielä ladattu'''
         return self.recipeLoaded
-        
+    
     def removeAllergens(self):
         ''' Poistaa kaikki raaka-aineen allergeenit'''
         self.allergens = []
-        return True
-            
+        return True          
 
     def removeRecipe(self):
         ''' Asettaa self.recipe = None sekä self.recipeLoaded = None'''

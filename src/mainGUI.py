@@ -18,19 +18,20 @@ from PyQt5.QtCore import QRegExp, Qt
 
 from IO import IO
 from recipe import Recipe
-from ingredient import IngredientContainer
+from ingredient import IngredientContainer, Ingredient
 from customErrors import *
 from search import Search
 import codecs
 
-
-INGREDIENTS = 1
-RECIPES = 2
-STORAGE = 3
-
 class MainGUI(QMainWindow, Ui_MainWindow):
+    ''' Tämä luokka perii pyqt:n QMainWindow luokan sekä QT Designerilla luodun Ui_MainWindow luokan, joka on moduulissa GUIDesign.
+    Ui_MainWindow luokka sisältää graafisen käyttöliittymän designin.
+    '''
     
     def __init__(self):
+        ''' Kutsuu Ui_MainWindow luokan konstruktoria, käyttöliittymän rakentamiseksi. Tämän lisäksi kutsutaan muita init metodeja, 
+        joilla mm. määritellään painikkeiden toiminnalisuudet ja ladataan tarvittavat tiedot tiedostoista
+        '''
         super().__init__()
         
         self.setupUi(self)
@@ -42,6 +43,8 @@ class MainGUI(QMainWindow, Ui_MainWindow):
         self.populateAllMainTables()
     
     def initSettingsAndLists(self):
+        ''' Tämä metodi alustaa tarvittavat muuttujat ja oliot sekä lataa reseptit, raaka-aineet ja varastotilanteen tiedostoista listoihin.'''
+        
         self.storageFile='storage.csv'
         self.recipesFile='resepti.txt'
         self.ingredientsFile='raaka_aine.txt'
@@ -58,6 +61,7 @@ class MainGUI(QMainWindow, Ui_MainWindow):
         self.IO.loadRecipesForIngredients(self.ingredientsList, self.recipesList)
     
     def initButtons(self):
+        ''' Tässä metodissa määritellään käyttöliittymän painikkeiden toiminallisuudet'''
         
         #Varastonäkymä
         self.buttonSaveStorageInfo.clicked.connect(self.saveStorageEdit)
@@ -97,6 +101,8 @@ class MainGUI(QMainWindow, Ui_MainWindow):
         
            
     def initTablesAndLists(self):
+        ''' Tässä metodissa määritellään käyttöliittymän taulukkojen toiminnallisuudet, esim. kun taulukon riviä klikataan'''
+        
         self.storageTable.clicked.connect(self.populateStorageEditFields)
         self.ingredientsTable.clicked.connect(self.populateIngredientsEditFields)
         
@@ -106,7 +112,16 @@ class MainGUI(QMainWindow, Ui_MainWindow):
         self.recipeInstructionsTable.clicked.connect(self.populateRecipesInstructionsEditFields)
     
     def initLineEdits(self):
-        # Validaattoreiden asettaminen
+        ''' Tässä metodissa alustetaan tarvittavat validaattorit sekä asetetaan nämä validaattorit käyttöön käyttöliittymän
+        tekstikentille. 
+        
+        Käytettävät validaattorit ovat
+        :min2char: vähintään 2 merkkiä pitkä
+        :min1tomax10char: 1-10 merkkiä aakkosia
+        :float2decimals: desimaaliluku, jossa 2 desimaalia
+        :onlyint: ainoastaan kokonaislukuja
+        '''
+        # Validaattoreiden alustaminen
         min2char = QRegExpValidator(QRegExp("^[\w\s]{2,}$"))
         min1tomax10char = QRegExpValidator(QRegExp("^[a-zA-Z]{1,10}$"))
         float2decimals = QDoubleValidator(0.00,999999999.00,2)
@@ -133,6 +148,9 @@ class MainGUI(QMainWindow, Ui_MainWindow):
         self.recipeInstruction.setValidator(min2char)
         
     def initToEditVariables(self):
+        ''' Tässä metodissa alustetaan apumuuttujat, joilla pidetään kirjaa mikä rivi mistäkin taulukosta on valittuna. 
+        Tätä tietoa tarvitaan taulukon tietojen muuttamisessa, esim. reseptin nimen.
+        '''
         self.ingredientToEdit = None
         self.recipeToEdit = None
         self.recipeIngredientToEdit = None
@@ -140,6 +158,10 @@ class MainGUI(QMainWindow, Ui_MainWindow):
         self.storageToEdit = None
     
     def initDialogLineEdits(self):
+        ''' Tässä metodissa alustetaan tarvittavat validaattorit sekä asetetaan nämä validaattorit käyttöön käyttöliittymän 
+        "Uusi resepti" dialogin tekstikenttiin
+        '''
+        
         min2char = QRegExpValidator(QRegExp("^[\w\s]{2,}$"))
         min1tomax10char = QRegExpValidator(QRegExp("^[a-zA-Z]{1,10}$"))
         float2decimals = QDoubleValidator(0.00,999999999.00,2)
@@ -157,12 +179,40 @@ class MainGUI(QMainWindow, Ui_MainWindow):
         self.recipeDialog.dialogInstruction.setValidator(min2char)
 
     def populateAllMainTables(self):
+        ''' Tämä metodi kutsuu kaikkien päätaulukoiden (reseptit, varastotilanne, raaka-aineet) populointimetodeja'''
+        
         self.populateStorageTable()
         self.populateIngredientsTable()
         self.populateRecipesTable()
         
+    def populateTableWithData(self, table, data):
+        ''' Tämä metodi populoi annettuun QTableWidget tauluun annetun datan. Datan tulee olla muotoa esim.
+        data = [ ['Nimi','Määrä'], ['Kala', 'Peruna'], [5,3] ]
+        '''
+        table.setRowCount(len(data[1]))
+        table.setColumnCount(len(data[0]))
+        table.setHorizontalHeaderLabels(data[0])
+        
+        data = iter(data)
+        next(data) # Skipataan eka, koska se on headerit
+        for n, columnData in enumerate(data):
+            for m, item in enumerate(columnData):
+                newitem = QTableWidgetItem(item)
+                table.setItem(m, n, newitem)
+        
     def populateSearchTable(self):
-
+        ''' Tämä metodi populoi datan hakunäkymän taulukkoon. Tätä metodia kutsuu hakunäkymän "Hae" painike.
+        
+        Hakunäkymällä on mahdollista valita nolla tai useampi hakuvaihtoehto, tämä metodi sisältää myös logiikan 
+        valittujen vaihtoehtojen tarkastamiselle sekä oikean hakutuloksen saamiseksi.
+        
+        Haku hyödyntää Search luokan metodeja, jotka palauttavat listan resepteistä, jotka täyttävät hakukriteerin. 
+        Hakulogiikka on ns. iteratiivinen ja alussa Search luokan metodeille annetaan listana kaikki tunnetut reseptit,
+        mahdollinen seuraava haku kuitenkin tehdään edellisen haun palauttamasta listasta, jolloin lopuksi listassa on enää kaikki
+        hakutulokset täyttävät reseptit.
+        
+        '''
+        
         searchList = self.recipesList
         if self.checkName.isChecked():
             searchList = self.search.searchFromList(self.searchName.text(), searchList)
@@ -193,16 +243,9 @@ class MainGUI(QMainWindow, Ui_MainWindow):
             self.searchTable.clearContents()
                 
     def populateStorageTable(self):
-        self.storageTable.setRowCount(len(self.storageList))
-        self.storageTable.setColumnCount(3)
-        self.storageTable.setHorizontalHeaderLabels(["Nimi","Määrä","Yksikkö"])
-        for r, ingredient in enumerate(self.storageList):
-            name = QTableWidgetItem(ingredient.getName())
-            quantity = QTableWidgetItem(str(ingredient.getQuantityStr()))
-            unit = QTableWidgetItem(ingredient.getUnit())
-            self.storageTable.setItem(r,0,name)
-            self.storageTable.setItem(r,1,quantity)
-            self.storageTable.setItem(r,2,unit)
+        
+        data = self.getIngredientContainersInListForTable(self.storageList)
+        self.populateTableWithData(self.storageTable,data)
         self.statusBar().showMessage("Varastolistaus päivitetty")
         
     def populateStorageEditFields(self,mi):
@@ -217,18 +260,9 @@ class MainGUI(QMainWindow, Ui_MainWindow):
             self.storageToEdit = mi.row()
 
     def populateIngredientsTable(self):
-        self.ingredientsTable.setRowCount(len(self.ingredientsList))
-        self.ingredientsTable.setColumnCount(4)
-        self.ingredientsTable.setHorizontalHeaderLabels(["Nimi","Allergeenit","Resepti", "Tiheys"])
-        for r, ingredient in enumerate(self.ingredientsList):
-            name = QTableWidgetItem(ingredient.getName())
-            allergens = QTableWidgetItem(str(ingredient.getAllergensGUI()))
-            recipe = QTableWidgetItem(ingredient.getRecipeGUI())
-            density = QTableWidgetItem(str(ingredient.getDensity()))
-            self.ingredientsTable.setItem(r,0,name)
-            self.ingredientsTable.setItem(r,1,allergens)
-            self.ingredientsTable.setItem(r,2,recipe)
-            self.ingredientsTable.setItem(r,3,density)
+
+        data = self.getIngredientsInListForTable(self.ingredientsList)
+        self.populateTableWithData(self.ingredientsTable, data)
         self.statusBar().showMessage("Raaka-ainelistaus päivitetty")
         
     def populateIngredientsEditFields(self,mi):
@@ -586,7 +620,40 @@ class MainGUI(QMainWindow, Ui_MainWindow):
             print("Kuka kutsuu SaveToFile?")
     
 
-
+    def getIngredientsInListForTable(self, ingredientList):
+        ''' Muodostaa annetujen raaka-aineiden tiedoista listojen listan, josta on helppo populoida QTabletWidget.
+        '''
+        
+        names = []
+        allergens = []
+        recipes = []
+        densities = []
+        headers = ['Nimi', 'Allergeenit', 'Resepti', 'Tiheys']
+        
+        for ingredient in ingredientList:
+            names.append(ingredient.getName())
+            allergens.append(ingredient.getAllergensGUI())
+            recipes.append(ingredient.getRecipeGUI())
+            densities.append(str(ingredient.getDensity()))
+        
+        return [headers,names,allergens,recipes,densities]
+    
+    def getIngredientContainersInListForTable(self, ingredientContainerList):
+        ''' Muodostaa annetujen raaka-aineiden(container) tiedoista listojen listan, josta on helppo populoida QTabletWidget.
+        '''
+        
+        names = []
+        quantities = []
+        units = []
+        headers = ['Nimi', 'Määrä', 'Yksikkö']
+        
+        for ingredientContainer in ingredientContainerList:
+            names.append(ingredientContainer.getName())
+            quantities.append(ingredientContainer.getQuantityStr())
+            units.append(ingredientContainer.getUnit())
+        
+        return [headers,names,quantities,units]
+    
         
 if __name__ == '__main__':
     
