@@ -7,12 +7,28 @@ Created on 19.4.2016
 from conversion import Conversion
 
 class Search:
+    ''' Tämän luokan metodeilla on mahdollista tehdä erilaisia hakuja. Ohjelma hyödyntää tätä luokkaa reseptien etsimisessä tietyillä hakuehdoilla
+    '''
     
     def __init__(self):
         self.conversion = Conversion()
-        self.inceptionCount = 0
+        # howManyIngredientsFoundInStorage metodi kutsuu iteratiivisesti itseään. Tämä mahdollistaa ikuisen loopin,
+        # joka on estetty laskemalla montako kertaa kyseistä metodia pyörii samaan aikaan.
+        self.inceptionCount = 0 
     
     def searcForhRecipesNIngredientsInStorage(self,recipesList,N,storageList, NNotInStorage):
+        '''
+        Tällä metodilla voidaan etsiä reseptejä, joihin löytyy vähintään N raaka-ainetta varastosta tai puuttuu maksimissaan N raaka-ainetta.
+        
+        Args:
+            :recipesList: Lista kaikista reseptiolioista
+            :N: Monta raaka-ainetta löydyttävä/puututtava varastosta (int)
+            :storageList: Lista varastossa olevista raaka-aineolioista
+            :NNotInStorage: (Boolean) True arvolla N merkitsee sitä montako saa puuttua. False arvolla N merkitsee montako täytyy löytyä
+            
+        Returns:
+            :recipesFound: Lista reseptio-olioista
+        '''
         
         recipesFound = []
         self.storageList = storageList
@@ -31,9 +47,15 @@ class Search:
         return recipesFound
                 
     def howManyIngredientsFoundInStorage(self, recipe):
+        ''' Apumetodi, jota ei ole tarkoitus kutsua luokan ulkopuolelta.
+        
+        Metodi käy reseptin raaka-aineet läpi ja montako niistä on tarpeeksi varastossa, metodi siis tarkastaa myös määrän.
+        Jos raaka-ainetta ei ole tarpeeksi varastossa, tarkastetaan voidaanko raaka-aine itse valmistaa reseptistä, jolloin kutsutaan 
+        tätä samaa metodia
+        '''
         
         #Käydään reseptin kaikki raaka-aineet läpi
-        self.inceptionCount += 1
+        self.inceptionCount += 1 # Pidetään kirjaa, montako instanssia tästä metodista pyörii
         ingredientsFoundInStorage = 0
         for ingredientRecipe in recipe.getIngredients():
             #Käydään koko varastolista läpi
@@ -41,23 +63,32 @@ class Search:
                 #Katsotaan löytyykö reseptin raaka-aine varastosta
                 if ingredientRecipe.getIngredient() is ingredientStorage.getIngredient():
                     #Tarkistetaan, onko varastossa tarpeeksi raaka-ainetta
-                    if self.__amountDifferenceMax10Perc(ingredientRecipe, ingredientStorage):
+                    if self.amountDifferenceMax10Perc(ingredientRecipe, ingredientStorage):
                         ingredientsFoundInStorage += 1
                     elif ingredientRecipe.hasRecipe() and self.inceptionCount < 3:
                         if self.howManyIngredientsFoundInStorage(ingredientRecipe.getRecipe()) == len(ingredientRecipe.getRecipe().getIngredients()):
                             ingredientsFoundInStorage += 1
                     break
                 
-        self.inceptionCount -= 1
+        self.inceptionCount -= 1 # Vähennetään instanssilaskuria
         return ingredientsFoundInStorage
                         
-    def __amountDifferenceMax10Perc(self, ingredientRecipe, ingredientStorage):
+    def amountDifferenceMax10Perc(self, ingredientRecipe, ingredientStorage):
+        ''' Apumetodi, jota ei ole tarkoitus kutsua luokan ulkopuolelta.
         
-        #Ei se niin nuukaa ole, onko pizzassa lihaa 1000g tilalla 900g vaiko 1100g,
-        #joten ns. 10 prosentin tarkkuus lienee siedettävä
+        Tällä metodilla tarkastetaan onko varastossa tarpeeksi tiettyä raaka-ainetta. Jos resepti vaatii 1kg jauhelihaa, niin
+        900g kin kyllä riittää, joten erotus saa olla maksimissaan 10% vaaditusta määrästä.
         
+        Args:
+            :ingredientRecipe: Reseptissä oleva ingredientContainer olio
+            :ingredientStorage: Varastossa oleva ingredientCOntainer olio
+        
+        Returns:
+            :True: Raaka-aineiden määrän erotus on alle 10% tarvittavasta eli reseptin määrästä
+            :False: Erotus on yli 10% tarvittavasta määrästä
+        '''
         maxDiff = 1.1
-        
+        # Muutetaan reseptin raaka-aineen määrän yksikkö vastaamaan varastossa olevan raaka-aineen määrän yksikkö ja lasketaan erotus
         difference = self.conversion.convertFromTo(ingredientRecipe.getQuantity(), 
                                                    ingredientRecipe.getUnit(), 
                                                    ingredientStorage.getUnit(), 
@@ -68,6 +99,16 @@ class Search:
             return False
         
     def searchFromList(self, searchFor, searchList):
+        ''' Tällä metodilla etsitään olio listasta tiettyä oliota sen nimen perusteella. 
+        Vertailu tapahtuu stringeinä ja vaatii, että listassa olevilla olioilla on getName() metodi.
+        
+        Args:
+            :searchFor: Etsittävä nimi (string)
+            :searchList: Lista olioista, joilla on getName() metodi
+            
+        returns:
+            :recipesFound: Lista löydetyistä olioista. Tyhjä, jos ei löytynyt
+        '''
         recipesFound = []
         
         for i in searchList:
@@ -77,6 +118,15 @@ class Search:
         return recipesFound
                         
     def searchIncludesIngredient(self,ingredientStr, recipesList):
+        ''' Tällä metodilla etsitään reseptejä, jotka sisältävät tietyn raaka-aineen. Vertailutapahtuu stringeinä
+        
+        Args:
+            :ingredientStr: Raaka-aineen nimi (string)
+            :recipesList: Lista reseptiolioista
+        
+        Returns:
+            :recipesFound: Lista reseptiolioista. Tyhjä, jos ei löytynyt
+        '''
         
         recipesFound = []
         
@@ -89,6 +139,17 @@ class Search:
     
     
     def searchNoAllergen(self,allergenStr,recipesList):
+        ''' Tämmä metodilla etsitään reseptejä, jotka eivät sisällä tiettyä allergeeniä. 
+        Allergeenien vertailu tapahtuu stringeinä
+        
+        Args:
+            :allergenStr: Allergeeni (string)
+            :recipesList: Lista reseptiolioista
+            
+        Returns:
+            :recipesFound: Lista reseptiolioista. Tyhjä, jos ei löytynyt
+        '''
+        
         recipesFound = []
         
         for recipe in recipesList:
