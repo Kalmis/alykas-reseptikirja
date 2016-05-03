@@ -13,12 +13,12 @@ class Ingredient:
     Raaka-aine luokka. Tämä luokka sisältää perustiedot raaka-aineesta, varastossa ja resepteissä olevat "raaka-aineet" sisältävät tämän olion.
     
     Attributes:
-        self.date: Luontipäivä
-        self.name: Nimi
-        self.density: Tiheys yksikkömuunnoksia varten (float)
-        self.allergens: Allergeenit (str[])
-        self.recipe: Mahdollinen resepti (object)
-        self.recipeLoaded: Kertoo onko raaka-aineen resepti ladattu. None = Ei reseptiä, False = Resepti on, mutta oliota ei ladattu, True = Olio ladattu
+        :self.date: Luontipäivä
+        :self.name: Nimi
+        :self.density: Tiheys yksikkömuunnoksia varten (float)
+        :self.allergens: Allergeenit (str[])
+        :self.recipe: Mahdollinen resepti (object)
+        :self.recipeLoaded: Kertoo onko raaka-aineen resepti ladattu. None = Ei reseptiä, False = Resepti on, mutta oliota ei ladattu, True = Olio ladattu
     
     Returns:
         Attribuuttien muuttamiseen käytettävät metodit (set* & add* & delete/remove*) palauttavat True, jos muutos onnistuu
@@ -168,12 +168,12 @@ class Ingredient:
         Etsii nimen perusteella reseptilistasta raaka-aineelle halutun reseptin ja asettaa olion: self.recipe
         
         Args:
-            recipesList: Lista kaikista resepteistä
+            :recipesList: Lista kaikista resepteistä
         
         Returns:
-            Onnistuessa: True
-            Ei ladattavaa: None
-            Reseptiä nimellä ei löytynyt: False
+            :Onnistuessa: True
+            :Ei ladattavaa: None
+            :Reseptiä nimellä ei löytynyt: False
             
         '''
         if(self.recipeLoaded == False):
@@ -197,15 +197,15 @@ class IngredientContainer:
     Tätä luokkaa hyödynnetään varastolistauksen sekä reseptien raaka-aineiden tallentamisessa.
     
     Attributes:
-        self.ingredient: Raaka-aine olio
-        self.quantity: Raaka-aineen määrä
-        self.unit: Määrän yksikkö
+        :self.ingredient: Raaka-aine olio
+        :self.quantity: Raaka-aineen määrä
+        :self.unit: Määrän yksikkö
         
      Returns:
-        Attribuuttien muuttamiseen käytettävät metodit (set* & add* & delete/remove*) palauttavat True, jos muutos onnistuu
+        :Attribuuttien muuttamiseen käytettävät metodit (set* & add* & delete/remove*) palauttavat True, jos muutos onnistuu
        
     Raises:
-        Attribuuttien asettamiseen käytettävät metodit (set* & add*) heittävät SetAttributeErrori:n, jos validointi epäonnistuu
+        :Attribuuttien asettamiseen käytettävät metodit (set* & add*) heittävät SetAttributeErrori:n, jos validointi epäonnistuu
     '''
     def __init__(self):
         
@@ -222,14 +222,14 @@ class IngredientContainer:
         Etsii halutun raaka-aineen annetusta raaka-ainelistasta nimen perusteella sekä asettaa sen: self.ingredient
         
         Attributes:
-            ingredient: Etsittävä raaka-aine (string)
-            ingredientsList: Lista kaikista raaka-aineista
+            :ingredient: Etsittävä raaka-aine (string)
+            :ingredientsList: Lista kaikista raaka-aineista
         
         Returns:
-            Onnistuessa: True
+            :Onnistuessa: True
         
         Raises:
-            SetAttributeError epäonnistuessa
+            :SetAttributeError epäonnistuessa
         '''
         for i in ingredientsList:
                 if i.getName().strip().lower() == ingredient.lower():

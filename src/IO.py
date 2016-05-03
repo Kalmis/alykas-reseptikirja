@@ -24,14 +24,14 @@ class IO(object):
         Tämä metodi lukee raaka-aineet tiedostosta ja palauttaa ne listana.
         
         Args:
-            inputLines: tiedoston kahva (fileIO), josta tiedot luetaan.
+            :inputLines: tiedoston kahva (fileIO), josta tiedot luetaan.
         
         Returns:
-            ingredientList: Raaka-aine oliot listana
-            successCount: Montako luettiin onnistuneesti sisään
-            errorCount: Montako jäi virheeseen luettaessa
+            :ingredientList: Raaka-aine oliot listana
+            :successCount: Montako luettiin onnistuneesti sisään
+            :errorCount: Montako jäi virheeseen luettaessa
         Raises:
-            CorruptedFileError: Jos kohdataan tuntematon tiedostotyyppi
+            :CorruptedFileError: Jos kohdataan tuntematon tiedostotyyppi
         '''
 
         self.date = False
@@ -139,15 +139,15 @@ class IO(object):
         Tämä metodi lukee reseptit tiedostosta ja palauttaa ne listana.
                 
         Args:
-            inputLines: tiedoston kahva (fileIO), josta tiedot luetaan.
-            ingredientList: Tunnetut raaka-aineet listana
+            :inputLines: tiedoston kahva (fileIO), josta tiedot luetaan.
+            :ingredientList: Tunnetut raaka-aineet listana
         
         Returns:
-            recipesList: Resepti oliot listana
-            successCount: Montako luettiin onnistuneesti sisään
-            errorCount: Montako jäi virheeseen luettaessa
+            :recipesList: Resepti oliot listana
+            :successCount: Montako luettiin onnistuneesti sisään
+            :errorCount: Montako jäi virheeseen luettaessa
         Raises:
-            CorruptedFileError: Jos kohdataan tuntematon tiedostotyyppi
+            :CorruptedFileError: Jos kohdataan tuntematon tiedostotyyppi
         '''
 
         self.date = False
@@ -270,15 +270,15 @@ class IO(object):
         Tämä metodi lukee varastolistauksen tiedostosta ja palauttaa ne listana.
                 
         Args:
-            inputLines: tiedoston kahva (fileIO), josta tiedot luetaan.
-            ingredientList: Tunnetut raaka-aineet listana
+            :inputLines: tiedoston kahva (fileIO), josta tiedot luetaan.
+            :ingredientList: Tunnetut raaka-aineet listana
         
         Returns:
-            storageList: Raaka-aine oliot listana
-            successCount: Montako luettiin onnistuneesti sisään
-            errorCount: Montako jäi virheeseen luettaessa
+            :storageList: Raaka-aine oliot listana
+            :successCount: Montako luettiin onnistuneesti sisään
+            :errorCount: Montako jäi virheeseen luettaessa
         Raises:
-            CorruptedFileError: Jos kohdataan tuntematon tiedostotyyppi
+            :CorruptedFileError: Jos kohdataan tuntematon tiedostotyyppi
         '''
 
         self.success = None
@@ -345,8 +345,8 @@ class IO(object):
         Tämä metodi tallentaa reseptit tiedostoon ohjelman luettavassa muodossa. Tiedot tallennetaan ensin temp.rec tiedostoon, jonka jälkeen kyseinen tiedosto nimetään uudelleen halutun nimiseksi.
                 
         Args:
-            fileName: Tiedostonimi, johon reseptit tallennetaan
-            recipesList: Resepti oliot listana
+            :fileName: Tiedostonimi, johon reseptit tallennetaan
+            :recipesList: Resepti oliot listana
 
         '''
 
@@ -380,8 +380,8 @@ class IO(object):
         Tämä metodi tallentaa raaka-aineet tiedostoon ohjelman luettavassa muodossa. Tiedot tallennetaan ensin temp.ing tiedostoon, jonka jälkeen kyseinen tiedosto nimetään uudelleen halutun nimiseksi.
                 
         Args:
-            fileName: Tiedostonimi, johon raaka-aineet tallennetaan
-            ingredientList: Raaka-aine oliot listana
+            :fileName: Tiedostonimi, johon raaka-aineet tallennetaan
+            :ingredientList: Raaka-aine oliot listana
 
         '''
         tempFileName = "temp.ing"
@@ -412,8 +412,8 @@ class IO(object):
         Tämä metodi tallentaa varastossa olevat raaka-aineet tiedostoon ohjelman luettavassa muodossa. Tiedot tallennetaan ensin temp.sto tiedostoon, jonka jälkeen kyseinen tiedosto nimetään uudelleen halutun nimiseksi.
                 
         Args:
-            fileName: Tiedostonimi, johon varaston raaka-aineet tallennetaan
-            storageList: Varaston raaka-aine oliot listana
+            :fileName: Tiedostonimi, johon varaston raaka-aineet tallennetaan
+            :storageList: Varaston raaka-aine oliot listana
 
         '''
         tempFileName = "temp.sto"
@@ -443,8 +443,8 @@ class IO(object):
         Tällä metodilla voidaan ladata kaikkien raaka-aineiden reseptit. Käytännössä tämä metodi kutsuu raaka-aineen loadrecipe() metodia
         
         Args:
-            ingredientList: Raaka-aine oliot listana
-            recipesList: Reseptio oliot listana
+            :ingredientList: Raaka-aine oliot listana
+            :recipesList: Reseptio oliot listana
         '''
         
         for ingredient in ingredientsList:

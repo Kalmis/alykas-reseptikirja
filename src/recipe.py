@@ -16,13 +16,13 @@ class Recipe():
     Luokka reseptejä varten. Tämä luokka pitää sisällään kaikki reseptille ominaiset attribuutit sekä tarvittavat metodit niiden arvojen muuttamiseksi.
     
     Attributes:
-        self.date: Luontipäivä
-        self.name: Reseptin nimi
-        self.time: Reseptin tekemiseen menevä aika minuuttina (int)
-        self.instructions: Ohjeet (str[])
-        self.outcomeSize: Reseptin lopputuloksen koko, esim. 4 (kg)
-        self.outcomeUnit: Reseptin lopputuloksen yksikkö, esim (4) kg
-        self.ingredients: Raaka-aineet (object[])
+        :self.date: Luontipäivä
+        :self.name: Reseptin nimi
+        :self.time: Reseptin tekemiseen menevä aika minuuttina (int)
+        :self.instructions: Ohjeet (str[])
+        :self.outcomeSize: Reseptin lopputuloksen koko, esim. 4 (kg)
+        :self.outcomeUnit: Reseptin lopputuloksen yksikkö, esim (4) kg
+        :self.ingredients: Raaka-aineet (object[])
         
     Returns:
         Attribuuttien muuttamiseen käytettävät metodit (set* & add* & delete/remove*) palauttavat True, jos muutos onnistuu

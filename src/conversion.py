@@ -23,8 +23,8 @@ class Conversion:
         Tällä metodilla voidaan tarkistaa onko sille parametrina annettu yksikkö ohjelman tuntema
         
         Returns:
-            Tunnettu: True
-            Ei tunnettu: False
+            :Tunnettu: True
+            :Ei tunnettu: False
         '''
         if unit in self.massDict.keys() or unit in self.volumeDict.keys() or unit in self.notConvertableList:
             return True
@@ -36,12 +36,12 @@ class Conversion:
         Tekee yksikkömuunnoksen ja palauttaa muunnetun arvon
         
         Args:
-            amount: Muunnettava määrä
-            unitFrom: Alkuperäinen yksikkö
-            unitTo: Haluttu yksikkö
-            density: aineen tiheys, tarvitaan vain kun muunnetaan massa<->tilavuus
+            :amount: Muunnettava määrä
+            :unitFrom: Alkuperäinen yksikkö
+            :unitTo: Haluttu yksikkö
+            :density: aineen tiheys, tarvitaan vain kun muunnetaan massa<->tilavuus
         Returns:
-            Muunnetun yksikön (int)
+            :Muunnetun yksikön (int):
         '''
         if unitFrom in self.notConvertableList or unitTo in self.notConvertableList:
             return None
