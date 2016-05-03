@@ -10,7 +10,7 @@ Created on 27.4.2016
 import sys
 import datetime
 from GUIDesign import Ui_MainWindow
-from createRecipe import Ui_Dialog
+from GUIRecipeDialog import Ui_Dialog
 from PyQt5.QtWidgets import QApplication,QMainWindow, QTableWidgetItem, QMessageBox, QDialog
 from PyQt5.QtGui import QDoubleValidator, QRegExpValidator, QIntValidator
 from PyQt5.QtCore import QRegExp, Qt
@@ -193,7 +193,6 @@ class MainGUI(QMainWindow, Ui_MainWindow):
         taulu populoidaan datalla, jonka jällkeen kolumnien leveydet skaalataan sisällölle sopivaksi.
         '''
         
-        
         table.clear()
         table.setRowCount(len(data[1]))
         table.setColumnCount(len(data[0]))
@@ -205,8 +204,7 @@ class MainGUI(QMainWindow, Ui_MainWindow):
             for m, item in enumerate(columnData):
                 newitem = QTableWidgetItem(item)
                 table.setItem(m, n, newitem)
-        
-        # Skaalataan columnien leveydet ja rivien korkeudet vastaamaan niissä olevan datan pituutta.        
+            
         table.resizeColumnsToContents()
         table.resizeRowsToContents()
         
@@ -243,12 +241,23 @@ class MainGUI(QMainWindow, Ui_MainWindow):
             self.searchTable.clearContents()
                 
     def populateStorageTable(self):
+        ''' Tämä metodi populoi varastolistaus tauluun kaikki varastossa olevat raaka-aineet'''
         
         data = self.getIngredientContainersInDataListForTable(self.storageList)
         self.populateTableWithData(self.storageTable,data)
         self.statusBar().showMessage("Varastolistaus päivitetty")
         
     def populateStorageEditFields(self,mi):
+        ''' Tämä metodi populoi varastonäkymällä olevat tekstikentät, joilla voi muokata varastossa olevaa raaka-ainetta.
+        Tätä metodia kutsutaan, kun varastolistauksessa klikataan riviä.
+        
+        Rivin indeksi tallennetaan self.storageToEdit muuttujaan, jotta muutoksia tallennettaessa tiedetään
+        mitä varasto raaka-ainetta täytyy muokata
+        
+        Args:
+            :mi: mi muuttuja/olio, joka sisältää klikatun rivin ja kolumnin indeksin.
+        '''
+        
         if mi.row() >= len(self.storageList):
             QMessageBox.warning(self, "Riviä ei voitu valita", "Päivitä listaus!", QMessageBox.Ok, QMessageBox.Ok)
             self.storageToEdit = None
@@ -260,12 +269,23 @@ class MainGUI(QMainWindow, Ui_MainWindow):
             self.storageToEdit = mi.row()
 
     def populateIngredientsTable(self):
+        ''' Tämä metodi populoi raaka-ainelistaus tauluun kaikki tiedetyt raaka-aineet '''
         
         data = self.getIngredientsInDataListForTable(self.ingredientsList)
         self.populateTableWithData(self.ingredientsTable, data)
         self.statusBar().showMessage("Raaka-ainelistaus päivitetty")
         
     def populateIngredientsEditFields(self,mi):
+        ''' Tämä metodi populoi raaka-ainenäkymällä olevat tekstikentät, joilla voi muokata raaka-aineen tietoja.
+        Tätä metodia kutsutaan, kun raaka-ainelistaus taulua klikataan.
+        
+        Rivin indeksi tallennetaan self.ingredientToEdit muuttujaan, jotta muutoksia tallennettaessa tiedetään
+        mitä raaka-ainetta täytyy muokata.
+        
+        Args:
+            :mi: mi muuttuja/olio, joka sisältää klikatun rivin ja kolumnin indeksin.
+        '''
+        
         if mi.row() >= len(self.ingredientsList):
             QMessageBox.warning(self, "Riviä ei voitu valita", "Päivitä listaus!", QMessageBox.Ok, QMessageBox.Ok)
             self.ingredientToEdit = None
@@ -278,22 +298,47 @@ class MainGUI(QMainWindow, Ui_MainWindow):
             self.ingredientToEdit = mi.row()
            
     def populateRecipesTable(self):
+        ''' Tämä metodi populoi reseptilistaus tauluun kaikki tiedetyt reseptit '''
         
         data = self.getRecipesInDataListForTable(self.recipesList)
         self.populateTableWithData(self.recipesTable, data)
         self.statusBar().showMessage("Reseptilistaus päivitetty")
         
     def populateRecipesInstructionsTable(self):
+        ''' Tämä metodi populoi reseptinäkymällä reseptin ohjeet tauluun. 
+        Tätä metodia kutsutaan, kun reseptilistaus taulua klikataan.
+        
+        Oikean reseptin löytämiseksi hyödynnetään self.recipeToEdit muuttujaa.
+        '''
+        
         recipe = self.recipesList[self.recipeToEdit]
         data = [['Ohje'], recipe.getInstructions()]
         self.populateTableWithData(self.recipeInstructionsTable, data)
             
     def populateRecipesIngredientsTable(self):
+        ''' Tämä metodi populoi reseptinäkymällä reseptin raaka-aineet tauluun. 
+        Tätä metodia kutsutaan, kun reseptilistaus taulua klikataan.
+        
+        Oikean reseptin löytämiseksi hyödynnetään self.recipeToEdit muuttujaa.
+        '''
+        
         recipe = self.recipesList[self.recipeToEdit]
         data = self.getIngredientContainersInDataListForTable(recipe.getIngredients())
         self.populateTableWithData(self.recipeIngredientsTable, data)
             
     def populateRecipesEditFields(self,mi):
+        ''' Tämä metodi populoi reseptinäkymällä olevat reseptin tekstikentät sekä tyhjentää reseptin raaka-aine ja
+        ohje muokkaustekstikentät sekä kutuu metodeja, joilla populoidaan reseptin raaka-aine ja ohjetaulut.
+        
+        Tätä metodia kutsutaan, kun reseptilistaus taulua klikataan.
+        
+        Rivin indeksi tallennetaan self.recipeToEdit muuttujaan, jotta muutoksia tallennettaessa tiedetään
+        mitä reseptiä täytyy muokata. 
+        
+        Args:
+            :mi: mi muuttuja/olio, joka sisältää klikatun rivin ja kolumnin indeksin.
+        '''
+        
         if mi.row() >= len(self.ingredientsList):
             QMessageBox.warning(self, "Riviä ei voitu valita", "Päivitä listaus!", QMessageBox.Ok, QMessageBox.Ok)
             self.recipeToEdit = None
@@ -315,6 +360,16 @@ class MainGUI(QMainWindow, Ui_MainWindow):
             self.populateRecipesInstructionsTable()
             
     def populateRecipesIngredientEditFields(self,mi):
+        ''' Tämä metodi populoi reseptinäkymällä olevat raaka-aine tekstikentät, joilla voi muokata reseptin raaka-aineen tietoja.
+        Tätä metodia kutsutaan, kun reseptin raaka-ainelistaus taulua klikataan.
+        
+        Rivin indeksi tallennetaan self.recipeIngredientToEdit muuttujaan, jotta muutoksia tallennettaessa tiedetään
+        mitä raaka-ainetta täytyy muokata.
+        
+        Args:
+            :mi: mi muuttuja/olio, joka sisältää klikatun rivin ja kolumnin indeksin.
+        ''' 
+        
         ingredients = self.recipesList[self.recipeToEdit].getIngredients()
         if mi.row() >= len(ingredients):
             QMessageBox.warning(self, "Riviä ei voitu valita", "Päivitä listaus!", QMessageBox.Ok, QMessageBox.Ok)
@@ -327,6 +382,15 @@ class MainGUI(QMainWindow, Ui_MainWindow):
             self.recipeIngredientToEdit = mi.row()        
        
     def populateRecipesInstructionsEditFields(self, mi):
+        ''' Tämä metodi populoi reseptinäkymällä olen ohje tekstikentät, joilla voi muokata reseptin ohjetta.
+        Tätä metodia kutsutaan, kun reseptin ohjelistaus taulua klikataan.
+        
+        Rivin indeksi tallennetaan self.recipeInstructionToEdit muuttujaan, jotta muutoksia tallennettaessa tiedetään
+        mitä raaka-ainetta täytyy muokata.
+        
+        Args:
+            :mi: mi muuttuja/olio, joka sisältää klikatun rivin ja kolumnin indeksin.
+        ''' 
         instructions = self.recipesList[self.recipeToEdit].getInstructions()
         if mi.row() >= len(instructions):
             QMessageBox.warning(self, "Riviä ei voitu valita", "Päivitä listaus!", QMessageBox.Ok, QMessageBox.Ok)
@@ -337,6 +401,10 @@ class MainGUI(QMainWindow, Ui_MainWindow):
             self.recipeInstructionToEdit = mi.row()   
                  
     def clearRecipeEditLineEdits(self):
+        ''' Tämä metodi tyhjentää reseptin raaka-aine sekä ohjeen tekstikentät.
+        Tätä metodia kutsutaan, kun reseptilistaus taulua klikataan, jotta kyseisissä tekstikentissä ei "vanhoja" tietoja.
+        '''
+        
         self.recipeIngredientToEdit = None
         self.recipeInstructionToEdit = None
         
@@ -347,7 +415,12 @@ class MainGUI(QMainWindow, Ui_MainWindow):
         self.recipeIngredientUnit.clear()    
         
     def showCreateNewRecipeDialog(self):
+        ''' Tämä metodi luo uuden QDialog widgetin, jossa voi täyttää uuden reseptin tietoja. Dialogin
+        graafinen ulkoasu on luotu QT Designerilla ja on tallennettuna moduuliin GUIrecipeDialog.
         
+        Jos dialogissa painetaan "OK" painiketta, kutsutaan metodia self.saveNewRecipe(), joka annetut tiedot
+        ja tallentaa reseptin.
+        '''
         self.dialog = QDialog()
         self.recipeDialog = Ui_Dialog()
         self.recipeDialog.setupUi(self.dialog)   
@@ -358,6 +431,12 @@ class MainGUI(QMainWindow, Ui_MainWindow):
             self.statusBar().showMessage("Tallennus keskeytetty")     
         
     def addNewRecipeInstruction(self):
+        ''' Tämä metodi tarkastaa ja tallentaa reseptinäkymällä ohjetekstikentässä olevan tekstin uudeksi ohjeeksi reseptille. 
+        Oikean reseptin löytymiseksi hyödynnetään self.recipeToEdit muuttujaa.
+        
+        Tallennuksen jälkeen metodi populoi uudelleen reseptin ohjelistaus taulun.
+        '''
+        
         if self.recipeInstruction.hasAcceptableInput():
             try:
                 recipe = self.recipesList[self.recipeToEdit]
@@ -371,6 +450,13 @@ class MainGUI(QMainWindow, Ui_MainWindow):
 
     
     def addNewRecipeIngredient(self):
+        ''' Tämä metodi tarkastaa ja tallentaa reseptinäkymällä raaka-aine tekstikentissä olevat tekstit 
+        uudeksi raaka-aineeksi reseptille. 
+        Oikean reseptin löytymiseksi hyödynnetään self.recipeToEdit muuttujaa.
+        
+        Tallennuksen jälkeen metodi populoi uudelleen reseptin raaka-ainelistaus taulun.
+        '''
+        
         if self.recipeIngredientName.hasAcceptableInput() and self.recipeIngredientQuantity.hasAcceptableInput() and self.recipeIngredientUnit.hasAcceptableInput():
             try:
                 recipe = self.recipesList[self.recipeToEdit]
@@ -387,6 +473,12 @@ class MainGUI(QMainWindow, Ui_MainWindow):
             QMessageBox.warning(self, "Virhe tallentaessa", "Virheellinen syöte!", QMessageBox.Ok, QMessageBox.Ok)
 
     def deleteRecipeIngredient(self):
+        ''' Tämä metodi poistaa valitun reseptin valitun raaka-aineen.
+        
+        Metodia kutsutaan painamalla poista painiketta. Oikea resepti ja raaka-aine selviää 
+        muuttujista self.recipeToEdit ja self.recipeIngredientToEdit
+        '''
+        
         if self.recipeIngredientToEdit is not None and self.recipeToEdit is not None:
             try:
                 recipe = self.recipesList[self.recipeToEdit]
@@ -400,6 +492,12 @@ class MainGUI(QMainWindow, Ui_MainWindow):
             QMessageBox.warning(self, "Virhe tallentaessa", "Päivitä listaus ja valitse resepti sekä raaka-aine uudelleen!", QMessageBox.Ok, QMessageBox.Ok)
     
     def deleteRecipeInstruction(self):
+        ''' Tämä metodi poistaa valitun reseptin valitun ohjeen.
+        
+        Metodia kutsutaan painamalla poista painiketta. Oikea resepti ja ohje selviää 
+        muuttujista self.recipeToEdit ja self.recipeInstructionToEdit
+        '''
+        
         if self.recipeInstructionToEdit is not None and self.recipeToEdit is not None:
             try:
                 recipe = self.recipesList[self.recipeToEdit]
@@ -414,6 +512,11 @@ class MainGUI(QMainWindow, Ui_MainWindow):
 
 
     def checkStateChanged(self,state):
+        ''' Tämä metodi pitää huolen, ettei hakunäkymällä olevat "Puuttuu N" ja "Löytyy N" checkboksit ole valittuna samaan aikaan,
+        koska se ei ole järin järkevä hakuvaihtoehto. 
+        
+        Tätä metodia kutsutaan vaihtamalla jomman kumman checkboksin tilaa.
+        '''
         # Jos rasti otettiin pois, niin toisen tilaa ei tarvitse vaihtaa
         if state != Qt.Checked:
             pass
@@ -424,6 +527,10 @@ class MainGUI(QMainWindow, Ui_MainWindow):
             
 
     def saveNewRecipe(self):
+        ''' Tämä metodi tarkastaa uusi resepti -dialogissa annetut tiedot ja valideja, niin luo uuden reseptin näillä tiedoilla
+        ja lisää sen reseptilistaan. Tämän jälkeen reseptilistaus taulu populoidaan uudelleen.
+        
+        '''
         if self.recipeDialog.dialogName.hasAcceptableInput() and self.recipeDialog.dialogInstruction.hasAcceptableInput() and self.recipeDialog.dialogIngredient.hasAcceptableInput() and self.recipeDialog.dialogOutcomeSize.hasAcceptableInput() and self.recipeDialog.dialogOutcomeUnit.hasAcceptableInput() and self.recipeDialog.DialogQuantity.hasAcceptableInput() and self.recipeDialog.dialogTime.hasAcceptableInput() and self.recipeDialog.dialogUnit.hasAcceptableInput():
             recipe = Recipe()
             try:
@@ -450,6 +557,11 @@ class MainGUI(QMainWindow, Ui_MainWindow):
 
                  
     def saveRecipesEdit(self):
+        ''' Tämä metodi tarkistaa reseptin perustietojen tekstikenttien arvot, jonka jälkeen muutokset tallennetaan reseptiin.
+        
+        Oikea resepti löydetään self.recipeToEdit muuttujan avulla.
+        '''
+        
         if self.recipeName.hasAcceptableInput() and self.recipeTime.hasAcceptableInput() and self.recipeOutcomeSize.hasAcceptableInput() and self.recipeOutcomeUnit.hasAcceptableInput() and self.recipeToEdit is not None:
             try:
                 recipe = self.recipesList[self.recipeToEdit]
@@ -465,6 +577,11 @@ class MainGUI(QMainWindow, Ui_MainWindow):
             QMessageBox.warning(self, "Virhe tallentaessa", "Virheellinen syöte!", QMessageBox.Ok, QMessageBox.Ok)
             
     def saveRecipesIngredientEdit(self):
+        ''' Tämä metodi tarkistaa reseptin raaka-aineen tekstikenttien arvot, jonka jälkeen muutokset tallennetaan reseptiin.
+        
+        Oikea resepti sekä raaka-aine löydetään self.recipeToEdit ja self.recipeIngredientToEdit muuttujien avulla.
+        '''
+        
         if self.recipeIngredientQuantity.hasAcceptableInput() and self.recipeIngredientUnit.hasAcceptableInput() and self.recipeToEdit is not None and self.recipeIngredientToEdit is not None:
             try:
                 ingredient = self.recipesList[self.recipeToEdit].getIngredients()[self.recipeIngredientToEdit]
@@ -478,6 +595,10 @@ class MainGUI(QMainWindow, Ui_MainWindow):
             QMessageBox.warning(self, "Virhe tallentaessa", "Virheellinen syöte!", QMessageBox.Ok, QMessageBox.Ok)
             
     def saveRecipesInstructionsEdit(self):
+        ''' Tämä metodi tarkistaa reseptin ohjeen tekstikentän arvon, jonka jälkeen muutokset tallennetaan reseptiin.
+        
+        Oikea resepti sekä ohje löydetään self.recipeToEdit ja self.recipeInstructionToEdit muuttujien avulla.
+        '''        
         if self.recipeInstruction.hasAcceptableInput() and self.recipeToEdit is not None and self.recipeInstructionToEdit is not None:
             try:
                 instructions = self.recipesList[self.recipeToEdit].getInstructions()
@@ -491,6 +612,10 @@ class MainGUI(QMainWindow, Ui_MainWindow):
             
             
     def saveStorageEdit(self):
+        ''' Tämä metodi tarkistaa varastossa olevan raaka-aineen perustietojen tekstikenttien arvot, jonka jälkeen muutokset tallennetaan raaka-aineeseen.
+        
+        Oikea raaka-aine löydetään self.storageToEdit muuttujan avulla.
+        '''
         if self.storageQuantity.hasAcceptableInput() and self.storageUnit.hasAcceptableInput() and self.storageToEdit is not None:
             try:
                 storage = self.storageList[self.storageToEdit]
@@ -504,6 +629,10 @@ class MainGUI(QMainWindow, Ui_MainWindow):
             QMessageBox.warning(self, "Virhe tallentaessa", "Virheellinen syöte!", QMessageBox.Ok, QMessageBox.Ok)
     
     def saveIngredientsEdit(self):
+        ''' Tämä metodi tarkistaa raaka-aineen perustietojen tekstikenttien arvot, jonka jälkeen muutokset tallennetaan raaka-aineeseen.
+        
+        Oikea raaka-aine löydetään self.ingredientToEdit muuttujan avulla.
+        '''
         if self.ingredientName.hasAcceptableInput() and self.ingredientDensity.hasAcceptableInput() and self.ingredientToEdit is not None:
             try:
                 ingredient = self.ingredientsList[self.ingredientToEdit]
@@ -527,15 +656,29 @@ class MainGUI(QMainWindow, Ui_MainWindow):
     
     
     def openFileUTF8(self,file):
+        ''' Tämä metodi avaa halutun tiedoston UTF-8 enkoodauksella ja palauttaa sen tiedostokahvan.
+        
+        Args:
+            :file: tiedoston polku
+        
+        Returns:
+            :Onnistuessa: tiedostokahva avattuun tiedostoon
+            :Epäonnistuessa: False
+        '''
         
         try:
             fileIO = codecs.open(file, "r", "utf-8")
             return fileIO
         except IOError:
             print("Tiedoston",file,"avaaminen ei onnistu.") 
-            return 0
+            return False
     
     def loadFromFileToList(self):
+        ''' Tämä metodi päättelee kutsujan (self.sender()) perusteella mikä tiedosto tulee ladata uudelleen ja myöskin lataa sen.
+        
+        Jos self.sender() on None, niin ladataan kaikki tiedostot. Muulloin kutsuja on esim. self.buttonLoadRecipes, jolloin ladataan
+        reseptit tiedostosta.
+        '''
         sender = self.sender()
         try:        
             if sender is None or sender is self.buttonLoadAll:
@@ -579,6 +722,11 @@ class MainGUI(QMainWindow, Ui_MainWindow):
         fileIO.close()
         
     def saveToFile(self):
+        ''' Tämä metodi päättelee kutsujan (self.sender()) perusteella mikä tiedosto tulee tallentaa ja myöskin tallentaa sen.
+        
+        Jos self.sender() on self.buttonSaveAll, niin ladataan kaikki tiedostot. Muulloin kutsuja on esim. self.buttonSaveRecipes, jolloin 
+        tallennetaan reseptit tiedostoon.
+        '''
         sender = self.sender()
         if sender is self.buttonSaveAll:
             self.IO.saveRecipes(self.recipesFile, self.recipesList)
