@@ -338,7 +338,8 @@ class MainGUI(QMainWindow, Ui_MainWindow):
         
         self.dialog = QDialog()
         self.recipeDialog = Ui_Dialog()
-        self.recipeDialog.setupUi(self.dialog)        
+        self.recipeDialog.setupUi(self.dialog)   
+        self.initDialogLineEdits()     
         if self.dialog.exec_():
             self.saveNewRecipe()
             self.statusBar().showMessage("Reseptin tallennus onnistui")
