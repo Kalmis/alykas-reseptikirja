@@ -342,7 +342,6 @@ class MainGUI(QMainWindow, Ui_MainWindow):
         self.initDialogLineEdits()     
         if self.dialog.exec_():
             self.saveNewRecipe()
-            self.statusBar().showMessage("Reseptin tallennus onnistui")
         else:
             self.statusBar().showMessage("Tallennus keskeytetty")     
         
@@ -431,8 +430,12 @@ class MainGUI(QMainWindow, Ui_MainWindow):
                 recipe.addIngredient(ingredient)
                 self.recaddIngredientContainernd(recipe)
                 self.populateRecipesTable()
+                self.statusBar().showMessage("Reseptin tallennus onnistui")
             except SetAttributeError as e:
                 QMessageBox.warning(self, "Virhe tallentaessa", str(e), QMessageBox.Ok, QMessageBox.Ok)
+        else:
+            QMessageBox.warning(self, "Virhe tallentaessa", "Kaikissa kentissä ei syötettä", QMessageBox.Ok, QMessageBox.Ok)
+
                  
     def saveRecipesEdit(self):
         if self.recipeName.hasAcceptableInput() and self.recipeTime.hasAcceptableInput() and self.recipeOutcomeSize.hasAcceptableInput() and self.recipeOutcomeUnit.hasAcceptableInput() and self.recipeToEdit is not None:
