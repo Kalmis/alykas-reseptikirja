@@ -173,7 +173,7 @@ class MainGUI(QMainWindow, Ui_MainWindow):
         if self.checkFoundN.isChecked():
             searchList = self.search.searcForhRecipesNIngredientsInStorage(searchList, self.spinFoundN.value(), self.storageList, False)
         elif self.checkMissingN.isChecked():
-            searchList = self.search.searcForhRecipesNIngredientsInStorage(searchList, self.spinMissingN, self.storageList, True)
+            searchList = self.search.searcForhRecipesNIngredientsInStorage(searchList, self.spinMissingN.value(), self.storageList, True)
         
         if len(searchList)>0:
             self.searchTable.setRowCount(len(searchList))
@@ -366,8 +366,8 @@ class MainGUI(QMainWindow, Ui_MainWindow):
                 ingredient.setIngredient(self.recipeIngredientName.text(),self.ingredientsList)
                 ingredient.setQuantity(self.recipeIngredientQuantity.text())
                 ingredient.setUnit(self.recipeIngredientUnit.text())
-                recipe.addIngredient(ingredient)
-                self.populateRecipesIngredientsTable()()
+                recipe.addIngredientContainer(ingredient)
+                self.populateRecipesIngredientsTable()
                 self.statusBar().showMessage("Raaka-aine lisätty")
             except SetAttributeError as e:
                 QMessageBox.warning(self, "Virhe tallentaessa", str(e), QMessageBox.Ok, QMessageBox.Ok)

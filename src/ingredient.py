@@ -173,7 +173,8 @@ class Ingredient:
         Returns:
             :Onnistuessa: True
             :Ei ladattavaa: None
-            :Reseptiä nimellä ei löytynyt: False
+        Raises:
+            :SetAttributeError: Reseptiä ei löytynyt
             
         '''
         if(self.recipeLoaded == False):
@@ -183,7 +184,7 @@ class Ingredient:
                     self.recipeLoaded = True
                     return True
             # Reseptiä kyseisellä nimellä ei löytynyt.
-            return False
+            raise SetAttributeError("Reseptiä ei löytynyt")
         else:
             return None # Ei ladattavaa
         
