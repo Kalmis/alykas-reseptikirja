@@ -23,6 +23,10 @@ from customErrors import *
 from search import Search
 import codecs
 
+STORAGE = 'varasto.csv'
+RECIPES = 'reseptit.txt'
+INGREDIENTS = 'raaka_aineet.txt'
+
 class MainGUI(QMainWindow, Ui_MainWindow):
     ''' Tämä luokka perii pyqt:n QMainWindow luokan sekä QT Designerilla luodun Ui_MainWindow luokan, joka on moduulissa GUIDesign.
     Ui_MainWindow luokka sisältää graafisen käyttöliittymän designin.
@@ -53,9 +57,9 @@ class MainGUI(QMainWindow, Ui_MainWindow):
     def initSettingsAndLists(self):
         ''' Tämä metodi alustaa tarvittavat muuttujat ja oliot sekä lataa reseptit, raaka-aineet ja varastotilanteen tiedostoista listoihin.'''
         
-        self.storageFile='storage.csv'
-        self.recipesFile='resepti.txt'
-        self.ingredientsFile='raaka_aine.txt'
+        self.storageFile= STORAGE
+        self.recipesFile= RECIPES
+        self.ingredientsFile= INGREDIENTS
         self.IO = IO()
         
         

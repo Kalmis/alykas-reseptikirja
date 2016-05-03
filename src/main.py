@@ -28,9 +28,9 @@ class Main(object):
 		self.saveMenuTitles =  ["1. Tallenna kaikki", "2. Tallenna reseptit", "3. Tallenna raaka-aineet", "4. Tallenna varasto", "0. Takaisin"]
 		self.loadMenuTitles =  ["1. Lataa kaikki", "2. Lataa reseptit", "3. Lataa raaka-aineet", "4. Lataa varasto", "0. Takaisin"]
 		
-		self.storageFile='storage.csv'
-		self.recipesFile='resepti.txt'
-		self.ingredientsFile='raaka_aine.txt'
+		self.storageFile='varasto.csv'
+		self.recipesFile='reseptit.txt'
+		self.ingredientsFile='raaka_aineet.txt'
 		self.IO = IO()
 		
 		
