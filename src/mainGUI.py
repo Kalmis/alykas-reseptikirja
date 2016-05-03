@@ -188,17 +188,27 @@ class MainGUI(QMainWindow, Ui_MainWindow):
     def populateTableWithData(self, table, data):
         ''' Tämä metodi populoi annettuun QTableWidget tauluun annetun datan. Datan tulee olla muotoa esim.
         data = [ ['Nimi','Määrä'], ['Kala', 'Peruna'], [5,3] ]
+        
+        Taulun sisältö tyhjennetään aluksi, asetetaan asetetaan sarakkeiden ja rivien lukumäärät. Tämän jälkeen
+        taulu populoidaan datalla, jonka jällkeen kolumnien leveydet skaalataan sisällölle sopivaksi.
         '''
+        
+        
+        table.clear()
         table.setRowCount(len(data[1]))
         table.setColumnCount(len(data[0]))
         table.setHorizontalHeaderLabels(data[0])
         
         data = iter(data)
-        next(data) # Skipataan eka, koska se on headerit
+        next(data) # Skipataan eka, koska ne on headerit
         for n, columnData in enumerate(data):
             for m, item in enumerate(columnData):
                 newitem = QTableWidgetItem(item)
                 table.setItem(m, n, newitem)
+        
+        # Skaalataan columnien leveydet ja rivien korkeudet vastaamaan niissä olevan datan pituutta.        
+        table.resizeColumnsToContents()
+        table.resizeRowsToContents()
         
     def populateSearchTable(self):
         ''' Tämä metodi populoi datan hakunäkymän taulukkoon. Tätä metodia kutsuu hakunäkymän "Hae" painike.
@@ -226,25 +236,15 @@ class MainGUI(QMainWindow, Ui_MainWindow):
             searchList = self.search.searcForhRecipesNIngredientsInStorage(searchList, self.spinMissingN.value(), self.storageList, True)
         
         if len(searchList)>0:
-            self.searchTable.setRowCount(len(searchList))
-            self.searchTable.setColumnCount(4)
-            self.searchTable.setHorizontalHeaderLabels(["Nimi","Aika","Lopputulos", "Allergeenit"])
-            for r, recipe in enumerate(searchList):
-                name = QTableWidgetItem(recipe.getName())
-                time = QTableWidgetItem(recipe.getTimeStr())
-                outcome = QTableWidgetItem(str(recipe.getOutcomeStr()))
-                allergens = QTableWidgetItem(str(recipe.getAllergensDistinctGUI()))
-                self.searchTable.setItem(r,0,name)
-                self.searchTable.setItem(r,1,time)
-                self.searchTable.setItem(r,2,outcome)
-                self.searchTable.setItem(r,3,allergens)
+            data = self.getRecipesInDataListForTable(searchList)
+            self.populateTableWithData(self.searchTable, data)
         else:
             self.statusBar().showMessage("Reseptejä ei löytynyt hakuehdoilla")
             self.searchTable.clearContents()
                 
     def populateStorageTable(self):
         
-        data = self.getIngredientContainersInListForTable(self.storageList)
+        data = self.getIngredientContainersInDataListForTable(self.storageList)
         self.populateTableWithData(self.storageTable,data)
         self.statusBar().showMessage("Varastolistaus päivitetty")
         
@@ -260,8 +260,8 @@ class MainGUI(QMainWindow, Ui_MainWindow):
             self.storageToEdit = mi.row()
 
     def populateIngredientsTable(self):
-
-        data = self.getIngredientsInListForTable(self.ingredientsList)
+        
+        data = self.getIngredientsInDataListForTable(self.ingredientsList)
         self.populateTableWithData(self.ingredientsTable, data)
         self.statusBar().showMessage("Raaka-ainelistaus päivitetty")
         
@@ -278,42 +278,20 @@ class MainGUI(QMainWindow, Ui_MainWindow):
             self.ingredientToEdit = mi.row()
            
     def populateRecipesTable(self):
-        self.recipesTable.setRowCount(len(self.recipesList))
-        self.recipesTable.setColumnCount(4)
-        self.recipesTable.setHorizontalHeaderLabels(["Nimi","Aika","Lopputulos", "Allergeenit"])
-        for r, recipe in enumerate(self.recipesList):
-            name = QTableWidgetItem(recipe.getName())
-            time = QTableWidgetItem(recipe.getTimeStr())
-            outcome = QTableWidgetItem(str(recipe.getOutcomeStr()))
-            allergens = QTableWidgetItem(str(recipe.getAllergensDistinctGUI()))
-            self.recipesTable.setItem(r,0,name)
-            self.recipesTable.setItem(r,1,time)
-            self.recipesTable.setItem(r,2,outcome)
-            self.recipesTable.setItem(r,3,allergens)
+        
+        data = self.getRecipesInDataListForTable(self.recipesList)
+        self.populateTableWithData(self.recipesTable, data)
         self.statusBar().showMessage("Reseptilistaus päivitetty")
         
     def populateRecipesInstructionsTable(self):
         recipe = self.recipesList[self.recipeToEdit]
-        self.recipeInstructionsTable.clear()
-        self.recipeInstructionsTable.setRowCount(len(recipe.getInstructions()))
-        self.recipeInstructionsTable.setColumnCount(1)
-        self.recipeInstructionsTable.setHorizontalHeaderLabels(["Ohje"])
-        for r, instruction in enumerate(recipe.getInstructions()):
-            self.recipeInstructionsTable.setItem(r,0,QTableWidgetItem(instruction))
+        data = [['Ohje'], recipe.getInstructions()]
+        self.populateTableWithData(self.recipeInstructionsTable, data)
             
     def populateRecipesIngredientsTable(self):
         recipe = self.recipesList[self.recipeToEdit]
-        self.recipeIngredientsTable.clear()
-        self.recipeIngredientsTable.setRowCount(len(recipe.getIngredients()))
-        self.recipeIngredientsTable.setColumnCount(3)
-        self.recipeIngredientsTable.setHorizontalHeaderLabels(["Nimi","Määrä","Yksikkö"])
-        for r, ingredient in enumerate(recipe.getIngredients()):
-            name = QTableWidgetItem(ingredient.getName())
-            quantity = QTableWidgetItem(str(ingredient.getQuantityStr()))
-            unit = QTableWidgetItem(ingredient.getUnit())
-            self.recipeIngredientsTable.setItem(r,0,name)
-            self.recipeIngredientsTable.setItem(r,1,quantity)
-            self.recipeIngredientsTable.setItem(r,2,unit) 
+        data = self.getIngredientContainersInDataListForTable(recipe.getIngredients())
+        self.populateTableWithData(self.recipeIngredientsTable, data)
             
     def populateRecipesEditFields(self,mi):
         if mi.row() >= len(self.ingredientsList):
@@ -620,8 +598,8 @@ class MainGUI(QMainWindow, Ui_MainWindow):
             print("Kuka kutsuu SaveToFile?")
     
 
-    def getIngredientsInListForTable(self, ingredientList):
-        ''' Muodostaa annetujen raaka-aineiden tiedoista listojen listan, josta on helppo populoida QTabletWidget.
+    def getIngredientsInDataListForTable(self, ingredientList):
+        ''' Muodostaa annetujen raaka-aineiden tiedoista listojen listan, jotka on helppo populoida QTabletWidget tauluun.
         '''
         
         names = []
@@ -638,10 +616,9 @@ class MainGUI(QMainWindow, Ui_MainWindow):
         
         return [headers,names,allergens,recipes,densities]
     
-    def getIngredientContainersInListForTable(self, ingredientContainerList):
-        ''' Muodostaa annetujen raaka-aineiden(container) tiedoista listojen listan, josta on helppo populoida QTabletWidget.
+    def getIngredientContainersInDataListForTable(self, ingredientContainerList):
+        ''' Muodostaa annetujen raaka-aineiden(container) tiedoista listojen listan, jotka on helppo populoida QTabletWidget tauluun.
         '''
-        
         names = []
         quantities = []
         units = []
@@ -654,7 +631,24 @@ class MainGUI(QMainWindow, Ui_MainWindow):
         
         return [headers,names,quantities,units]
     
+    def getRecipesInDataListForTable(self, recipeList):
+        ''' Muodostaa annetujen reseptien tiedoista listojen listan, jotka on helppo populoida QTabletWidget tauluun.
+        '''
         
+        names = []
+        times = []
+        outcomes = []
+        allergens = []
+        headers = ['Nimi', 'Aika', 'Lopputulos', 'Allergeenit']
+        
+        for recipe in recipeList:
+            names.append(recipe.getName())
+            times.append(recipe.getTimeStr())
+            outcomes.append(recipe.getOutcomeStr())
+            allergens.append(recipe.getAllergensDistinctGUI())
+        
+        return [headers,names,times,outcomes, allergens]
+    
 if __name__ == '__main__':
     
     app = QApplication(sys.argv)
