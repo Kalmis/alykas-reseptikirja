@@ -1,5 +1,9 @@
 # -*- coding: utf-8 -*-
+'''
+Created on 19.4.2016
 
+@author: Kimi Päivärinta
+'''
 from conversion import Conversion
 
 class Search:

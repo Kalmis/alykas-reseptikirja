@@ -2,7 +2,7 @@
 '''
 Created on 19.4.2016
 
-@author: Kalmis
+@author: Kimi Päivärinta
 '''
 import datetime
 from customErrors import SetAttributeError

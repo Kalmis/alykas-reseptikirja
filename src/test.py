@@ -9,6 +9,7 @@ from main import Main
 from ingredient import Ingredient, IngredientContainer
 from recipe import Recipe
 from customErrors import *
+from conversion import Conversion
 
 class Test(unittest.TestCase):
     
@@ -20,6 +21,34 @@ class Test(unittest.TestCase):
         
         #IO setUp
         self.IO = IO()
+        
+        
+    def testConversion(self):
+        self.conversion = Conversion()
+        
+        
+        self.assertEqual(1000, self.conversion.convertMassToMass(1000, 'kg', 'kg'), "1000 kg -> 1000 kg")
+        self.assertEqual(1, self.conversion.convertMassToMass(1000, 'g', 'kg'), "1000 g -> 1 kg")
+        self.assertEqual(1000, self.conversion.convertMassToMass(1, 'kg', 'g'), "1kg -> 1000g")
+        self.assertEqual(435, self.conversion.convertMassToMass(0.435, 'kg', 'g'),"0.435kg -> 435g")
+        
+        self.assertEqual(1, self.conversion.convertVolumeToVolume(1, 'l',   'l'), "1l -> 1l")
+        self.assertEqual(4000, self.conversion.convertVolumeToVolume(4, 'm3',   'l'), "4m3 -> 40001m3")
+        self.assertEqual(10, self.conversion.convertVolumeToVolume(1, 'l',   'dl'), "1l -> 10dl")
+        self.assertEqual(0.015, self.conversion.convertVolumeToVolume(1, 'rkl', 'l'), "1rkl -> 0.015 l")
+        
+        self.assertEqual(6.25, self.conversion.convertMassToVolume(5, 'kg', 'l', 800),  "5 kg -> 6.25 l (800 density)")
+        self.assertEqual(10, self.conversion.convertMassToVolume(1500, 'g', 'dl', 1500),  "1500 g -> 10 dl (1500 density)")
+        
+        self.assertEqual(1500, self.conversion.convertVolumeToMass(10, 'dl', 'g', 1500), "10dl -> 1500 g (1500 density)")
+        self.assertEqual(5, self.conversion.convertVolumeToMass(6.25, 'l', 'kg', 800), "6.25 l -> 5kg (800 density)")
+        
+        self.assertEqual(1, self.conversion.convertFromTo(1, 'kpl', 'kg', None), "1 kpl convert")
+        self.assertEqual(435, self.conversion.convertFromTo(0.435, 'kg', 'g', None), "0.435kg -> 435g")
+        self.assertEqual(0.015, self.conversion.convertFromTo(1, 'rkl', 'l', None), "1rkl -> 0.015l")
+        self.assertEqual(6.25, self.conversion.convertFromTo(5, 'kg', 'l', 800), "5 kg -> 6.25 l (800 density)")
+        self.assertEqual(1500, self.conversion.convertFromTo(10, 'dl', 'g', 1500), "10dl -> 1500 g (1500 density)")
+        
        
        
     def testIngredient(self):

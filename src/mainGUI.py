@@ -1,7 +1,7 @@
 '''
 Created on 27.4.2016
 
-@author: Kalmis
+@author: Kimi Päivärinta
 '''
 
 #!/usr/bin/python3
