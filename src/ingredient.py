@@ -6,6 +6,7 @@ Created on 19.4.2016
 '''
 import datetime
 from customErrors import SetAttributeError
+from conversion import Conversion
 
 class Ingredient:
     '''
@@ -18,6 +19,9 @@ class Ingredient:
         self.allergens: Allergeenit (str[])
         self.recipe: Mahdollinen resepti (object)
         self.recipeLoaded: Kertoo onko raaka-aineen resepti ladattu. None = Ei reseptiä, False = Resepti on, mutta oliota ei ladattu, True = Olio ladattu
+    
+    Returns:
+        Attribuuttien muuttamiseen käytettävät metodit (set* & add* & delete/remove*) palauttavat True, jos muutos onnistuu
     
     Raises:
         Attribuuttien asettamiseen käytettävät metodit (set* & add*) heittävät SetAttributeErrori:n, jos validointi epäonnistuu
@@ -37,6 +41,7 @@ class Ingredient:
         try:
             datetime.datetime.strptime(date,'%d.%m.%Y')
             self.date = date
+            return True
         except ValueError:
             raise SetAttributeError("Päivämäärää ei voitu tallentaa")
         
@@ -44,6 +49,7 @@ class Ingredient:
         '''Validoi, että nimi on yli 2 merkkiä pitkä ja asettaa sen self.date'''
         if len(name) > 2:
             self.name = name
+            return True
         else:
             raise SetAttributeError("Nimen tulee olla yli 2 merkkiä pitkä")
     
@@ -51,9 +57,32 @@ class Ingredient:
         '''Muuttaa desimaalipilkun pisteeksi, muuntaa tiheyden float luvuksi ja asettaa sen: self.density'''
         try:
             self.density = float(str(density).replace(",", "."))
+            return True
         except ValueError:
             raise SetAttributeError("Tiheyden täytyy olla desimaaliluku")
         
+    def addAllergen(self,allergen):
+        ''' Validoi, että allergeeni on yli 2 merkkiä pitkä ja lisää sen raaka-aineen allergeeni listaan'''
+        if len(allergen)>2:
+            self.allergens.append(allergen)
+            return True
+        else:
+            raise SetAttributeError("Allergeenin täytyy olla yli 2 merkkiä pitkä.")
+
+    def setRecipe(self,recipe):
+        
+        ''' 
+        Raaka-aineet luetaan sisälle ennen reseptejä, joten reseptin oliota ei todennäköisesti ole vielä olemassa.
+        Validoi, että resepti on yli kaksi merkkiä pitkä sekä asettaa halutun reseptin nimen stringinä: self.recipe sekä asettaa self.recipeLoaded = False
+        '''
+        if len(recipe) > 2:
+            self.recipe = recipe
+            self.recipeLoaded = False
+            return True
+        else:
+            self.recipeLoaded = None
+            raise SetAttributeError("Reseptin tulee olla yli 2 merkkiä pitkä.")
+                
     def getName(self):
         ''' Palauttaa nimen'''
         return self.name 
@@ -84,45 +113,6 @@ class Ingredient:
             allergens = allergens[:-2]
         return allergens
     
-    def getAllergensStr(self):
-        ''' Palauttaa allergeenit stringinä pilkulla erotettuna sekä alkussa teksti "Allergeenit: "'''
-        allergens ="  "
-        if len(self.allergens)>0:
-            allergens = ", Allergeenit: "
-        for i in self.allergens:
-            allergens += i + ", "
-        #Lopussa ei tarvitse olla ", ", joten poistetaan ne.
-        allergens = allergens[:-2]
-        return allergens
-    
-    def removeAllergens(self):
-        ''' Poistaa kaikki raaka-aineen allergeenit'''
-        self.allergens = []
-            
-    def addAllergen(self,allergen):
-        ''' Validoi, että allergeeni on yli 2 merkkiä pitkä ja lisää sen raaka-aineen allergeeni listaan'''
-        if len(allergen)>2:
-            self.allergens.append(allergen)
-        else:
-            raise SetAttributeError("Allergeenin täytyy olla yli 2 merkkiä pitkä.")
-
-    def setRecipe(self,recipe):
-        
-        ''' 
-        Raaka-aineet luetaan sisälle ennen reseptejä, joten reseptin oliota ei todennäköisesti ole vielä olemassa.
-        Validoi, että resepti on yli kaksi merkkiä pitkä sekä asettaa halutun reseptin nimen stringinä: self.recipe sekä asettaa self.recipeLoaded = False
-        '''
-        if len(recipe) > 2:
-            self.recipe = recipe
-            self.recipeLoaded = False
-        else:
-            raise SetAttributeError("Reseptin tulee olla yli 2 merkkiä pitkä.")
-        
-    def removeRecipe(self):
-        ''' Asettaa self.recipe = None sekä self.recipeLoaded = None'''
-        self.recipeLoaded = None
-        self.recipe = None
-    
     def getRecipeGUI(self):
         ''' Palauttaa reseptin nimen stringinä'''
         if self.recipeLoaded:
@@ -142,13 +132,36 @@ class Ingredient:
         if self.recipeLoaded:
             return self.recipe
         else:
-            return False
+            return False    
         
-        
+    def getAllergensStr(self):
+        ''' Palauttaa allergeenit stringinä pilkulla erotettuna sekä alkussa teksti "Allergeenit: "'''
+        allergens ="  "
+        if len(self.allergens)>0:
+            allergens = ", Allergeenit: "
+        for i in self.allergens:
+            allergens += i + ", "
+        #Lopussa ei tarvitse olla ", ", joten poistetaan ne.
+        allergens = allergens[:-2]
+        return allergens
+    
     def getRecipeLoaded(self):
         ''' Palauttaa self.recipeLoaded arvon. None = Ei reseptiä, True = Resepti olio ladattu, False = Reseptiä ei vielä ladattu'''
         return self.recipeLoaded
-    
+        
+    def removeAllergens(self):
+        ''' Poistaa kaikki raaka-aineen allergeenit'''
+        self.allergens = []
+        return True
+            
+
+    def removeRecipe(self):
+        ''' Asettaa self.recipe = None sekä self.recipeLoaded = None'''
+        self.recipeLoaded = None
+        self.recipe = None
+        return True
+
+
     
     def loadRecipe(self,recipesList):
         '''
@@ -188,6 +201,9 @@ class IngredientContainer:
         self.quantity: Raaka-aineen määrä
         self.unit: Määrän yksikkö
         
+     Returns:
+        Attribuuttien muuttamiseen käytettävät metodit (set* & add* & delete/remove*) palauttavat True, jos muutos onnistuu
+       
     Raises:
         Attribuuttien asettamiseen käytettävät metodit (set* & add*) heittävät SetAttributeErrori:n, jos validointi epäonnistuu
     '''
@@ -196,6 +212,8 @@ class IngredientContainer:
         self.ingredient = None
         self.quantity = None
         self.unit = None
+        
+        self.conversion = Conversion()
 
         
         
@@ -225,16 +243,19 @@ class IngredientContainer:
     def setQuantity(self,quantity):
         ''' Muuttaa desimaalipilkun pisteeksti ja asettaa määrän floattina: self.quantity'''
         try:
-            self.quantity = float(quantity.replace(",","."))
+            self.quantity = float(str(quantity).replace(",","."))
+            return True
         except ValueError:
             raise SetAttributeError("Määrän tulee olla desimaaliluku")
         
     def setUnit(self, unit):
-        ''' Validoi, että yksikkö on ei ole tyhjä sekä asettaa sen: self.unit'''
-        if len(unit) > 0:
+        ''' Validoi, että yksikkö on ohjelman tuntema sekä asettaa sen: self.unit'''
+        unit = unit.lower()
+        if self.conversion.isValidUnit(unit):
             self.unit = unit
+            return True
         else:
-            raise SetAttributeError("Lopputuloksen yksikkö ei voi olla tyhjä")
+            raise SetAttributeError("Tuntematon yksikkö")
     
     def getQuantity(self):
         ''' Palauttaa määrän floattina'''

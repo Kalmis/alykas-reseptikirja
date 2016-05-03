@@ -37,7 +37,7 @@ class Search:
                 #Katsotaan löytyykö reseptin raaka-aine varastosta
                 if ingredientRecipe.getIngredient() is ingredientStorage.getIngredient():
                     #Tarkistetaan, onko varastossa tarpeeksi raaka-ainetta
-                    if self.amountDifferenceMax10Perc(ingredientRecipe, ingredientStorage):
+                    if self.__amountDifferenceMax10Perc(ingredientRecipe, ingredientStorage):
                         ingredientsFoundInStorage += 1
                     elif ingredientRecipe.hasRecipe() and self.inceptionCount < 3:
                         if self.howManyIngredientsFoundInStorage(ingredientRecipe.getRecipe()) == len(ingredientRecipe.getRecipe().getIngredients()):
@@ -47,7 +47,7 @@ class Search:
         self.inceptionCount -= 1
         return ingredientsFoundInStorage
                         
-    def amountDifferenceMax10Perc(self, ingredientRecipe, ingredientStorage):
+    def __amountDifferenceMax10Perc(self, ingredientRecipe, ingredientStorage):
         
         #Ei se niin nuukaa ole, onko pizzassa lihaa 1000g tilalla 900g vaiko 1100g,
         #joten ns. 10 prosentin tarkkuus lienee siedettävä

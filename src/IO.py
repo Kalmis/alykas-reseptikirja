@@ -221,7 +221,7 @@ class IO(object):
                                     self.ingredientContainer.setIngredient(headerParts[1].strip(), ingredientsList)
                                     self.ingredientContainer.setQuantity(headerParts[2].strip())
                                     self.ingredientContainer.setUnit(headerParts[3].strip())
-                                    self.recipe.addIngredient(self.ingredientContainer)
+                                    self.recipe.addIngredientContainer(self.ingredientContainer)
                                     self.ingredients = True
                                     
                                 currentLine = inputLines.readline()

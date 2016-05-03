@@ -7,6 +7,8 @@ Created on 19.4.2016
 
 import datetime
 from customErrors import SetAttributeError
+from ingredient import IngredientContainer
+from conversion import Conversion
 
 
 class Recipe():
@@ -21,6 +23,9 @@ class Recipe():
         self.outcomeSize: Reseptin lopputuloksen koko, esim. 4 (kg)
         self.outcomeUnit: Reseptin lopputuloksen yksikkö, esim (4) kg
         self.ingredients: Raaka-aineet (object[])
+        
+    Returns:
+        Attribuuttien muuttamiseen käytettävät metodit (set* & add* & delete/remove*) palauttavat True, jos muutos onnistuu
     
     Raises:
         Kaikki attribuuttien asettamiseen käytettävät metodit (set* & add*) heittävät SetAttributeErrorin, jos attribuutin arvon asetus epäonnistuu.
@@ -35,11 +40,13 @@ class Recipe():
         self.outcomeUnit = None
         self.ingredients = []
         
+        self.conversion = Conversion()
                 
     def setName(self,name):
         ''' Validoi, että nimi on yli 2 merkkiä pitkä ja asettaa sen: self.name'''
         if len(name) > 2:
             self.name = name
+            return True
         else:
             raise SetAttributeError("Nimen tulee olla yli 2 merkkiä pitkä")
         
@@ -47,28 +54,41 @@ class Recipe():
         ''' Muuttaa desimaalipilkun pisteeksi ja settaa määrän floattina: self.outcomeSize'''
         try:
             self.outcomeSize = float(str(outcomeSize).replace(",", "."))
+            return True
         except ValueError:
             raise SetAttributeError("Lopputuloksen tulee olla desimaaliluku")
         
     def setOutcomeUnit(self, outcomeUnit):
-        ''' Validoi, että yksikkö ei ole tyhjä ja asettaa sen: self.outcomeUnit'''
-        if len(outcomeUnit) > 0:
+        ''' Validoi, että yksikkö on ohjelman tuntema ja asettaa sen: self.outcomeUnit'''
+        outcomeUnit = outcomeUnit.lower()
+        if self.conversion.isValidUnit(outcomeUnit):
             self.outcomeUnit = outcomeUnit
+            return True
         else:
-            raise SetAttributeError("Lopputuloksen yksikkö ei voi olla tyhjä")
+            raise SetAttributeError("Yksikkö ei ole ohjelman tuntema")
     
     def setDate(self,date):
         ''' Validoi päivämäärän ja asettaa sen stringinä: self.date'''
         try:
             datetime.datetime.strptime(date,'%d.%m.%Y')
             self.date = date
+            return True
         except ValueError:
             raise SetAttributeError("Päivämäärää ei voitu tallentaa")
+        
+    def setTime(self,time):
+        ''' Asettaa reseptin tekemiseen menevän ajan (min) inttinä: self.time'''
+        try:
+            self.time = int(time)
+            return True
+        except ValueError:
+            raise SetAttributeError("Ajan täytyy olla kokonaisluku (min)")
         
     def addInstruction(self,instruction):
         ''' Validoi, että ohje on yli 2 merkkiä pitkä ja lisää sen self.instruction[] listaan'''
         if len(instruction) > 2:
             self.instructions.append(instruction) 
+            return True
         else:
             raise SetAttributeError("Ohjeen tulisi olla yli 2 merkkiä pitkä")
         
@@ -76,27 +96,24 @@ class Recipe():
         ''' Poistaa reseptiltä ohjeen. Argumenttina annetaan ohjeen sijainti listassa (index)'''
         try:
             del self.instructions[index]
+            return True
         except LookupError as e:
             raise SetAttributeError("Ohjetta ei voitu poistaa")
         
-    def addIngredient(self, ingredientContainer):
-        ''' Lisää raaka-aineen(Container) self.ingredients[] listaan'''
-        self.ingredients.append(ingredientContainer)
-        return True
-    
+    def addIngredientContainer(self, ingredientContainer):
+        ''' Validoi, että lisättävä raaka-aine on IngredientContainer-olio sekä lisää raaka-aineen(Container) self.ingredients[] listaan'''
+        if isinstance(ingredientContainer,IngredientContainer):
+            self.ingredients.append(ingredientContainer)
+            return True
+        else:
+            raise SetAttributeError("Raaka-aine ei ollut IngredientContainer-olio")
     def deleteIngredient(self, index):
         ''' Poistaa reseptiltä raaka-aineen. Argumenttina annetaan ohjeen sijainti listassa (index)'''
         try:
             del self.ingredients[index]
+            return True
         except LookupError as e:
             raise SetAttributeError("Raaka-ainetta ei voitu poistaa")
-    
-    def setTime(self,time):
-        ''' Asettaa reseptin tekemiseen menevän ajan (min) inttinä: self.time'''
-        try:
-            self.time = int(time)
-        except ValueError:
-            raise SetAttributeError("Ajan täytyy olla kokonaisluku (min)")
     
     def getName(self):
         ''' Palauttaa reseptin nimen'''

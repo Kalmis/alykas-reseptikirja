@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+
 '''
 Created on 19.4.2016
 
@@ -16,6 +17,19 @@ class Conversion:
         self.massDict = {'g' : 1, 'kg' : 1000, 'annos' : 250}
         self.volumeDict = {'m3' : 1000, 'l' : 1, 'dl' : 0.1, 'sl' : 0.01, 'ml' : 0.001, 'rkl' : 0.015, 'tl' : 0.005}
         self.notConvertableList = ['kpl']
+        
+    def isValidUnit(self,unit):
+        '''
+        Tällä metodilla voidaan tarkistaa onko sille parametrina annettu yksikkö ohjelman tuntema
+        
+        Returns:
+            Tunnettu: True
+            Ei tunnettu: False
+        '''
+        if unit in self.massDict.keys() or unit in self.volumeDict.keys() or unit in self.notConvertableList:
+            return True
+        else:
+            return False
         
     def convertFromTo(self, amount, unitFrom,unitTo, density):
         '''

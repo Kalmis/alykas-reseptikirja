@@ -367,7 +367,7 @@ class MainGUI(QMainWindow, Ui_MainWindow):
                 ingredient.setQuantity(self.recipeIngredientQuantity.text())
                 ingredient.setUnit(self.recipeIngredientUnit.text())
                 recipe.addIngredient(ingredient)
-                self.populateRecipesIngredientsTable()
+                addIngredientContainerRecipesIngredientsTable()
                 self.statusBar().showMessage("Raaka-aine lisätty")
             except SetAttributeError as e:
                 QMessageBox.warning(self, "Virhe tallentaessa", str(e), QMessageBox.Ok, QMessageBox.Ok)
@@ -428,7 +428,7 @@ class MainGUI(QMainWindow, Ui_MainWindow):
                 ingredient.setQuantity(self.recipeDialog.DialogQuantity.text())
                 ingredient.setUnit(self.recipeDialog.dialogUnit.text())
                 recipe.addIngredient(ingredient)
-                self.recipesList.append(recipe)
+                self.recaddIngredientContainernd(recipe)
                 self.populateRecipesTable()
             except SetAttributeError as e:
                 QMessageBox.warning(self, "Virhe tallentaessa", str(e), QMessageBox.Ok, QMessageBox.Ok)
