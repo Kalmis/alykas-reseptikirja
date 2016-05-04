@@ -231,7 +231,7 @@ class Main(object):
 				recipesFound = self.search.searchNoAllergen(allergenStr, self.recipesList)
 				self.printList(recipesFound, RECIPES)
 			elif userChoice == 4:
-				recipesFound = self.search.searcForhRecipesNIngredientsInStorage(self.recipesList, 0, self.storageList, False)
+				recipesFound = self.search.searcForhRecipesNIngredientsInStorage(self.recipesList, 0, self.storageList, True)
 				self.printList(recipesFound, RECIPES)
 			elif userChoice == 5:
 				N = self.askUserInputInt("Monta raaka-ainetta saa puuttua varastosta > ")

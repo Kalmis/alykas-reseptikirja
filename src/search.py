@@ -39,8 +39,7 @@ class Search:
             ingredientsInRecipe = len(recipe.getIngredients())
             # Saa puuttua 0, joten N = raaka-aineiden määrä
             if N == 0 and NNotInStorage:
-                N = ingredientsInRecipe
-                if ingredientsFoundInStorage == N:
+                if ingredientsFoundInStorage == ingredientsInRecipe:
                     recipesFound.append(recipe)
             elif ingredientsFoundInStorage >= N and not NNotInStorage:
                 recipesFound.append(recipe)
@@ -54,7 +53,8 @@ class Search:
         
         Metodi käy reseptin raaka-aineet läpi ja montako niistä on tarpeeksi varastossa, metodi siis tarkastaa myös määrän.
         Jos raaka-ainetta ei ole tarpeeksi varastossa, tarkastetaan voidaanko raaka-aine itse valmistaa reseptistä, jolloin kutsutaan 
-        tätä samaa metodia
+        tätä samaa metodia. Tätä metodia voidaan kuitenkin kutsua maksimissaan 2 kertaa, jottei päädytä ikuiseen looppiin. Siis Raaka-aine - resepti
+        ketjua seurataan vain 2 kertaa.
         '''
         
         #Käydään reseptin kaikki raaka-aineet läpi
@@ -80,7 +80,7 @@ class Search:
         ''' Apumetodi, jota ei ole tarkoitus kutsua luokan ulkopuolelta.
         
         Tällä metodilla tarkastetaan onko varastossa tarpeeksi tiettyä raaka-ainetta. Jos resepti vaatii 1kg jauhelihaa, niin
-        900g kin kyllä riittää, joten erotus saa olla maksimissaan 10% vaaditusta määrästä.
+        900g kin kyllä riittää, joten varastosta saa puuttua maksimissaan 10% vaaditusta määrästä.
         
         Args:
             :ingredientRecipe: Reseptissä oleva ingredientContainer olio
@@ -96,7 +96,10 @@ class Search:
                                                    ingredientStorage.getUnit(), 
                                                    ingredientRecipe.getUnit(), 
                                                    ingredientStorage.getDensity()) - ingredientRecipe.getQuantity()
-        if abs(difference) <= ingredientRecipe.getQuantity() * maxDiff:
+        # Armoa annetaan 10% vaaditusta määrästä, joten lisätään se erotukseen
+        # näin esim  9.5 kg - 10 kg = -0.5kg + 10*0.1 = -0.5kg + 1kg = +0.5kg > 0
+        difference = difference + ingredientRecipe.getQuantity() * maxDiff
+        if difference >= 0:
             return True
         else:
             return False

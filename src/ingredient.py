@@ -160,7 +160,12 @@ class Ingredient:
         self.recipe = None
         return True
 
-
+    def hasRecipe(self):
+        ''' Palauttaa True, jos raaka-aineella on tallennettu resepti, muuten false'''
+        if self.getRecipeLoaded():
+            return True
+        else:
+            return False
     
     def loadRecipe(self,recipesList):
         '''

@@ -42,6 +42,7 @@ Date                   : 18.4.2016
 Name                   : Juusto
 Density                : 1.0
 Allergen               : Laktoosi
+Recipe                 : Kala pizza
 
 #Ingredient
 Date                   : 18.4.2015

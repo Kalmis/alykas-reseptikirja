@@ -223,6 +223,7 @@ class Test(unittest.TestCase):
             self.assertEqual(1, ingredient.getDensity(), "Raaka-aineen tiheys ei täsmää")
             self.assertEqual(["Laktoosi","Maissi"], ingredient.getAllergens(), "Raaka-aineen allergeenit eivät täsmää")
 
+
         
         
         

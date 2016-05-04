@@ -246,6 +246,7 @@ class MainGUI(QMainWindow, Ui_MainWindow):
         if self.checkFoundN.isChecked():
             searchList = self.search.searcForhRecipesNIngredientsInStorage(searchList, self.spinFoundN.value(), self.storageList, False)
         elif self.checkMissingN.isChecked():
+            print(self.spinMissingN.value())
             searchList = self.search.searcForhRecipesNIngredientsInStorage(searchList, self.spinMissingN.value(), self.storageList, True)
         
         if len(searchList)>0:
@@ -708,7 +709,8 @@ class MainGUI(QMainWindow, Ui_MainWindow):
                 fileIO = self.openFileUTF8(self.storageFile)
                 self.storageList, self.storageSuccess, self.storageError = self.IO.loadStorage(fileIO, self.ingredientsList)
                 self.statusBar().showMessage("Kaikki luettu sisään")
-
+                
+                self.IO.loadRecipesForIngredients(self.ingredientsList, self.recipesList)
             elif sender is self.buttonLoadRecipes:
                 self.recipesList = []
                 fileIO = self.openFileUTF8(self.recipesFile)
@@ -726,6 +728,7 @@ class MainGUI(QMainWindow, Ui_MainWindow):
                 fileIO = self.openFileUTF8(self.ingredientsFile)
                 self.ingredientsList, self.ingredientsSuccess, self.ingredientsError = self.IO.loadIngredients(fileIO)
                 self.statusBar().showMessage("Raaka-aineet luettu sisään")
+                self.IO.loadRecipesForIngredients(self.ingredientsList, self.recipesList)
 
             else:
                 print("Tuntematon tyyppi")
