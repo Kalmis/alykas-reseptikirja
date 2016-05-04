@@ -5,7 +5,6 @@ Date                   : 18.4.2015
 Name                   : Kala
 Density                : 0.5
 Allergen               : Kala
-Recipe                 : , Resepti: Jauheliha pizza
 
 #Ingredient
 Date                   : 18.4.2015

@@ -184,7 +184,7 @@ class Ui_MainWindow(object):
         self.formLayout_9.setWidget(0, QtWidgets.QFormLayout.LabelRole, self.raakaAineLabel_2)
         self.recipeIngredientName = QtWidgets.QLineEdit(self.tab_3)
         self.recipeIngredientName.setText("")
-        self.recipeIngredientName.setReadOnly(True)
+        self.recipeIngredientName.setReadOnly(False)
         self.recipeIngredientName.setObjectName("recipeIngredientName")
         self.formLayout_9.setWidget(0, QtWidgets.QFormLayout.FieldRole, self.recipeIngredientName)
         self.mRLabel_2 = QtWidgets.QLabel(self.tab_3)

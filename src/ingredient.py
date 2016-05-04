@@ -128,7 +128,7 @@ class Ingredient:
             return  ''
         
     def getRecipe(self):
-        ''' Palauttaa resepti olion, jos se on asetettu ja ladattu '''
+        ''' Palauttaa resepti olion, jos se on asetettu ja ladattu. Muulloin False '''
         if self.recipeLoaded:
             return self.recipe
         else:
@@ -194,7 +194,11 @@ class Ingredient:
 class IngredientContainer:
     '''
     Tämä luokka sisältää viittauksen raaka-aine olioon ja tämän lisäksi omat attribuutit määrästä sekä yksiköstä.
-    Tätä luokkaa hyödynnetään varastolistauksen sekä reseptien raaka-aineiden tallentamisessa.
+    Tätä luokkaa hyödynnetään varastolistauksen sekä reseptien raaka-aineiden tallentamisessa. Samaa raaka-ainetta
+    käytetään hyvin todennäköisesti useassa eri reseptissä, jos Ingredient luokassa olisi määrä, niin silloin
+    tietoa joutuisi kopioimaan sekä säilyttämään moneen kertaan. Tämän luokan avulla esim. Jauhelihan tiedot ovat vain
+    kertaalleen Ingredient oliossa ja resepteissä olevat IngredientContainer oliot sisältävät viittauksen tähän.
+    
     
     Attributes:
         :self.ingredient: Raaka-aine olio

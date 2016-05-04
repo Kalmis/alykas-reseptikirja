@@ -34,4 +34,6 @@ Name                   : Kalaa
 Time                   : 35
 Outcome                : 4.0 : annos
 Ingredient             : Kala : 5.0 : kg
+Ingredient             : Jauheliha : 5.0 : kg
 Instruction            : jee
+Instruction            : jeedasdas

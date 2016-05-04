@@ -32,11 +32,13 @@ class MainGUI(QMainWindow, Ui_MainWindow):
     Ui_MainWindow luokka sisältää graafisen käyttöliittymän designin.
     
     Luokka sisältää paljon metodeja, joilla tehdään muutoksia, kun käyttöliittymällä tapahtuu muutoksia. Metodit voidaan jakaa karkeasti osiin
-    :init*: Luokan luomisen yhteydessä asetetaan nappuloiden toiminnallisuudet, ladataan tiedostoja ym.
-    :populate*: Piirretään data johonkin tauluun
-    :save*: Tallennetaan muuttunutta dataa
-    :add*: Lisätään uusi ohje/raaka-aine/ym.
-    :get*InDataListForTable: Metodit palauttavat niille annetun listan olennaisimmat tiedot "data" tyyppinä, joka voidaan antaa populateTableWith() metodille populoitavaksi
+    
+    Metodit:
+        :init*: Luokan luomisen yhteydessä asetetaan nappuloiden toiminnallisuudet, ladataan tiedostoja ym.
+        :populate*: Piirretään data johonkin tauluun
+        :save*: Tallennetaan muuttunutta dataa
+        :add*: Lisätään uusi ohje/raaka-aine/ym.
+        :get*InDataListForTable: Metodit palauttavat niille annetun listan olennaisimmat tiedot "data" tyyppinä, joka voidaan antaa populateTableWith() metodille populoitavaksi
     
     '''
     
@@ -323,7 +325,7 @@ class MainGUI(QMainWindow, Ui_MainWindow):
         
         Oikean reseptin löytämiseksi hyödynnetään self.recipeToEdit muuttujaa.
         '''
-        
+        self.clearRecipeEditLineEdits()
         recipe = self.recipesList[self.recipeToEdit]
         data = [['Ohje'], recipe.getInstructions()]
         self.populateTableWithData(self.recipeInstructionsTable, data)
@@ -334,7 +336,7 @@ class MainGUI(QMainWindow, Ui_MainWindow):
         
         Oikean reseptin löytämiseksi hyödynnetään self.recipeToEdit muuttujaa.
         '''
-        
+        self.clearRecipeEditLineEdits()
         recipe = self.recipesList[self.recipeToEdit]
         data = self.getIngredientContainersInDataListForTable(recipe.getIngredients())
         self.populateTableWithData(self.recipeIngredientsTable, data)
@@ -444,22 +446,21 @@ class MainGUI(QMainWindow, Ui_MainWindow):
             self.statusBar().showMessage("Tallennus keskeytetty")     
         
     def addNewRecipeInstruction(self):
-        ''' Tämä metodi tarkastaa ja tallentaa reseptinäkymällä ohjetekstikentässä olevan tekstin uudeksi ohjeeksi reseptille. 
+        ''' Tämä metodi tallentaa reseptinäkymällä ohjetekstikentässä olevan tekstin uudeksi ohjeeksi reseptille. 
         Oikean reseptin löytymiseksi hyödynnetään self.recipeToEdit muuttujaa.
         
         Tallennuksen jälkeen metodi populoi uudelleen reseptin ohjelistaus taulun.
         '''
         
-        if self.recipeInstruction.hasAcceptableInput():
-            try:
-                recipe = self.recipesList[self.recipeToEdit]
-                recipe.addInstruction(self.recipeInstruction.toPlainText())
-                self.populateRecipesInstructionsTable()
-                self.statusBar().showMessage("Ohje lisätty")
-            except SetAttributeError as e:
-                QMessageBox.warning(self, "Virhe tallentaessa", str(e), QMessageBox.Ok, QMessageBox.Ok)
-        else:
-            QMessageBox.warning(self, "Virhe tallentaessa", "Virheellinen syöte!", QMessageBox.Ok, QMessageBox.Ok)
+        try:
+            recipe = self.recipesList[self.recipeToEdit]
+            recipe.addInstruction(self.recipeInstruction.toPlainText())
+            self.clearRecipeEditLineEdits()
+            self.populateRecipesInstructionsTable()
+            self.statusBar().showMessage("Ohje lisätty")
+        except SetAttributeError as e:
+            QMessageBox.warning(self, "Virhe tallentaessa", str(e), QMessageBox.Ok, QMessageBox.Ok)
+
 
     
     def addNewRecipeIngredient(self):
@@ -629,7 +630,7 @@ class MainGUI(QMainWindow, Ui_MainWindow):
         
         Oikea raaka-aine löydetään self.storageToEdit muuttujan avulla.
         '''
-        if self.recipeInstruction.isModified() and self.storageQuantity.hasAcceptableInput() and self.storageUnit.hasAcceptableInput() and self.storageToEdit is not None:
+        if self.storageQuantity.hasAcceptableInput() and self.storageUnit.hasAcceptableInput() and self.storageToEdit is not None:
             try:
                 storage = self.storageList[self.storageToEdit]
                 storage.setQuantity(self.storageQuantity.text())

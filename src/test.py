@@ -10,6 +10,7 @@ from ingredient import Ingredient, IngredientContainer
 from recipe import Recipe
 from customErrors import *
 from conversion import Conversion
+from search import Search
 
 class Test(unittest.TestCase):
     
@@ -49,7 +50,7 @@ class Test(unittest.TestCase):
         self.assertEqual(6.25, self.conversion.convertFromTo(5, 'kg', 'l', 800), "5 kg -> 6.25 l (800 density)")
         self.assertEqual(1500, self.conversion.convertFromTo(10, 'dl', 'g', 1500), "10dl -> 1500 g (1500 density)")
         
-       
+
        
     def testIngredient(self):
         ingredient = Ingredient()
@@ -114,7 +115,47 @@ class Test(unittest.TestCase):
         self.assertEqual(True, ingredientContainer.setQuantity(35.0), "Määrän asetus epäonnistui")
         self.assertEqual(True, ingredientContainer.setUnit('l'), "Määrän yksikön asetus epäonnistui")
 
+    def testSearch(self):
+        self.search = Search()
         
+        ingredient1 = Ingredient()
+        ingredient1.setDate("18.4.2016")
+        ingredient1.setName("raakis1")
+        ingredient1.setDensity(1)
+        
+        ingredient2 = Ingredient()
+        ingredient2.setDate("19.4.2016")
+        ingredient2.setName("raakis2")
+        ingredient2.setDensity(3)
+        
+        ingredientContainer1 = IngredientContainer()
+        ingredientContainer2 = IngredientContainer()
+        
+        ingredientList = [ingredient1, ingredient2]
+        
+        self.assertEqual(True, ingredientContainer1.setIngredient('raakis1', ingredientList), "Raaka-aineen asetus epäonnistui")
+        self.assertEqual(True, ingredientContainer1.setQuantity(10), "Määrän asetus epäonnistui")
+        self.assertEqual(True, ingredientContainer1.setUnit('l'), "Määrän yksikön asetus epäonnistui")
+        
+        self.assertEqual(True, ingredientContainer2.setIngredient('raakis2', ingredientList), "Raaka-aineen asetus epäonnistui")
+        self.assertEqual(True, ingredientContainer2.setQuantity(9), "Määrän asetus epäonnistui")
+        self.assertEqual(True, ingredientContainer2.setUnit('l'), "Määrän yksikön asetus epäonnistui")
+        
+        self.assertEqual(True, self.search.amountDifferenceMax10Perc(ingredientContainer1, ingredientContainer2), "määrät 10 ja 9")
+        self.assertEqual(True, ingredientContainer2.setQuantity(8), "Määrän asetus epäonnistui")
+        self.assertEqual(False, self.search.amountDifferenceMax10Perc(ingredientContainer1, ingredientContainer2), "määrät 10l ja 8l")
+        self.assertEqual(True, ingredientContainer2.setQuantity(80), "Määrän asetus epäonnistui")
+        self.assertEqual(True, ingredientContainer2.setUnit('dl'), "Määrän yksikön asetus epäonnistui")
+        self.assertEqual(False, self.search.amountDifferenceMax10Perc(ingredientContainer1, ingredientContainer2), "määrät 10l ja 80dl")        
+        self.assertEqual(True, ingredientContainer2.setQuantity(105), "Määrän asetus epäonnistui")
+        self.assertEqual(True, ingredientContainer2.setUnit('dl'), "Määrän yksikön asetus epäonnistui")
+        self.assertEqual(True, self.search.amountDifferenceMax10Perc(ingredientContainer1, ingredientContainer2), "määrät 10l ja 105dl")
+        
+        
+
+        
+
+                
     def testRecipe(self):
         recipe = Recipe()  
         

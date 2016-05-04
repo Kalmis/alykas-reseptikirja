@@ -399,7 +399,7 @@ class IO(object):
                 for allergen in ingredient.getAllergens():
                     tempFile.write("Allergen               : " + allergen + "\n")
                 if ingredient.getRecipe():
-                    tempFile.write("Recipe                 : " + ingredient.getRecipeStr()+ "\n")
+                    tempFile.write("Recipe                 : " + ingredient.getRecipeGUI()+ "\n")
         tempFile.close()
         try:
             os.remove(fileName)
@@ -448,5 +448,8 @@ class IO(object):
         '''
         
         for ingredient in ingredientsList:
-            ingredient.loadRecipe(recipesList)
+            try:
+                ingredient.loadRecipe(recipesList)
+            except SetAttributeError as e:
+                print(str(e))
                            

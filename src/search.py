@@ -37,9 +37,12 @@ class Search:
         for recipe in recipesList:
             ingredientsFoundInStorage = self.howManyIngredientsFoundInStorage(recipe)
             ingredientsInRecipe = len(recipe.getIngredients())
-            if N == 0:
+            # Saa puuttua 0, joten N = raaka-aineiden määrä
+            if N == 0 and NNotInStorage:
                 N = ingredientsInRecipe
-            if ingredientsFoundInStorage >= N and not NNotInStorage:
+                if ingredientsFoundInStorage == N:
+                    recipesFound.append(recipe)
+            elif ingredientsFoundInStorage >= N and not NNotInStorage:
                 recipesFound.append(recipe)
             elif ingredientsInRecipe - ingredientsFoundInStorage <= N and NNotInStorage:
                 recipesFound.append(recipe)
@@ -87,13 +90,13 @@ class Search:
             :True: Raaka-aineiden määrän erotus on alle 10% tarvittavasta eli reseptin määrästä
             :False: Erotus on yli 10% tarvittavasta määrästä
         '''
-        maxDiff = 1.1
+        maxDiff = 0.1
         # Muutetaan reseptin raaka-aineen määrän yksikkö vastaamaan varastossa olevan raaka-aineen määrän yksikkö ja lasketaan erotus
-        difference = self.conversion.convertFromTo(ingredientRecipe.getQuantity(), 
-                                                   ingredientRecipe.getUnit(), 
+        difference = self.conversion.convertFromTo(ingredientStorage.getQuantity(), 
                                                    ingredientStorage.getUnit(), 
-                                                   ingredientRecipe.getDensity()) - ingredientStorage.getQuantity()
-        if abs(difference) < ingredientRecipe.getQuantity() * maxDiff:
+                                                   ingredientRecipe.getUnit(), 
+                                                   ingredientStorage.getDensity()) - ingredientRecipe.getQuantity()
+        if abs(difference) <= ingredientRecipe.getQuantity() * maxDiff:
             return True
         else:
             return False
