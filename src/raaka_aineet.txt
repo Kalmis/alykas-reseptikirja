@@ -2,49 +2,51 @@ INGREDIENTLIST
 
 #Ingredient
 Date                   : 18.4.2015
-Name                   : Kala
-Density                : 0.5
+Name                   : Kalaa
+Density                : 1000.0
 Allergen               : Kala
 
 #Ingredient
 Date                   : 18.4.2015
 Name                   : Maito
-Density                : 1.0
+Density                : 800.0
 Allergen               : Laktoosi
 Allergen               : Maito
 
 #Ingredient
 Date                   : 18.4.2015
 Name                   : Vehnajauho
-Density                : 1.0
+Density                : 1500.0
 Allergen               : Gluteeni
 
 #Ingredient
 Date                   : 18.4.2015
 Name                   : Pizzataikina
-Density                : 1.5
+Density                : 500.0
 Allergen               : Gluteeni
 Allergen               : Laktoosi
 
 #Ingredient
 Date                   : 18.4.2015
 Name                   : Jauheliha
-Density                : 1.0
+Density                : 1699.0
+Allergen               : Jauheliha
+Recipe                 : Jauheliha pizza
 
 #Ingredient
 Date                   : 18.4.2015
 Name                   : Tomaattimurska
-Density                : 1.0
+Density                : 900.0
 Allergen               : Tomaatti
 
 #Ingredient
 Date                   : 18.4.2016
 Name                   : Juusto
-Density                : 1.0
+Density                : 1232.0
 Allergen               : Laktoosi
 Recipe                 : Kala pizza
 
 #Ingredient
 Date                   : 18.4.2015
 Name                   : Oregano
-Density                : 1.0
+Density                : 999.0

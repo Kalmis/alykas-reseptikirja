@@ -3,14 +3,14 @@ RECIPELIST
 #Recipe
 Date                   : 18.4.2016
 Name                   : Jauheliha pizza
-Time                   : 40
-Outcome                : 2.0 : annos
+Time                   : 35
+Outcome                : 3.0 : kg
 Ingredient             : Jauheliha : 600.0 : g
 Ingredient             : Pizzataikina : 300.0 : g
-Ingredient             : Juusto : 0.1 : kg
+Ingredient             : Juusto : 0.11 : kg
 Ingredient             : Oregano : 5.0 : g
 Ingredient             : Tomaattimurska : 300.0 : g
-Instruction            : Ruskista jauheliha
+Instruction            : Ruskista jauhelihasdad
 Instruction            : Kaada kaikki sekoitettuna uuniin
 Instruction            : Nauti kylman PepsiColan kanssa.
 
@@ -19,7 +19,7 @@ Date                   : 18.4.2015
 Name                   : Kala pizza
 Time                   : 65
 Outcome                : 1000.0 : g
-Ingredient             : Kala : 0.4 : kg
+Ingredient             : Kalaa : 0.4 : kg
 Ingredient             : Pizzataikina : 300.0 : g
 Ingredient             : Juusto : 0.1 : kg
 Ingredient             : Oregano : 5.0 : g
@@ -33,7 +33,7 @@ Date                   : 02.05.2016
 Name                   : Kalaa
 Time                   : 35
 Outcome                : 4.0 : annos
-Ingredient             : Kala : 5.0 : kg
+Ingredient             : Kalaa : 5.0 : kg
 Ingredient             : Jauheliha : 5.0 : kg
 Instruction            : jee
 Instruction            : jeedasdas
