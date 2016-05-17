@@ -1,0 +1,539 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="fi">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>IO &mdash; Älykäs reseptikirja 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/translations.js"></script>
+    <link rel="top" title="Älykäs reseptikirja 1.0 documentation" href="../index.html" />
+    <link rel="up" title="Module code" href="index.html" />
+   
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for IO</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Created on 19.4.2016</span>
+
+<span class="sd">@author: Kimi Päivärinta</span>
+<span class="sd">&#39;&#39;&#39;</span>
+
+<span class="kn">from</span> <span class="nn">recipe</span> <span class="kn">import</span> <span class="n">Recipe</span>
+<span class="kn">from</span> <span class="nn">ingredient</span> <span class="kn">import</span> <span class="n">Ingredient</span><span class="p">,</span> <span class="n">IngredientContainer</span>
+<span class="kn">from</span> <span class="nn">customErrors</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+
+<div class="viewcode-block" id="IO"><a class="viewcode-back" href="../Ohjelman_rakenne.html#IO.IO">[docs]</a><span class="k">class</span> <span class="nc">IO</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Input output luokka, jolla ladataan raaka-aineet, reseptit ja varastolistaus tiedostoista. Tämän lisäksi nämä voidaan tallentaa tiedostoihin annetusta listasta.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+<div class="viewcode-block" id="IO.loadIngredients"><a class="viewcode-back" href="../Ohjelman_rakenne.html#IO.IO.loadIngredients">[docs]</a>    <span class="k">def</span> <span class="nf">loadIngredients</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inputLines</span><span class="p">):</span>
+
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Tämä metodi lukee raaka-aineet tiedostosta ja palauttaa ne listana.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            :inputLines: tiedoston kahva (fileIO), josta tiedot luetaan.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            :ingredientList: Raaka-aine oliot listana</span>
+<span class="sd">            :successCount: Montako luettiin onnistuneesti sisään</span>
+<span class="sd">            :errorCount: Montako jäi virheeseen luettaessa</span>
+<span class="sd">        Raises:</span>
+<span class="sd">            :CorruptedFileError: Jos kohdataan tuntematon tiedostotyyppi</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">date</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">density</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">success</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ingredientList</span> <span class="o">=</span> <span class="p">[]</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">succesCount</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">errorCount</span> <span class="o">=</span> <span class="mi">0</span>
+        
+ 
+        <span class="n">currentLine</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+
+        <span class="k">try</span><span class="p">:</span>
+
+    
+
+            <span class="n">currentLine</span> <span class="o">=</span> <span class="n">inputLines</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
+            <span class="n">headerParts</span> <span class="o">=</span> <span class="n">currentLine</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)</span>
+
+            <span class="c1"># Process the data we just read.</span>
+
+            <span class="k">if</span> <span class="n">headerParts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="o">!=</span> <span class="s2">&quot;INGREDIENTLIST&quot;</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">CorruptedFileError</span><span class="p">(</span><span class="s2">&quot;Unknown file type&quot;</span><span class="p">)</span>
+
+
+
+            <span class="n">currentLine</span> <span class="o">=</span> <span class="n">inputLines</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
+            <span class="n">headerParts</span> <span class="o">=</span> <span class="n">currentLine</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)</span>
+            <span class="k">while</span> <span class="n">currentLine</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+         
+                <span class="k">if</span> <span class="n">headerParts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;#ingredient&#39;</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">ingredient</span> <span class="o">=</span> <span class="n">Ingredient</span><span class="p">()</span>
+                        <span class="n">currentLine</span> <span class="o">=</span> <span class="n">inputLines</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
+                        <span class="n">headerParts</span> <span class="o">=</span> <span class="n">currentLine</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">)</span>    
+                        <span class="k">while</span> <span class="n">currentLine</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+                            <span class="k">try</span><span class="p">:</span>
+                                <span class="k">if</span> <span class="n">currentLine</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;#&#39;</span><span class="p">:</span>
+                                    <span class="k">break</span>
+                                
+                                <span class="k">if</span> <span class="n">headerParts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;date&#39;</span><span class="p">:</span>
+                                    <span class="bp">self</span><span class="o">.</span><span class="n">ingredient</span><span class="o">.</span><span class="n">setDate</span><span class="p">(</span><span class="n">headerParts</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+                                    <span class="bp">self</span><span class="o">.</span><span class="n">date</span> <span class="o">=</span> <span class="bp">True</span>
+
+                                    
+                                <span class="k">elif</span> <span class="n">headerParts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;name&#39;</span><span class="p">:</span>
+                                    <span class="bp">self</span><span class="o">.</span><span class="n">ingredient</span><span class="o">.</span><span class="n">setName</span><span class="p">(</span><span class="n">headerParts</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+                                    <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">headerParts</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+
+                                
+                                <span class="k">elif</span> <span class="n">headerParts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;density&#39;</span><span class="p">:</span>
+                                    <span class="bp">self</span><span class="o">.</span><span class="n">ingredient</span><span class="o">.</span><span class="n">setDensity</span><span class="p">(</span><span class="n">headerParts</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+                                    <span class="bp">self</span><span class="o">.</span><span class="n">density</span> <span class="o">=</span> <span class="bp">True</span>
+
+                                
+                                <span class="k">elif</span> <span class="n">headerParts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;recipe&#39;</span><span class="p">:</span>
+                                    <span class="bp">self</span><span class="o">.</span><span class="n">ingredient</span><span class="o">.</span><span class="n">setRecipe</span><span class="p">(</span><span class="n">headerParts</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+                                
+                                <span class="k">elif</span> <span class="n">headerParts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;allergen&#39;</span><span class="p">:</span>
+                                    <span class="bp">self</span><span class="o">.</span><span class="n">ingredient</span><span class="o">.</span><span class="n">addAllergen</span><span class="p">(</span><span class="n">headerParts</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+
+                                        
+                                <span class="n">currentLine</span> <span class="o">=</span> <span class="n">inputLines</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
+                                <span class="n">headerParts</span> <span class="o">=</span> <span class="n">currentLine</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">)</span>   
+                            <span class="k">except</span> <span class="n">SetAttributeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                                <span class="k">print</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">success</span> <span class="o">=</span> <span class="bp">False</span>
+                                <span class="k">break</span> 
+                            
+                        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="ow">or</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">density</span> <span class="ow">or</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">date</span> <span class="ow">or</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">success</span><span class="p">:</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">errorCount</span> <span class="o">+=</span><span class="mi">1</span>
+                            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
+                                <span class="k">print</span><span class="p">(</span><span class="s2">&quot;Seuraavan raaka-aineen lukeminen epäonnistui:&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+                            <span class="k">else</span><span class="p">:</span>
+                                <span class="k">print</span><span class="p">(</span><span class="s2">&quot;Raaka-aineen luku epäonnistui, jatketaan seuraavaan.&quot;</span><span class="p">)</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">succesCount</span> <span class="o">+=</span><span class="mi">1</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">ingredientList</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ingredient</span><span class="p">)</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">date</span> <span class="o">=</span> <span class="bp">False</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="bp">False</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">density</span> <span class="o">=</span> <span class="bp">False</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">success</span> <span class="o">=</span> <span class="bp">True</span>
+                        
+                        
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">currentLine</span> <span class="o">=</span> <span class="n">inputLines</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
+                    <span class="n">headerParts</span> <span class="o">=</span> <span class="n">currentLine</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)</span>
+                    
+            
+    
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">ingredientList</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">succesCount</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">errorCount</span>
+        
+        <span class="k">except</span> <span class="ne">IOError</span><span class="p">:</span>
+
+
+            <span class="k">raise</span> <span class="n">CorruptedFileError</span><span class="p">(</span><span class="s2">&quot;Raaka-aine tiedosto korruptoitunut&quot;</span><span class="p">)</span></div>
+     
+        
+    <span class="c1">#################################################################################</span>
+        
+<div class="viewcode-block" id="IO.loadRecipes"><a class="viewcode-back" href="../Ohjelman_rakenne.html#IO.IO.loadRecipes">[docs]</a>    <span class="k">def</span> <span class="nf">loadRecipes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inputLines</span><span class="p">,</span> <span class="n">ingredientsList</span><span class="p">):</span>
+
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Tämä metodi lukee reseptit tiedostosta ja palauttaa ne listana.</span>
+<span class="sd">                </span>
+<span class="sd">        Args:</span>
+<span class="sd">            :inputLines: tiedoston kahva (fileIO), josta tiedot luetaan.</span>
+<span class="sd">            :ingredientList: Tunnetut raaka-aineet listana</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            :recipesList: Resepti oliot listana</span>
+<span class="sd">            :successCount: Montako luettiin onnistuneesti sisään</span>
+<span class="sd">            :errorCount: Montako jäi virheeseen luettaessa</span>
+<span class="sd">        Raises:</span>
+<span class="sd">            :CorruptedFileError: Jos kohdataan tuntematon tiedostotyyppi</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">date</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">time</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">instructions</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ingredients</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">outcome</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">recipesList</span> <span class="o">=</span> <span class="p">[]</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">succesCount</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">errorCount</span> <span class="o">=</span> <span class="mi">0</span>
+ 
+        <span class="n">currentLine</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+
+        <span class="k">try</span><span class="p">:</span>
+
+    
+
+            <span class="n">currentLine</span> <span class="o">=</span> <span class="n">inputLines</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
+            <span class="n">headerParts</span> <span class="o">=</span> <span class="n">currentLine</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)</span>
+
+            <span class="c1"># Process the data we just read.</span>
+
+            <span class="k">if</span> <span class="n">headerParts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="o">!=</span> <span class="s2">&quot;RECIPELIST&quot;</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">CorruptedFileError</span><span class="p">(</span><span class="s2">&quot;Unknown file type&quot;</span><span class="p">)</span>
+
+
+
+            <span class="n">currentLine</span> <span class="o">=</span> <span class="n">inputLines</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
+            <span class="n">headerParts</span> <span class="o">=</span> <span class="n">currentLine</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)</span>
+            <span class="k">while</span> <span class="n">currentLine</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+         
+                <span class="k">if</span> <span class="n">headerParts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;#recipe&#39;</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">recipe</span> <span class="o">=</span> <span class="n">Recipe</span><span class="p">()</span>
+                        <span class="n">currentLine</span> <span class="o">=</span> <span class="n">inputLines</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
+                        <span class="n">headerParts</span> <span class="o">=</span> <span class="n">currentLine</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">)</span>    
+                        <span class="k">while</span> <span class="n">currentLine</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+                            <span class="k">try</span><span class="p">:</span>
+                                <span class="k">if</span> <span class="n">currentLine</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;#&#39;</span><span class="p">:</span>
+                                    <span class="k">break</span>
+                                
+                                <span class="k">if</span> <span class="n">headerParts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;date&#39;</span><span class="p">:</span>
+                                    <span class="bp">self</span><span class="o">.</span><span class="n">recipe</span><span class="o">.</span><span class="n">setDate</span><span class="p">(</span><span class="n">headerParts</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+                                    <span class="bp">self</span><span class="o">.</span><span class="n">date</span> <span class="o">=</span> <span class="bp">True</span>
+                                    
+                                <span class="k">elif</span> <span class="n">headerParts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;name&#39;</span><span class="p">:</span>
+                                    <span class="bp">self</span><span class="o">.</span><span class="n">recipe</span><span class="o">.</span><span class="n">setName</span><span class="p">(</span><span class="n">headerParts</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+                                    <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">headerParts</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+                                
+                                <span class="k">elif</span> <span class="n">headerParts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;time&#39;</span><span class="p">:</span>
+                                    <span class="bp">self</span><span class="o">.</span><span class="n">recipe</span><span class="o">.</span><span class="n">setTime</span><span class="p">(</span><span class="n">headerParts</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+                                    <span class="bp">self</span><span class="o">.</span><span class="n">time</span> <span class="o">=</span> <span class="bp">True</span>
+
+                                    
+                                <span class="k">elif</span> <span class="n">headerParts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;instruction&#39;</span><span class="p">:</span>
+                                    <span class="bp">self</span><span class="o">.</span><span class="n">recipe</span><span class="o">.</span><span class="n">addInstruction</span><span class="p">(</span><span class="n">headerParts</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+                                    <span class="bp">self</span><span class="o">.</span><span class="n">instructions</span> <span class="o">=</span> <span class="bp">True</span>
+                                
+                                <span class="k">elif</span> <span class="n">headerParts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;outcome&#39;</span><span class="p">:</span>
+                                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">headerParts</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">3</span><span class="p">:</span> <span class="k">break</span>
+                                    <span class="bp">self</span><span class="o">.</span><span class="n">recipe</span><span class="o">.</span><span class="n">setOutcomeSize</span><span class="p">(</span><span class="n">headerParts</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span> 
+                                    <span class="bp">self</span><span class="o">.</span><span class="n">recipe</span><span class="o">.</span><span class="n">setOutcomeUnit</span><span class="p">(</span><span class="n">headerParts</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+                                    <span class="bp">self</span><span class="o">.</span><span class="n">outcome</span> <span class="o">=</span> <span class="bp">True</span>
+                                
+                                <span class="k">elif</span> <span class="n">headerParts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;ingredient&#39;</span><span class="p">:</span>
+                                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">headerParts</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">4</span><span class="p">:</span> 
+                                        <span class="bp">self</span><span class="o">.</span><span class="n">ingredients</span> <span class="o">=</span> <span class="bp">False</span>
+                                        <span class="k">break</span>
+                                    <span class="bp">self</span><span class="o">.</span><span class="n">ingredientContainer</span> <span class="o">=</span> <span class="n">IngredientContainer</span><span class="p">()</span>
+                                    <span class="bp">self</span><span class="o">.</span><span class="n">ingredientContainer</span><span class="o">.</span><span class="n">setIngredient</span><span class="p">(</span><span class="n">headerParts</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span> <span class="n">ingredientsList</span><span class="p">)</span>
+                                    <span class="bp">self</span><span class="o">.</span><span class="n">ingredientContainer</span><span class="o">.</span><span class="n">setQuantity</span><span class="p">(</span><span class="n">headerParts</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+                                    <span class="bp">self</span><span class="o">.</span><span class="n">ingredientContainer</span><span class="o">.</span><span class="n">setUnit</span><span class="p">(</span><span class="n">headerParts</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+                                    <span class="bp">self</span><span class="o">.</span><span class="n">recipe</span><span class="o">.</span><span class="n">addIngredientContainer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ingredientContainer</span><span class="p">)</span>
+                                    <span class="bp">self</span><span class="o">.</span><span class="n">ingredients</span> <span class="o">=</span> <span class="bp">True</span>
+                                    
+                                <span class="n">currentLine</span> <span class="o">=</span> <span class="n">inputLines</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
+                                <span class="n">headerParts</span> <span class="o">=</span> <span class="n">currentLine</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">)</span>    
+                                
+                            <span class="k">except</span> <span class="n">SetAttributeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                                <span class="k">print</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+                                <span class="k">break</span>
+                            
+                        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="ow">or</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">date</span> <span class="ow">or</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">time</span> <span class="ow">or</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">instructions</span> <span class="ow">or</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">ingredients</span> <span class="ow">or</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">outcome</span><span class="p">:</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">errorCount</span> <span class="o">+=</span> <span class="mi">1</span>
+                            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
+                                <span class="k">print</span><span class="p">(</span><span class="s2">&quot;Seuraavan reseptin lukeminen epäonnistui:&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+                            <span class="k">else</span><span class="p">:</span>
+                                <span class="k">print</span><span class="p">(</span><span class="s2">&quot;Reseptin luku epäonnistui, jatketaan silti.&quot;</span><span class="p">)</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">succesCount</span> <span class="o">+=</span> <span class="mi">1</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">recipesList</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">recipe</span><span class="p">)</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">date</span> <span class="o">=</span> <span class="bp">False</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="bp">False</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">time</span> <span class="o">=</span> <span class="bp">False</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">instructions</span> <span class="o">=</span> <span class="bp">False</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">ingredients</span> <span class="o">=</span> <span class="bp">False</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">outcome</span> <span class="o">=</span> <span class="bp">False</span>
+                        
+                        
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">currentLine</span> <span class="o">=</span> <span class="n">inputLines</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
+                    <span class="n">headerParts</span> <span class="o">=</span> <span class="n">currentLine</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)</span>
+                    
+            
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">recipesList</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">succesCount</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">errorCount</span>
+
+            
+        <span class="k">except</span> <span class="ne">IOError</span><span class="p">:</span>
+
+
+            <span class="k">raise</span> <span class="n">CorruptedFileError</span><span class="p">(</span><span class="s2">&quot;Reseptitiedosto korruptoitunut&quot;</span><span class="p">)</span></div>
+                             
+        <span class="c1">########################################################################</span>
+        
+        
+<div class="viewcode-block" id="IO.loadStorage"><a class="viewcode-back" href="../Ohjelman_rakenne.html#IO.IO.loadStorage">[docs]</a>    <span class="k">def</span> <span class="nf">loadStorage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inputLines</span><span class="p">,</span> <span class="n">ingredientsList</span><span class="p">):</span>
+
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Tämä metodi lukee varastolistauksen tiedostosta ja palauttaa ne listana.</span>
+<span class="sd">                </span>
+<span class="sd">        Args:</span>
+<span class="sd">            :inputLines: tiedoston kahva (fileIO), josta tiedot luetaan.</span>
+<span class="sd">            :ingredientList: Tunnetut raaka-aineet listana</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            :storageList: Raaka-aine oliot listana</span>
+<span class="sd">            :successCount: Montako luettiin onnistuneesti sisään</span>
+<span class="sd">            :errorCount: Montako jäi virheeseen luettaessa</span>
+<span class="sd">        Raises:</span>
+<span class="sd">            :CorruptedFileError: Jos kohdataan tuntematon tiedostotyyppi</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">success</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">storageList</span> <span class="o">=</span> <span class="p">[]</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">succesCount</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">errorCount</span> <span class="o">=</span> <span class="mi">0</span>
+ 
+        <span class="n">currentLine</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+
+        <span class="k">try</span><span class="p">:</span>
+
+    
+
+            <span class="n">currentLine</span> <span class="o">=</span> <span class="n">inputLines</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
+            <span class="n">headerParts</span> <span class="o">=</span> <span class="n">currentLine</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;;&quot;</span><span class="p">)</span>
+
+            <span class="c1"># Process the data we just read.</span>
+
+            <span class="k">if</span> <span class="n">headerParts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="o">!=</span> <span class="s2">&quot;STORAGELIST&quot;</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">CorruptedFileError</span><span class="p">(</span><span class="s2">&quot;Unknown file type&quot;</span><span class="p">)</span>
+         
+            <span class="n">currentLine</span> <span class="o">=</span> <span class="n">inputLines</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
+            <span class="n">headerParts</span> <span class="o">=</span> <span class="n">currentLine</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;;&quot;</span><span class="p">)</span>   
+            <span class="k">while</span> <span class="n">currentLine</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">headerParts</span><span class="p">)</span> <span class="o">&gt;</span><span class="mi">2</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">ingredientContainer</span> <span class="o">=</span> <span class="n">IngredientContainer</span><span class="p">()</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">ingredientContainer</span><span class="o">.</span><span class="n">setIngredient</span><span class="p">(</span><span class="n">headerParts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span> <span class="n">ingredientsList</span><span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">ingredientContainer</span><span class="o">.</span><span class="n">setQuantity</span><span class="p">(</span><span class="n">headerParts</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span> 
+                        <span class="bp">self</span><span class="o">.</span><span class="n">ingredientContainer</span><span class="o">.</span><span class="n">setUnit</span><span class="p">(</span><span class="n">headerParts</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">success</span> <span class="o">=</span> <span class="bp">True</span>
+                <span class="k">except</span> <span class="n">SetAttributeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                    <span class="k">print</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">success</span> <span class="o">=</span> <span class="bp">False</span>
+                    
+                <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">success</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">errorCount</span> <span class="o">+=</span> <span class="mi">1</span>
+                    <span class="k">print</span><span class="p">(</span><span class="s2">&quot;Varastorivin luku epäonnistui, jatketaan silti.&quot;</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">success</span> <span class="o">=</span> <span class="bp">None</span>
+                <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">success</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">succesCount</span> <span class="o">+=</span> <span class="mi">1</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">storageList</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ingredientContainer</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">success</span> <span class="o">=</span> <span class="bp">None</span>
+                    
+                <span class="n">currentLine</span> <span class="o">=</span> <span class="n">inputLines</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
+                <span class="n">headerParts</span> <span class="o">=</span> <span class="n">currentLine</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;;&quot;</span><span class="p">)</span>   
+                
+                    
+                    
+            
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">storageList</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">succesCount</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">errorCount</span>
+
+            
+        <span class="k">except</span> <span class="ne">IOError</span><span class="p">:</span>
+
+
+            <span class="k">raise</span> <span class="n">CorruptedFileError</span><span class="p">(</span><span class="s2">&quot;Varastotiedosto korruptoitunut&quot;</span><span class="p">)</span></div>
+        
+        
+<div class="viewcode-block" id="IO.saveRecipes"><a class="viewcode-back" href="../Ohjelman_rakenne.html#IO.IO.saveRecipes">[docs]</a>    <span class="k">def</span> <span class="nf">saveRecipes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">fileName</span><span class="p">,</span> <span class="n">recipesList</span><span class="p">):</span>
+        
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Tämä metodi tallentaa reseptit tiedostoon ohjelman luettavassa muodossa. Tiedot tallennetaan ensin temp.rec tiedostoon, jonka jälkeen kyseinen tiedosto nimetään uudelleen halutun nimiseksi.</span>
+<span class="sd">                </span>
+<span class="sd">        Args:</span>
+<span class="sd">            :fileName: Tiedostonimi, johon reseptit tallennetaan</span>
+<span class="sd">            :recipesList: Resepti oliot listana</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="n">tempFileName</span> <span class="o">=</span> <span class="s2">&quot;temp.rec&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">tempFileName</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">FileNotFoundError</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">tempFileName</span><span class="p">,</span> <span class="s2">&quot;w+&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">tempFile</span><span class="p">:</span>
+            <span class="n">tempFile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;RECIPELIST</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">recipe</span> <span class="ow">in</span> <span class="n">recipesList</span><span class="p">:</span>
+                <span class="n">tempFile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">#Recipe</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">tempFile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Date                   : &quot;</span> <span class="o">+</span> <span class="n">recipe</span><span class="o">.</span><span class="n">getDate</span><span class="p">()</span> <span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">tempFile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Name                   : &quot;</span> <span class="o">+</span> <span class="n">recipe</span><span class="o">.</span><span class="n">getName</span><span class="p">()</span> <span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">tempFile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Time                   : &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">recipe</span><span class="o">.</span><span class="n">getTime</span><span class="p">())</span> <span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">tempFile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Outcome                : &quot;</span> <span class="o">+</span>  <span class="nb">str</span><span class="p">(</span><span class="n">recipe</span><span class="o">.</span><span class="n">getOutcomeSize</span><span class="p">())</span> <span class="o">+</span> <span class="s2">&quot; : &quot;</span> <span class="o">+</span> <span class="n">recipe</span><span class="o">.</span><span class="n">getOutcomeUnit</span><span class="p">()</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">ingredient</span> <span class="ow">in</span> <span class="n">recipe</span><span class="o">.</span><span class="n">getIngredients</span><span class="p">():</span>
+                    <span class="n">tempFile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Ingredient             : &quot;</span> <span class="o">+</span> <span class="n">ingredient</span><span class="o">.</span><span class="n">getName</span><span class="p">()</span> <span class="o">+</span> <span class="s2">&quot; : &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">ingredient</span><span class="o">.</span><span class="n">getQuantity</span><span class="p">())</span> <span class="o">+</span> <span class="s2">&quot; : &quot;</span> <span class="o">+</span> <span class="n">ingredient</span><span class="o">.</span><span class="n">getUnit</span><span class="p">()</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">instruction</span> <span class="ow">in</span> <span class="n">recipe</span><span class="o">.</span><span class="n">getInstructions</span><span class="p">():</span>
+                    <span class="n">tempFile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Instruction            : &quot;</span> <span class="o">+</span> <span class="n">instruction</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">tempFile</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">fileName</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">FileNotFoundError</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">tempFileName</span><span class="p">,</span> <span class="n">fileName</span><span class="p">)</span></div>
+
+    
+<div class="viewcode-block" id="IO.saveIngredients"><a class="viewcode-back" href="../Ohjelman_rakenne.html#IO.IO.saveIngredients">[docs]</a>    <span class="k">def</span> <span class="nf">saveIngredients</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">fileName</span><span class="p">,</span> <span class="n">ingredientsList</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Tämä metodi tallentaa raaka-aineet tiedostoon ohjelman luettavassa muodossa. Tiedot tallennetaan ensin temp.ing tiedostoon, jonka jälkeen kyseinen tiedosto nimetään uudelleen halutun nimiseksi.</span>
+<span class="sd">                </span>
+<span class="sd">        Args:</span>
+<span class="sd">            :fileName: Tiedostonimi, johon raaka-aineet tallennetaan</span>
+<span class="sd">            :ingredientList: Raaka-aine oliot listana</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">tempFileName</span> <span class="o">=</span> <span class="s2">&quot;temp.ing&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">tempFileName</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">FileNotFoundError</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">tempFileName</span><span class="p">,</span> <span class="s2">&quot;w+&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">tempFile</span><span class="p">:</span>
+            <span class="n">tempFile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;INGREDIENTLIST</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">ingredient</span> <span class="ow">in</span> <span class="n">ingredientsList</span><span class="p">:</span>
+                <span class="n">tempFile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">#Ingredient</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">tempFile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Date                   : &quot;</span> <span class="o">+</span> <span class="n">ingredient</span><span class="o">.</span><span class="n">getDate</span><span class="p">()</span> <span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">tempFile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Name                   : &quot;</span> <span class="o">+</span> <span class="n">ingredient</span><span class="o">.</span><span class="n">getName</span><span class="p">()</span> <span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">tempFile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Density                : &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">ingredient</span><span class="o">.</span><span class="n">getDensity</span><span class="p">())</span> <span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">allergen</span> <span class="ow">in</span> <span class="n">ingredient</span><span class="o">.</span><span class="n">getAllergens</span><span class="p">():</span>
+                    <span class="n">tempFile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Allergen               : &quot;</span> <span class="o">+</span> <span class="n">allergen</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">ingredient</span><span class="o">.</span><span class="n">getRecipe</span><span class="p">():</span>
+                    <span class="n">tempFile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Recipe                 : &quot;</span> <span class="o">+</span> <span class="n">ingredient</span><span class="o">.</span><span class="n">getRecipeGUI</span><span class="p">()</span><span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">tempFile</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">fileName</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">FileNotFoundError</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">tempFileName</span><span class="p">,</span> <span class="n">fileName</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="IO.saveStorage"><a class="viewcode-back" href="../Ohjelman_rakenne.html#IO.IO.saveStorage">[docs]</a>    <span class="k">def</span> <span class="nf">saveStorage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">fileName</span><span class="p">,</span> <span class="n">storageList</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Tämä metodi tallentaa varastossa olevat raaka-aineet tiedostoon ohjelman luettavassa muodossa. Tiedot tallennetaan ensin temp.sto tiedostoon, jonka jälkeen kyseinen tiedosto nimetään uudelleen halutun nimiseksi.</span>
+<span class="sd">                </span>
+<span class="sd">        Args:</span>
+<span class="sd">            :fileName: Tiedostonimi, johon varaston raaka-aineet tallennetaan</span>
+<span class="sd">            :storageList: Varaston raaka-aine oliot listana</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">tempFileName</span> <span class="o">=</span> <span class="s2">&quot;temp.sto&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">tempFileName</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">FileNotFoundError</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">tempFileName</span><span class="p">,</span> <span class="s2">&quot;w+&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">tempFile</span><span class="p">:</span>
+            <span class="n">tempFile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;STORAGELIST</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">ingredient</span> <span class="ow">in</span> <span class="n">storageList</span><span class="p">:</span>
+                <span class="n">tempFile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">ingredient</span><span class="o">.</span><span class="n">getName</span><span class="p">())</span>
+                <span class="n">tempFile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;;&quot;</span><span class="p">)</span>
+                <span class="n">tempFile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">ingredient</span><span class="o">.</span><span class="n">getQuantity</span><span class="p">()))</span>
+                <span class="n">tempFile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;;&quot;</span><span class="p">)</span>
+                <span class="n">tempFile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">ingredient</span><span class="o">.</span><span class="n">getUnit</span><span class="p">())</span>
+                <span class="n">tempFile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">tempFile</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">fileName</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">FileNotFoundError</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">tempFileName</span><span class="p">,</span> <span class="n">fileName</span><span class="p">)</span>    </div>
+              
+              
+<div class="viewcode-block" id="IO.loadRecipesForIngredients"><a class="viewcode-back" href="../Ohjelman_rakenne.html#IO.IO.loadRecipesForIngredients">[docs]</a>    <span class="k">def</span> <span class="nf">loadRecipesForIngredients</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">ingredientsList</span><span class="p">,</span><span class="n">recipesList</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; </span>
+<span class="sd">        Tällä metodilla voidaan ladata kaikkien raaka-aineiden reseptit. Käytännössä tämä metodi kutsuu raaka-aineen loadrecipe() metodia</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            :ingredientList: Raaka-aine oliot listana</span>
+<span class="sd">            :recipesList: Reseptio oliot listana</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        
+        <span class="k">for</span> <span class="n">ingredient</span> <span class="ow">in</span> <span class="n">ingredientsList</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">ingredient</span><span class="o">.</span><span class="n">loadRecipe</span><span class="p">(</span><span class="n">recipesList</span><span class="p">)</span>
+            <span class="k">except</span> <span class="n">SetAttributeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="k">print</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span></div></div>
+                           
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Pikahaku</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Siirry" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, Kimi Päivärinta.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.4.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.7</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,622 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="fi">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Tietorakenteet &mdash; Älykäs reseptikirja 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/translations.js"></script>
+    <link rel="top" title="Älykäs reseptikirja 1.0 documentation" href="index.html" />
+    <link rel="next" title="Tiedostot" href="Tiedostot.html" />
+    <link rel="prev" title="Algoritmit" href="Algoritmit.html" />
+   
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="tietorakenteet">
+<h1>Tietorakenteet<a class="headerlink" href="#tietorakenteet" title="Permalink to this headline">¶</a></h1>
+<p>Raaka-aineista tehdään jokaisesta oma olio, jossa on raaka-aineen perustiedot kuten nimi, tiheys, allergeenit ym. Useissa resepteissä esiintyy samat raaka-aineet, mutta ei ole kovin mielekästä monistaa samaa pohja dataa useisiin olioihin. Tämän vuoksi ohjelmassa on ns. ”ingredientContainer” olio, jossa on viittaus perus raaka-aineolioon sekä erikseen määritelty määrä sekä määrän yksikkö. Näin Jauhelihan tietoja ei tarvitse tallentaa useaan olioon, ainoastaan viittaus Jauhelihan olioon.</p>
+<p>Olioita (reseptit, raaka-aineet sekä ingredientContainer) säilytetään yksinkertaisesti listassa. Pythonin lista on muuttuvatilainen rakenteinen. Jos ohjelmaa kehittäisi eteenpäin, niin yksi ominaisuus olisi reseptin tai raaka-aineen poistaminen. Olioita pitää siis olla mahdollista poistaa myös listan keskeltä, joten muuttuvatilainen rakenne on parempi.</p>
+<p>Massa- sekä tilavuusyksiköt ovat ohjelmassa tallennettuna sanakirjaan. Sanakirja on tähän sopiva valinta, koska yksiköistä ei riitä ainoastaan nimi, vaan täytyy tietää myös jonkinlainen suhdeluku muihin yksikköihin verrattuna ja tämän suhdeluvun pitää löytyä nimenomaan yksikön nimellä.</p>
+<p>Jo ohjelmaa suunnitellessa tiesin, ettei ”tietokannan” luominen listoilla ole kovin järkevää, mutta kurssin alueen puitteissa päädyin tähän ratkaisuun. Fiksumpi vaihtoehto olisi ollut esimerkiksi käyttää Pythonin SQLite3 kirjastoa. Näin data olisi ollut tallennettuna tiedostoihin. Tämä olisi myös tehnyt ohjelmasta paljon helpommin skaalattavan, koska datan hakeminen tietokannasta olisi jo perustunut SQL kyselyihin ja siirtyminen käyttämään oikeaa tietokantapalvelinta olisi ollut verrattain helppoa. Myöhemmin dokumentissa puhutaan myös hakualgoritmeista ja niiden tehokkuudesta. Oikean tietokannan käyttäminen helpottaisi myös paljon hakujen tekemistä ja niiden tehokkuudesta huolehtiminen siirtyisi tietokannan puolelle, joka on suunniteltu tehokkuus ja haut mielessä.</p>
+<p>Created on 19.4.2016</p>
+<p>&#64;author: Kimi Päivärinta</p>
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="descclassname">ingredient.</code><code class="descname">Ingredient</code><a class="reference internal" href="_modules/ingredient.html#Ingredient"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Raaka-aine luokka. Tämä luokka sisältää perustiedot raaka-aineesta, varastossa ja resepteissä olevat &#8220;raaka-aineet&#8221; sisältävät tämän olion.</p>
+<dl class="docutils">
+<dt>Attributes:</dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">self.date:</th><td class="field-body">Luontipäivä</td>
+</tr>
+<tr class="field-even field"><th class="field-name">self.name:</th><td class="field-body">Nimi</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">self.density:</th><td class="field-body">Tiheys yksikkömuunnoksia varten (float)</td>
+</tr>
+<tr class="field-even field"><th class="field-name">self.allergens:</th><td class="field-body">Allergeenit (str[])</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">self.recipe:</th><td class="field-body">Mahdollinen resepti (object)</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">self.recipeLoaded:</th></tr>
+<tr class="field-even field"><td>&nbsp;</td><td class="field-body">Kertoo onko raaka-aineen resepti ladattu. None = Ei reseptiä, False = Resepti on, mutta oliota ei ladattu, True = Olio ladattu</td>
+</tr>
+</tbody>
+</table>
+</dd>
+<dt>Returns:</dt>
+<dd>Attribuuttien muuttamiseen käytettävät metodit (set* &amp; add* &amp; delete/remove*) palauttavat True, jos muutos onnistuu</dd>
+<dt>Raises:</dt>
+<dd>Attribuuttien asettamiseen käytettävät metodit (set* &amp; add*) heittävät SetAttributeErrori:n, jos validointi epäonnistuu</dd>
+</dl>
+<dl class="method">
+<dt>
+<code class="descname">addAllergen</code><span class="sig-paren">(</span><em>allergen</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ingredient.html#Ingredient.addAllergen"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Validoi, että allergeeni on yli 2 merkkiä pitkä ja lisää sen raaka-aineen allergeeni listaan</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">getAllergens</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ingredient.html#Ingredient.getAllergens"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Palauttaa allergeenit listana</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">getAllergensGUI</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ingredient.html#Ingredient.getAllergensGUI"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Palauttaa allergeenit stringinä pilkulla ja välilyönnillä erotettuna</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">getAllergensStr</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ingredient.html#Ingredient.getAllergensStr"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Palauttaa allergeenit stringinä pilkulla erotettuna sekä alkussa teksti &#8220;Allergeenit: &#8220;</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">getDate</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ingredient.html#Ingredient.getDate"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Palauttaa luontipäivän</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">getDensity</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ingredient.html#Ingredient.getDensity"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Palauttaa tiheyden floattina</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">getDensityGUI</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ingredient.html#Ingredient.getDensityGUI"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Palauttaa tiheyden stringinä desimaalipilkulla</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">getName</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ingredient.html#Ingredient.getName"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Palauttaa nimen</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">getRecipe</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ingredient.html#Ingredient.getRecipe"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Palauttaa resepti olion, jos se on asetettu ja ladattu. Muulloin False</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">getRecipeGUI</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ingredient.html#Ingredient.getRecipeGUI"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Palauttaa reseptin nimen stringinä</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">getRecipeLoaded</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ingredient.html#Ingredient.getRecipeLoaded"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Palauttaa self.recipeLoaded arvon. None = Ei reseptiä, True = Resepti olio ladattu, False = Reseptiä ei vielä ladattu</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">getRecipeStr</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ingredient.html#Ingredient.getRecipeStr"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Palauttaa &#8220;Resepti: &#8221; + reseptin nimi, jos resepti on asetettu ja ladattu</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">hasRecipe</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ingredient.html#Ingredient.hasRecipe"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Palauttaa True, jos raaka-aineella on tallennettu resepti, muuten false</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">loadRecipe</code><span class="sig-paren">(</span><em>recipesList</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ingredient.html#Ingredient.loadRecipe"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Etsii nimen perusteella reseptilistasta raaka-aineelle halutun reseptin ja asettaa olion: self.recipe</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">recipesList:</th><td class="field-body">Lista kaikista resepteistä</td>
+</tr>
+</tbody>
+</table>
+</dd>
+<dt>Returns:</dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Onnistuessa:</th><td class="field-body">True</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Ei ladattavaa:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd>
+<dt>Raises:</dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name" colspan="2">SetAttributeError:</th></tr>
+<tr class="field-odd field"><td>&nbsp;</td><td class="field-body">Reseptiä ei löytynyt</td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">removeAllergens</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ingredient.html#Ingredient.removeAllergens"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Poistaa kaikki raaka-aineen allergeenit</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">removeRecipe</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ingredient.html#Ingredient.removeRecipe"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Asettaa self.recipe = None sekä self.recipeLoaded = None</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">setDate</code><span class="sig-paren">(</span><em>date</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ingredient.html#Ingredient.setDate"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Validoi päivämäärän ja asettaa sen: self.date</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">setDensity</code><span class="sig-paren">(</span><em>density</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ingredient.html#Ingredient.setDensity"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Muuttaa desimaalipilkun pisteeksi, muuntaa tiheyden float luvuksi ja asettaa sen: self.density</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">setName</code><span class="sig-paren">(</span><em>name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ingredient.html#Ingredient.setName"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Validoi, että nimi on yli 2 merkkiä pitkä ja asettaa sen self.date</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">setRecipe</code><span class="sig-paren">(</span><em>recipe</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ingredient.html#Ingredient.setRecipe"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Raaka-aineet luetaan sisälle ennen reseptejä, joten reseptin oliota ei todennäköisesti ole vielä olemassa.
+Validoi, että resepti on yli kaksi merkkiä pitkä sekä asettaa halutun reseptin nimen stringinä: self.recipe sekä asettaa self.recipeLoaded = False</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="descclassname">ingredient.</code><code class="descname">IngredientContainer</code><a class="reference internal" href="_modules/ingredient.html#IngredientContainer"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Tämä luokka sisältää viittauksen raaka-aine olioon ja tämän lisäksi omat attribuutit määrästä sekä yksiköstä.
+Tätä luokkaa hyödynnetään varastolistauksen sekä reseptien raaka-aineiden tallentamisessa. Samaa raaka-ainetta
+käytetään hyvin todennäköisesti useassa eri reseptissä, jos Ingredient luokassa olisi määrä, niin silloin
+tietoa joutuisi kopioimaan sekä säilyttämään moneen kertaan. Tämän luokan avulla esim. Jauhelihan tiedot ovat vain
+kertaalleen Ingredient oliossa ja resepteissä olevat IngredientContainer oliot sisältävät viittauksen tähän.</p>
+<dl class="docutils">
+<dt>Attributes:</dt>
+<dd><blockquote class="first">
+<div><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name" colspan="2">self.ingredient:</th></tr>
+<tr class="field-odd field"><td>&nbsp;</td><td class="field-body">Raaka-aine olio</td>
+</tr>
+<tr class="field-even field"><th class="field-name">self.quantity:</th><td class="field-body">Raaka-aineen määrä</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">self.unit:</th><td class="field-body">Määrän yksikkö</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+<dl class="last docutils">
+<dt>Returns:</dt>
+<dd>:Attribuuttien muuttamiseen käytettävät metodit (set* &amp; add* &amp; delete/remove*) palauttavat True, jos muutos onnistuu</dd>
+</dl>
+</dd>
+<dt>Raises:</dt>
+<dd>:Attribuuttien asettamiseen käytettävät metodit (set* &amp; add*) heittävät SetAttributeErrori:n, jos validointi epäonnistuu</dd>
+</dl>
+<dl class="method">
+<dt>
+<code class="descname">getAllergens</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ingredient.html#IngredientContainer.getAllergens"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Palauttaa allergeenit listana</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">getAllergensStr</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ingredient.html#IngredientContainer.getAllergensStr"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Palauttaa allergeenit stringinä pilkulla erotettuna sekä alkussa teksti &#8220;Allergeenit: &#8220;</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">getDensity</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ingredient.html#IngredientContainer.getDensity"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Palauttaa raaka-aineen tiheyden floattina</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">getIngredient</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ingredient.html#IngredientContainer.getIngredient"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Palauttaa raaka-aine olion</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">getName</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ingredient.html#IngredientContainer.getName"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Palauttaa raaka-aineen nimen</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">getQuantity</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ingredient.html#IngredientContainer.getQuantity"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Palauttaa määrän floattina</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">getQuantityStr</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ingredient.html#IngredientContainer.getQuantityStr"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Palauttaa määrän stringinä, desimaalipilkulla</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">getRecipe</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ingredient.html#IngredientContainer.getRecipe"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Palauttaa reseptiolion, jos raaka-aineella on</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">getRecipeStr</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ingredient.html#IngredientContainer.getRecipeStr"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Palauttaa reseptin nimen stringinä, jos raaka-aineella on</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">getUnit</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ingredient.html#IngredientContainer.getUnit"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Palauttaa määrän yksikön</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">hasRecipe</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ingredient.html#IngredientContainer.hasRecipe"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Palauttaa True, jos raaka-aineella on tallennettu resepti, muuten false</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">setIngredient</code><span class="sig-paren">(</span><em>ingredient</em>, <em>ingredientsList</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ingredient.html#IngredientContainer.setIngredient"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Etsii halutun raaka-aineen annetusta raaka-ainelistasta nimen perusteella sekä asettaa sen: self.ingredient</p>
+<dl class="docutils">
+<dt>Attributes:</dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">ingredient:</th><td class="field-body">Etsittävä raaka-aine (string)</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">ingredientsList:</th></tr>
+<tr class="field-even field"><td>&nbsp;</td><td class="field-body">Lista kaikista raaka-aineista</td>
+</tr>
+</tbody>
+</table>
+</dd>
+<dt>Returns:</dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Onnistuessa:</th><td class="field-body">True</td>
+</tr>
+</tbody>
+</table>
+</dd>
+<dt>Raises:</dt>
+<dd>:SetAttributeError epäonnistuessa</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">setQuantity</code><span class="sig-paren">(</span><em>quantity</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ingredient.html#IngredientContainer.setQuantity"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Muuttaa desimaalipilkun pisteeksti ja asettaa määrän floattina: self.quantity</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">setUnit</code><span class="sig-paren">(</span><em>unit</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ingredient.html#IngredientContainer.setUnit"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Validoi, että yksikkö on ohjelman tuntema sekä asettaa sen: self.unit</p>
+</dd></dl>
+
+</dd></dl>
+
+<p>Created on 19.4.2016</p>
+<p>&#64;author: Kimi Päivärinta</p>
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="descclassname">recipe.</code><code class="descname">Recipe</code><a class="reference internal" href="_modules/recipe.html#Recipe"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Luokka reseptejä varten. Tämä luokka pitää sisällään kaikki reseptille ominaiset attribuutit sekä tarvittavat metodit niiden arvojen muuttamiseksi.</p>
+<dl class="docutils">
+<dt>Attributes:</dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">self.date:</th><td class="field-body">Luontipäivä</td>
+</tr>
+<tr class="field-even field"><th class="field-name">self.name:</th><td class="field-body">Reseptin nimi</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">self.time:</th><td class="field-body">Reseptin tekemiseen menevä aika minuuttina (int)</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">self.instructions:</th></tr>
+<tr class="field-even field"><td>&nbsp;</td><td class="field-body">Ohjeet (str[])</td>
+</tr>
+<tr class="field-odd field"><th class="field-name" colspan="2">self.outcomeSize:</th></tr>
+<tr class="field-odd field"><td>&nbsp;</td><td class="field-body">Reseptin lopputuloksen koko, esim. 4 (kg)</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">self.outcomeUnit:</th></tr>
+<tr class="field-even field"><td>&nbsp;</td><td class="field-body">Reseptin lopputuloksen yksikkö, esim (4) kg</td>
+</tr>
+<tr class="field-odd field"><th class="field-name" colspan="2">self.ingredients:</th></tr>
+<tr class="field-odd field"><td>&nbsp;</td><td class="field-body">Raaka-aineet (object[])</td>
+</tr>
+</tbody>
+</table>
+</dd>
+<dt>Returns:</dt>
+<dd>Attribuuttien muuttamiseen käytettävät metodit (set* &amp; add* &amp; delete/remove*) palauttavat True, jos muutos onnistuu</dd>
+<dt>Raises:</dt>
+<dd>Kaikki attribuuttien asettamiseen käytettävät metodit (set* &amp; add*) heittävät SetAttributeErrorin, jos attribuutin arvon asetus epäonnistuu.</dd>
+</dl>
+<dl class="method">
+<dt>
+<code class="descname">addIngredientContainer</code><span class="sig-paren">(</span><em>ingredientContainer</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipe.html#Recipe.addIngredientContainer"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Validoi, että lisättävä raaka-aine on IngredientContainer-olio sekä lisää raaka-aineen(Container) self.ingredients[] listaan</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">addInstruction</code><span class="sig-paren">(</span><em>instruction</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipe.html#Recipe.addInstruction"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Validoi, että ohje on yli 2 merkkiä pitkä ja lisää sen self.instruction[] listaan</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">deleteIngredient</code><span class="sig-paren">(</span><em>index</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipe.html#Recipe.deleteIngredient"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Poistaa reseptiltä raaka-aineen. Argumenttina annetaan ohjeen sijainti listassa (index)</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">deleteInstruction</code><span class="sig-paren">(</span><em>index</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipe.html#Recipe.deleteInstruction"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Poistaa reseptiltä ohjeen. Argumenttina annetaan ohjeen sijainti listassa (index)</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">getAllergensDistinctGUI</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipe.html#Recipe.getAllergensDistinctGUI"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Palauttaa reseptien raaka-aineiden stringinä pilkulla erotettuna. Allergeeni esiintyy listassa vain kerran, vaikka se olisi monessa raaka-aineessa.</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">getDate</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipe.html#Recipe.getDate"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Palauttaa reseptin luontipäivän</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">getIngredients</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipe.html#Recipe.getIngredients"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Palauttaa reseptin raaka-aine oliot listana</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">getIngredientsGUI</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipe.html#Recipe.getIngredientsGUI"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Palauttaa raaka-aineiden nimet listana</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">getIngredientsStr</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipe.html#Recipe.getIngredientsStr"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Palauttaa reseptin raaka-aineet stringinä, hyödyntää raaka-aine luokan __str__() metodia</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">getInstructions</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipe.html#Recipe.getInstructions"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Palauttaa ohjeet listana</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">getInstructionsStr</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipe.html#Recipe.getInstructionsStr"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Palauttaa ohjeet stringinä, jokainen ohje omalla rivillä ja edessä ohjeen järjestysnumero eli järjestys listassa</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">getName</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipe.html#Recipe.getName"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Palauttaa reseptin nimen</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">getOutcomeSize</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipe.html#Recipe.getOutcomeSize"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Palauttaa lopputuloksen floattina</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">getOutcomeSizeGUI</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipe.html#Recipe.getOutcomeSizeGUI"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Palauttaa lopputuloksen stringinä desimaalipilkulla</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">getOutcomeStr</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipe.html#Recipe.getOutcomeStr"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Palauttaa reseptin lopputuloksen desimaalipilkulla muodossa &#8220;&lt;määrä&gt; &lt;yksikkö&gt;&#8221;</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">getOutcomeUnit</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipe.html#Recipe.getOutcomeUnit"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Palauttaa lopputuloksen yksikön</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">getTime</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipe.html#Recipe.getTime"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Palauttaa reseptin tekemiseen menevän ajan inttinä</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">getTimeGUI</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipe.html#Recipe.getTimeGUI"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Palauttaa reseptin tekemiseen menevän ajan stringinä</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">getTimeStr</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipe.html#Recipe.getTimeStr"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Palauttaa reseptin tekemiseen menevän ajan stringinä, jonka lopussa on &#8221; Min&#8221;</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">setDate</code><span class="sig-paren">(</span><em>date</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipe.html#Recipe.setDate"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Validoi päivämäärän ja asettaa sen stringinä: self.date</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">setName</code><span class="sig-paren">(</span><em>name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipe.html#Recipe.setName"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Validoi, että nimi on yli 2 merkkiä pitkä ja asettaa sen: self.name</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">setOutcomeSize</code><span class="sig-paren">(</span><em>outcomeSize</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipe.html#Recipe.setOutcomeSize"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Muuttaa desimaalipilkun pisteeksi ja settaa määrän floattina: self.outcomeSize</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">setOutcomeUnit</code><span class="sig-paren">(</span><em>outcomeUnit</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipe.html#Recipe.setOutcomeUnit"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Validoi, että yksikkö on ohjelman tuntema ja asettaa sen: self.outcomeUnit</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">setTime</code><span class="sig-paren">(</span><em>time</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipe.html#Recipe.setTime"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Asettaa reseptin tekemiseen menevän ajan (min) inttinä: self.time</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="Algoritmit.html" title="<<">Algoritmit</a></li>
+      <li>Next: <a href="Tiedostot.html" title=">>">Tiedostot</a></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>Tämä sivu</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/Tietorakenteet.txt"
+            rel="nofollow">Näytä lähdekoodina</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Pikahaku</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Siirry" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, Kimi Päivärinta.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.4.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.7</a>
+      
+      |
+      <a href="_sources/Tietorakenteet.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
