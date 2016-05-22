@@ -1,0 +1,106 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="fi">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Arvio lopputuloksesta &mdash; Älykäs reseptikirja 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/translations.js"></script>
+    <link rel="top" title="Älykäs reseptikirja 1.0 documentation" href="index.html" />
+    <link rel="next" title="Viitteet" href="Viitteet.html" />
+    <link rel="prev" title="Toteutunut työjärjestys ja aikataulu" href="Toteutunut_tyojarjestys.html" />
+   
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="arvio-lopputuloksesta">
+<h1>Arvio lopputuloksesta<a class="headerlink" href="#arvio-lopputuloksesta" title="Permalink to this headline">¶</a></h1>
+<p>Kokonaisuudessaan olen tyytyväinen projektin lopputulokseen. Paljon mieleen tulleita ominaisuuksia jäi toteuttamatta, mutta kuten todettu tämä oli myös tietoinen valinta. Halusin, että palautuksen koittaessa projekti on hyvin tehty sekä dokumentoitu eikä niin, että siinä on paljon toiminnallisuuksia, mutta ne ovat tehty huonosti.</p>
+<p>Eniten parannettavaa on mielestäni omissa työskentelytavoissani. Liian useat ominaisuudet tuli tehtyä yhteen tai kahteen kertaan, koska en ollut tyytyväinen toteutukseeni tai keksin paremman tavan. Tulevaisuudessa pyrin myöskin tekemään yhden osion kerralla kuntoon ja sitten jatkaa seuraavaan. Jokaisen osion välissä pitäisi myöskin malttaa suunnitella toiminallisuuden impelementaatio kunnolla ja miettiä mm. toteutuksen skaalautuvuutta.</p>
+<p>Ohjelman oleellisen puute lienee se, että raaka-aineiden reseptejä on hieman hankala tarkastella. Haku ottaa huomioon raaka-aineiden reseptit ja näin ollen palauttaa reseptejä, joihin ei suoraan ole raaka-aineita. Näkymä ei kuitenkaan indikoi mitenkään, että mikä raaka-aine puuttuu ja pitää tehdä reseptistä, vaan se jää käyttäjän vastuulle. Muut puutteet on kerrottu tämän dokumentin kohdassa 9. Ohjelman puutteet.</p>
+<p>Ohjelman parantamiseksi refaktoroisin IO luokan lähes kokonaan ja parantaisin sen virheenkäsittelyä sekä virheen heittämistä. Muut parannukset koskisivat pääasiassa toiminnallisuuksia, kuten:
+* raaka-aineen lisäys ja poisto
+* varastotuotteen lisäys ja poisto
+* Tallennettavien tai ladattavien tiedostojen polkujen valitseminen käyttöliittymältä
+* Reseptin katsominen helpommaksi hakunäkymällä</p>
+<p>Paremmin projektissa olisi mielestäni voinut tehdä tietorakenteiden valinnan. Kuten kohdassa 5. Tietorakenteet totesin, niin listoilla tietokannan luominen ei ole järin hyvä vaihtoehto. Parempi vaihtoehto olisi ollut esim SQLite3 kirjaston käyttö. Ohjelma on muilta osin mielestäni hyvin skaalautuva ja uusien toiminnallisuuksien lisääminen käyttäen olemassa olevia metodeja pitäisi olla verrattain yksinkertaista - osittain kattavan dokumentaation takia. Oikean tietokannan puuttuminen kuitenkin heikentää ohjelman skaalautuvuutta merkittävästi. Projekti on myös todella kattavasti dokumentoitu, joten myöhemmin projektin jatkaminen pitäisi olla verrattain helppoa.</p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="Toteutunut_tyojarjestys.html" title="<<">Toteutunut työjärjestys ja aikataulu</a></li>
+      <li>Next: <a href="Viitteet.html" title=">>">Viitteet</a></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>Tämä sivu</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/Arvio_lopputuloksesta.txt"
+            rel="nofollow">Näytä lähdekoodina</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Pikahaku</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Siirry" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, Kimi Päivärinta.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.4.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.7</a>
+      
+      |
+      <a href="_sources/Arvio_lopputuloksesta.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

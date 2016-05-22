@@ -1,0 +1,406 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="fi">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>ingredient &mdash; Älykäs reseptikirja 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/translations.js"></script>
+    <link rel="top" title="Älykäs reseptikirja 1.0 documentation" href="../index.html" />
+    <link rel="up" title="Module code" href="index.html" />
+   
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for ingredient</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Created on 19.4.2016</span>
+
+<span class="sd">@author: Kimi Päivärinta</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">from</span> <span class="nn">customErrors</span> <span class="kn">import</span> <span class="n">SetAttributeError</span>
+<span class="kn">from</span> <span class="nn">conversion</span> <span class="kn">import</span> <span class="n">Conversion</span>
+
+<div class="viewcode-block" id="Ingredient"><a class="viewcode-back" href="../Tietorakenteet.html#ingredient.Ingredient">[docs]</a><span class="k">class</span> <span class="nc">Ingredient</span><span class="p">:</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Raaka-aine luokka. Tämä luokka sisältää perustiedot raaka-aineesta, varastossa ja resepteissä olevat &quot;raaka-aineet&quot; sisältävät tämän olion.</span>
+<span class="sd">    </span>
+<span class="sd">    Attributes:</span>
+<span class="sd">        :self.date: Luontipäivä</span>
+<span class="sd">        :self.name: Nimi</span>
+<span class="sd">        :self.density: Tiheys yksikkömuunnoksia varten (float)</span>
+<span class="sd">        :self.allergens: Allergeenit (str[])</span>
+<span class="sd">        :self.recipe: Mahdollinen resepti (object)</span>
+<span class="sd">        :self.recipeLoaded: Kertoo onko raaka-aineen resepti ladattu. None = Ei reseptiä, False = Resepti on, mutta oliota ei ladattu, True = Olio ladattu</span>
+<span class="sd">    </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        Attribuuttien muuttamiseen käytettävät metodit (set* &amp; add* &amp; delete/remove*) palauttavat True, jos muutos onnistuu</span>
+<span class="sd">    </span>
+<span class="sd">    Raises:</span>
+<span class="sd">        Attribuuttien asettamiseen käytettävät metodit (set* &amp; add*) heittävät SetAttributeErrori:n, jos validointi epäonnistuu</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">date</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">density</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">allergens</span> <span class="o">=</span> <span class="p">[]</span>        
+        <span class="bp">self</span><span class="o">.</span><span class="n">recipe</span> <span class="o">=</span> <span class="bp">None</span>          
+        <span class="bp">self</span><span class="o">.</span><span class="n">recipeLoaded</span> <span class="o">=</span> <span class="bp">None</span>   
+
+    
+<div class="viewcode-block" id="Ingredient.setDate"><a class="viewcode-back" href="../Tietorakenteet.html#ingredient.Ingredient.setDate">[docs]</a>    <span class="k">def</span> <span class="nf">setDate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">date</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Validoi päivämäärän ja asettaa sen: self.date&#39;&#39;&#39;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">date</span><span class="p">,</span><span class="s1">&#39;</span><span class="si">%d</span><span class="s1">.%m.%Y&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">date</span> <span class="o">=</span> <span class="n">date</span>
+            <span class="k">return</span> <span class="bp">True</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SetAttributeError</span><span class="p">(</span><span class="s2">&quot;Päivämäärää ei voitu tallentaa&quot;</span><span class="p">)</span></div>
+        
+<div class="viewcode-block" id="Ingredient.setName"><a class="viewcode-back" href="../Tietorakenteet.html#ingredient.Ingredient.setName">[docs]</a>    <span class="k">def</span> <span class="nf">setName</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">name</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Validoi, että nimi on yli 2 merkkiä pitkä ja asettaa sen self.date&#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+            <span class="k">return</span> <span class="bp">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SetAttributeError</span><span class="p">(</span><span class="s2">&quot;Nimen tulee olla yli 2 merkkiä pitkä&quot;</span><span class="p">)</span></div>
+    
+<div class="viewcode-block" id="Ingredient.setDensity"><a class="viewcode-back" href="../Tietorakenteet.html#ingredient.Ingredient.setDensity">[docs]</a>    <span class="k">def</span> <span class="nf">setDensity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">density</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Muuttaa desimaalipilkun pisteeksi, muuntaa tiheyden float luvuksi ja asettaa sen: self.density&#39;&#39;&#39;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">density</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">density</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">,</span> <span class="s2">&quot;.&quot;</span><span class="p">))</span>
+            <span class="k">return</span> <span class="bp">True</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SetAttributeError</span><span class="p">(</span><span class="s2">&quot;Tiheyden täytyy olla desimaaliluku&quot;</span><span class="p">)</span></div>
+        
+<div class="viewcode-block" id="Ingredient.addAllergen"><a class="viewcode-back" href="../Tietorakenteet.html#ingredient.Ingredient.addAllergen">[docs]</a>    <span class="k">def</span> <span class="nf">addAllergen</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">allergen</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Validoi, että allergeeni on yli 2 merkkiä pitkä ja lisää sen raaka-aineen allergeeni listaan&#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">allergen</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">2</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">allergens</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">allergen</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SetAttributeError</span><span class="p">(</span><span class="s2">&quot;Allergeenin täytyy olla yli 2 merkkiä pitkä.&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Ingredient.setRecipe"><a class="viewcode-back" href="../Tietorakenteet.html#ingredient.Ingredient.setRecipe">[docs]</a>    <span class="k">def</span> <span class="nf">setRecipe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">recipe</span><span class="p">):</span>
+        
+        <span class="sd">&#39;&#39;&#39; </span>
+<span class="sd">        Raaka-aineet luetaan sisälle ennen reseptejä, joten reseptin oliota ei todennäköisesti ole vielä olemassa.</span>
+<span class="sd">        Validoi, että resepti on yli kaksi merkkiä pitkä sekä asettaa halutun reseptin nimen stringinä: self.recipe sekä asettaa self.recipeLoaded = False</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">recipe</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">recipe</span> <span class="o">=</span> <span class="n">recipe</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">recipeLoaded</span> <span class="o">=</span> <span class="bp">False</span>
+            <span class="k">return</span> <span class="bp">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">recipeLoaded</span> <span class="o">=</span> <span class="bp">None</span>
+            <span class="k">raise</span> <span class="n">SetAttributeError</span><span class="p">(</span><span class="s2">&quot;Reseptin tulee olla yli 2 merkkiä pitkä.&quot;</span><span class="p">)</span></div>
+                
+<div class="viewcode-block" id="Ingredient.getName"><a class="viewcode-back" href="../Tietorakenteet.html#ingredient.Ingredient.getName">[docs]</a>    <span class="k">def</span> <span class="nf">getName</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Palauttaa nimen&#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> </div>
+        
+<div class="viewcode-block" id="Ingredient.getDate"><a class="viewcode-back" href="../Tietorakenteet.html#ingredient.Ingredient.getDate">[docs]</a>    <span class="k">def</span> <span class="nf">getDate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Palauttaa luontipäivän&#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">date</span></div>
+    
+<div class="viewcode-block" id="Ingredient.getDensity"><a class="viewcode-back" href="../Tietorakenteet.html#ingredient.Ingredient.getDensity">[docs]</a>    <span class="k">def</span> <span class="nf">getDensity</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Palauttaa tiheyden floattina&#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">density</span></div>
+    
+<div class="viewcode-block" id="Ingredient.getDensityGUI"><a class="viewcode-back" href="../Tietorakenteet.html#ingredient.Ingredient.getDensityGUI">[docs]</a>    <span class="k">def</span> <span class="nf">getDensityGUI</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Palauttaa tiheyden stringinä desimaalipilkulla&#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">density</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="s2">&quot;,&quot;</span><span class="p">)</span></div>
+    
+<div class="viewcode-block" id="Ingredient.getAllergens"><a class="viewcode-back" href="../Tietorakenteet.html#ingredient.Ingredient.getAllergens">[docs]</a>    <span class="k">def</span> <span class="nf">getAllergens</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Palauttaa allergeenit listana&#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">allergens</span></div>
+    
+<div class="viewcode-block" id="Ingredient.getAllergensGUI"><a class="viewcode-back" href="../Tietorakenteet.html#ingredient.Ingredient.getAllergensGUI">[docs]</a>    <span class="k">def</span> <span class="nf">getAllergensGUI</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Palauttaa allergeenit stringinä pilkulla ja välilyönnillä erotettuna&#39;&#39;&#39;</span>
+        <span class="n">allergens</span><span class="o">=</span><span class="s1">&#39;&#39;</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">allergens</span><span class="p">:</span>
+            <span class="n">allergens</span> <span class="o">+=</span> <span class="n">i</span> <span class="o">+</span> <span class="s2">&quot;, &quot;</span>
+        <span class="c1">#Lopussa ei tarvitse olla &quot;, &quot;, joten poistetaan ne.</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">allergens</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">2</span><span class="p">:</span>
+            <span class="n">allergens</span> <span class="o">=</span> <span class="n">allergens</span><span class="p">[:</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">allergens</span></div>
+    
+<div class="viewcode-block" id="Ingredient.getRecipeGUI"><a class="viewcode-back" href="../Tietorakenteet.html#ingredient.Ingredient.getRecipeGUI">[docs]</a>    <span class="k">def</span> <span class="nf">getRecipeGUI</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Palauttaa reseptin nimen stringinä&#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">recipeLoaded</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">recipe</span><span class="o">.</span><span class="n">getName</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span>  <span class="s1">&#39;&#39;</span>  </div>
+         
+<div class="viewcode-block" id="Ingredient.getRecipeStr"><a class="viewcode-back" href="../Tietorakenteet.html#ingredient.Ingredient.getRecipeStr">[docs]</a>    <span class="k">def</span> <span class="nf">getRecipeStr</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Palauttaa &quot;Resepti: &quot; + reseptin nimi, jos resepti on asetettu ja ladattu&#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">recipeLoaded</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;, Resepti: &quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">recipe</span><span class="o">.</span><span class="n">getName</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span>  <span class="s1">&#39;&#39;</span></div>
+        
+<div class="viewcode-block" id="Ingredient.getRecipe"><a class="viewcode-back" href="../Tietorakenteet.html#ingredient.Ingredient.getRecipe">[docs]</a>    <span class="k">def</span> <span class="nf">getRecipe</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Palauttaa resepti olion, jos se on asetettu ja ladattu. Muulloin False &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">recipeLoaded</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">recipe</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">False</span>    </div>
+        
+<div class="viewcode-block" id="Ingredient.getAllergensStr"><a class="viewcode-back" href="../Tietorakenteet.html#ingredient.Ingredient.getAllergensStr">[docs]</a>    <span class="k">def</span> <span class="nf">getAllergensStr</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Palauttaa allergeenit stringinä pilkulla erotettuna sekä alkussa teksti &quot;Allergeenit: &quot;&#39;&#39;&#39;</span>
+        <span class="n">allergens</span> <span class="o">=</span><span class="s2">&quot;  &quot;</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">allergens</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">:</span>
+            <span class="n">allergens</span> <span class="o">=</span> <span class="s2">&quot;, Allergeenit: &quot;</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">allergens</span><span class="p">:</span>
+            <span class="n">allergens</span> <span class="o">+=</span> <span class="n">i</span> <span class="o">+</span> <span class="s2">&quot;, &quot;</span>
+        <span class="c1">#Lopussa ei tarvitse olla &quot;, &quot;, joten poistetaan ne.</span>
+        <span class="n">allergens</span> <span class="o">=</span> <span class="n">allergens</span><span class="p">[:</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">allergens</span></div>
+    
+<div class="viewcode-block" id="Ingredient.getRecipeLoaded"><a class="viewcode-back" href="../Tietorakenteet.html#ingredient.Ingredient.getRecipeLoaded">[docs]</a>    <span class="k">def</span> <span class="nf">getRecipeLoaded</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Palauttaa self.recipeLoaded arvon. None = Ei reseptiä, True = Resepti olio ladattu, False = Reseptiä ei vielä ladattu&#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">recipeLoaded</span></div>
+    
+<div class="viewcode-block" id="Ingredient.removeAllergens"><a class="viewcode-back" href="../Tietorakenteet.html#ingredient.Ingredient.removeAllergens">[docs]</a>    <span class="k">def</span> <span class="nf">removeAllergens</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Poistaa kaikki raaka-aineen allergeenit&#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">allergens</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">return</span> <span class="bp">True</span>          </div>
+
+<div class="viewcode-block" id="Ingredient.removeRecipe"><a class="viewcode-back" href="../Tietorakenteet.html#ingredient.Ingredient.removeRecipe">[docs]</a>    <span class="k">def</span> <span class="nf">removeRecipe</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Asettaa self.recipe = None sekä self.recipeLoaded = None&#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">recipeLoaded</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">recipe</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="k">return</span> <span class="bp">True</span></div>
+
+<div class="viewcode-block" id="Ingredient.hasRecipe"><a class="viewcode-back" href="../Tietorakenteet.html#ingredient.Ingredient.hasRecipe">[docs]</a>    <span class="k">def</span> <span class="nf">hasRecipe</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Palauttaa True, jos raaka-aineella on tallennettu resepti, muuten false&#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">getRecipeLoaded</span><span class="p">():</span>
+            <span class="k">return</span> <span class="bp">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">False</span></div>
+    
+<div class="viewcode-block" id="Ingredient.loadRecipe"><a class="viewcode-back" href="../Tietorakenteet.html#ingredient.Ingredient.loadRecipe">[docs]</a>    <span class="k">def</span> <span class="nf">loadRecipe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">recipesList</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Etsii nimen perusteella reseptilistasta raaka-aineelle halutun reseptin ja asettaa olion: self.recipe</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            :recipesList: Lista kaikista resepteistä</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            :Onnistuessa: True</span>
+<span class="sd">            :Ei ladattavaa: None</span>
+<span class="sd">        Raises:</span>
+<span class="sd">            :SetAttributeError: Reseptiä ei löytynyt</span>
+<span class="sd">            </span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">recipeLoaded</span> <span class="o">==</span> <span class="bp">False</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">recipesList</span><span class="p">:</span>             
+                <span class="k">if</span> <span class="n">i</span><span class="o">.</span><span class="n">getName</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">recipe</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">recipe</span> <span class="o">=</span> <span class="n">i</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">recipeLoaded</span> <span class="o">=</span> <span class="bp">True</span>
+                    <span class="k">return</span> <span class="bp">True</span>
+            <span class="c1"># Reseptiä kyseisellä nimellä ei löytynyt.</span>
+            <span class="k">raise</span> <span class="n">SetAttributeError</span><span class="p">(</span><span class="s2">&quot;Reseptiä ei löytynyt&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">None</span> <span class="c1"># Ei ladattavaa</span></div>
+        
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s1">&#39;&#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">getName</span><span class="p">()</span> <span class="o">+</span> <span class="s2">&quot;, tiheys: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">getDensity</span><span class="p">())</span>  <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">getAllergensStr</span><span class="p">()</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">getRecipeStr</span><span class="p">()</span></div>
+    
+
+<div class="viewcode-block" id="IngredientContainer"><a class="viewcode-back" href="../Tietorakenteet.html#ingredient.IngredientContainer">[docs]</a><span class="k">class</span> <span class="nc">IngredientContainer</span><span class="p">:</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Tämä luokka sisältää viittauksen raaka-aine olioon ja tämän lisäksi omat attribuutit määrästä sekä yksiköstä.</span>
+<span class="sd">    Tätä luokkaa hyödynnetään varastolistauksen sekä reseptien raaka-aineiden tallentamisessa. Samaa raaka-ainetta</span>
+<span class="sd">    käytetään hyvin todennäköisesti useassa eri reseptissä, jos Ingredient luokassa olisi määrä, niin silloin</span>
+<span class="sd">    tietoa joutuisi kopioimaan sekä säilyttämään moneen kertaan. Tämän luokan avulla esim. Jauhelihan tiedot ovat vain</span>
+<span class="sd">    kertaalleen Ingredient oliossa ja resepteissä olevat IngredientContainer oliot sisältävät viittauksen tähän.</span>
+<span class="sd">    </span>
+<span class="sd">    </span>
+<span class="sd">    Attributes:</span>
+<span class="sd">        :self.ingredient: Raaka-aine olio</span>
+<span class="sd">        :self.quantity: Raaka-aineen määrä</span>
+<span class="sd">        :self.unit: Määrän yksikkö</span>
+<span class="sd">        </span>
+<span class="sd">     Returns:</span>
+<span class="sd">        :Attribuuttien muuttamiseen käytettävät metodit (set* &amp; add* &amp; delete/remove*) palauttavat True, jos muutos onnistuu</span>
+<span class="sd">       </span>
+<span class="sd">    Raises:</span>
+<span class="sd">        :Attribuuttien asettamiseen käytettävät metodit (set* &amp; add*) heittävät SetAttributeErrori:n, jos validointi epäonnistuu</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">ingredient</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">quantity</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">unit</span> <span class="o">=</span> <span class="bp">None</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">conversion</span> <span class="o">=</span> <span class="n">Conversion</span><span class="p">()</span>
+
+        
+        
+<div class="viewcode-block" id="IngredientContainer.setIngredient"><a class="viewcode-back" href="../Tietorakenteet.html#ingredient.IngredientContainer.setIngredient">[docs]</a>    <span class="k">def</span> <span class="nf">setIngredient</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">ingredient</span><span class="p">,</span><span class="n">ingredientsList</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Etsii halutun raaka-aineen annetusta raaka-ainelistasta nimen perusteella sekä asettaa sen: self.ingredient</span>
+<span class="sd">        </span>
+<span class="sd">        Attributes:</span>
+<span class="sd">            :ingredient: Etsittävä raaka-aine (string)</span>
+<span class="sd">            :ingredientsList: Lista kaikista raaka-aineista</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            :Onnistuessa: True</span>
+<span class="sd">        </span>
+<span class="sd">        Raises:</span>
+<span class="sd">            :SetAttributeError epäonnistuessa</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">ingredientsList</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">i</span><span class="o">.</span><span class="n">getName</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="n">ingredient</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">ingredient</span> <span class="o">=</span> <span class="n">i</span>
+                    <span class="k">return</span> <span class="bp">True</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># Raaka-ainetta kyseisellä nimellä ei löytynyt.</span>
+                    <span class="k">pass</span>
+        <span class="k">raise</span> <span class="n">SetAttributeError</span><span class="p">(</span><span class="s2">&quot;Raaka-ainetta ei löytynyt&quot;</span><span class="p">)</span></div>
+    
+<div class="viewcode-block" id="IngredientContainer.setQuantity"><a class="viewcode-back" href="../Tietorakenteet.html#ingredient.IngredientContainer.setQuantity">[docs]</a>    <span class="k">def</span> <span class="nf">setQuantity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">quantity</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Muuttaa desimaalipilkun pisteeksti ja asettaa määrän floattina: self.quantity&#39;&#39;&#39;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">quantity</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">quantity</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">,</span><span class="s2">&quot;.&quot;</span><span class="p">))</span>
+            <span class="k">return</span> <span class="bp">True</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SetAttributeError</span><span class="p">(</span><span class="s2">&quot;Määrän tulee olla desimaaliluku&quot;</span><span class="p">)</span></div>
+        
+<div class="viewcode-block" id="IngredientContainer.setUnit"><a class="viewcode-back" href="../Tietorakenteet.html#ingredient.IngredientContainer.setUnit">[docs]</a>    <span class="k">def</span> <span class="nf">setUnit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">unit</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Validoi, että yksikkö on ohjelman tuntema sekä asettaa sen: self.unit&#39;&#39;&#39;</span>
+        <span class="n">unit</span> <span class="o">=</span> <span class="n">unit</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">conversion</span><span class="o">.</span><span class="n">isValidUnit</span><span class="p">(</span><span class="n">unit</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">unit</span> <span class="o">=</span> <span class="n">unit</span>
+            <span class="k">return</span> <span class="bp">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SetAttributeError</span><span class="p">(</span><span class="s2">&quot;Tuntematon yksikkö&quot;</span><span class="p">)</span></div>
+    
+<div class="viewcode-block" id="IngredientContainer.getQuantity"><a class="viewcode-back" href="../Tietorakenteet.html#ingredient.IngredientContainer.getQuantity">[docs]</a>    <span class="k">def</span> <span class="nf">getQuantity</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Palauttaa määrän floattina&#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">quantity</span></div>
+    
+<div class="viewcode-block" id="IngredientContainer.getQuantityStr"><a class="viewcode-back" href="../Tietorakenteet.html#ingredient.IngredientContainer.getQuantityStr">[docs]</a>    <span class="k">def</span> <span class="nf">getQuantityStr</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Palauttaa määrän stringinä, desimaalipilkulla&#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">quantity</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="s2">&quot;,&quot;</span><span class="p">)</span></div>
+    
+<div class="viewcode-block" id="IngredientContainer.getUnit"><a class="viewcode-back" href="../Tietorakenteet.html#ingredient.IngredientContainer.getUnit">[docs]</a>    <span class="k">def</span> <span class="nf">getUnit</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Palauttaa määrän yksikön&#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">unit</span></div>
+    
+<div class="viewcode-block" id="IngredientContainer.getIngredient"><a class="viewcode-back" href="../Tietorakenteet.html#ingredient.IngredientContainer.getIngredient">[docs]</a>    <span class="k">def</span> <span class="nf">getIngredient</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Palauttaa raaka-aine olion&#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">ingredient</span></div>
+    
+<div class="viewcode-block" id="IngredientContainer.getName"><a class="viewcode-back" href="../Tietorakenteet.html#ingredient.IngredientContainer.getName">[docs]</a>    <span class="k">def</span> <span class="nf">getName</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Palauttaa raaka-aineen nimen&#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">ingredient</span><span class="o">.</span><span class="n">getName</span><span class="p">()</span></div>
+    
+<div class="viewcode-block" id="IngredientContainer.getAllergensStr"><a class="viewcode-back" href="../Tietorakenteet.html#ingredient.IngredientContainer.getAllergensStr">[docs]</a>    <span class="k">def</span> <span class="nf">getAllergensStr</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Palauttaa allergeenit stringinä pilkulla erotettuna sekä alkussa teksti &quot;Allergeenit: &quot;&#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">ingredient</span><span class="o">.</span><span class="n">getAllergensStr</span><span class="p">()</span></div>
+    
+<div class="viewcode-block" id="IngredientContainer.getRecipe"><a class="viewcode-back" href="../Tietorakenteet.html#ingredient.IngredientContainer.getRecipe">[docs]</a>    <span class="k">def</span> <span class="nf">getRecipe</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Palauttaa reseptiolion, jos raaka-aineella on&#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">ingredient</span><span class="o">.</span><span class="n">getRecipe</span><span class="p">()</span></div>
+    
+<div class="viewcode-block" id="IngredientContainer.getRecipeStr"><a class="viewcode-back" href="../Tietorakenteet.html#ingredient.IngredientContainer.getRecipeStr">[docs]</a>    <span class="k">def</span> <span class="nf">getRecipeStr</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Palauttaa reseptin nimen stringinä, jos raaka-aineella on&#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">ingredient</span><span class="o">.</span><span class="n">getRecipeStr</span><span class="p">()</span></div>
+    
+<div class="viewcode-block" id="IngredientContainer.getDensity"><a class="viewcode-back" href="../Tietorakenteet.html#ingredient.IngredientContainer.getDensity">[docs]</a>    <span class="k">def</span> <span class="nf">getDensity</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Palauttaa raaka-aineen tiheyden floattina&#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">ingredient</span><span class="o">.</span><span class="n">getDensity</span><span class="p">()</span></div>
+    
+<div class="viewcode-block" id="IngredientContainer.hasRecipe"><a class="viewcode-back" href="../Tietorakenteet.html#ingredient.IngredientContainer.hasRecipe">[docs]</a>    <span class="k">def</span> <span class="nf">hasRecipe</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Palauttaa True, jos raaka-aineella on tallennettu resepti, muuten false&#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ingredient</span><span class="o">.</span><span class="n">getRecipeLoaded</span><span class="p">():</span>
+            <span class="k">return</span> <span class="bp">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">False</span></div>
+        
+<div class="viewcode-block" id="IngredientContainer.getAllergens"><a class="viewcode-back" href="../Tietorakenteet.html#ingredient.IngredientContainer.getAllergens">[docs]</a>    <span class="k">def</span> <span class="nf">getAllergens</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Palauttaa allergeenit listana&#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">ingredient</span><span class="o">.</span><span class="n">getAllergens</span><span class="p">()</span></div>
+    
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s1">&#39;&#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">getName</span><span class="p">()</span> <span class="o">+</span><span class="s2">&quot;, &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">getQuantity</span><span class="p">())</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">getUnit</span><span class="p">()</span>  <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">getAllergensStr</span><span class="p">()</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">getRecipeStr</span><span class="p">()</span> </div>
+
+                
+                   
+            
+
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Pikahaku</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Siirry" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, Kimi Päivärinta.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.4.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.7</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

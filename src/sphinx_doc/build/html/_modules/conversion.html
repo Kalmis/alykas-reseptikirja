@@ -1,0 +1,161 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="fi">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>conversion &mdash; Älykäs reseptikirja 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/translations.js"></script>
+    <link rel="top" title="Älykäs reseptikirja 1.0 documentation" href="../index.html" />
+    <link rel="up" title="Module code" href="index.html" />
+   
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for conversion</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Created on 19.4.2016</span>
+
+<span class="sd">@author: Kimi Päivärinta</span>
+<span class="sd">&#39;&#39;&#39;</span>
+
+<div class="viewcode-block" id="Conversion"><a class="viewcode-back" href="../Ohjelman_rakenne.html#conversion.Conversion">[docs]</a><span class="k">class</span> <span class="nc">Conversion</span><span class="p">:</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Conversion luokka sisältää kaikki ohjelman tuntemat yksiköt sekä niiden &quot;suhdeluvut&quot;, jotka mahdollistaa muunnokset.</span>
+<span class="sd">    Tämän luokan avulla onnistuu yksikkömuunnokset.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Ohjelman tuntemat yksiköt: massat, tilavuudet sekä yksiköt, joita ei pysty muuttamaan toiseen yksikköön&#39;&#39;&#39;</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">massDict</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;g&#39;</span> <span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;kg&#39;</span> <span class="p">:</span> <span class="mi">1000</span><span class="p">,</span> <span class="s1">&#39;annos&#39;</span> <span class="p">:</span> <span class="mi">250</span><span class="p">}</span> <span class="c1"># Oletetaan, että annos = 250g</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">volumeDict</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;m3&#39;</span> <span class="p">:</span> <span class="mi">1000</span><span class="p">,</span> <span class="s1">&#39;l&#39;</span> <span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;dl&#39;</span> <span class="p">:</span> <span class="mf">0.1</span><span class="p">,</span> <span class="s1">&#39;sl&#39;</span> <span class="p">:</span> <span class="mf">0.01</span><span class="p">,</span> <span class="s1">&#39;ml&#39;</span> <span class="p">:</span> <span class="mf">0.001</span><span class="p">,</span> <span class="s1">&#39;rkl&#39;</span> <span class="p">:</span> <span class="mf">0.015</span><span class="p">,</span> <span class="s1">&#39;tl&#39;</span> <span class="p">:</span> <span class="mf">0.005</span><span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">notConvertableList</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;kpl&#39;</span><span class="p">,</span> <span class="s1">&#39;pkt&#39;</span><span class="p">,</span> <span class="s1">&#39;tlk&#39;</span><span class="p">]</span>
+        
+<div class="viewcode-block" id="Conversion.isValidUnit"><a class="viewcode-back" href="../Ohjelman_rakenne.html#conversion.Conversion.isValidUnit">[docs]</a>    <span class="k">def</span> <span class="nf">isValidUnit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">unit</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Tällä metodilla voidaan tarkistaa onko sille parametrina annettu yksikkö ohjelman tuntema</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            :Tunnettu: True</span>
+<span class="sd">            :Ei tunnettu: False</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="n">unit</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">massDict</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="ow">or</span> <span class="n">unit</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">volumeDict</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="ow">or</span> <span class="n">unit</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">notConvertableList</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">False</span></div>
+        
+<div class="viewcode-block" id="Conversion.convertFromTo"><a class="viewcode-back" href="../Ohjelman_rakenne.html#conversion.Conversion.convertFromTo">[docs]</a>    <span class="k">def</span> <span class="nf">convertFromTo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">amount</span><span class="p">,</span> <span class="n">unitFrom</span><span class="p">,</span><span class="n">unitTo</span><span class="p">,</span> <span class="n">density</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Tekee yksikkömuunnoksen ja palauttaa muunnetun arvon. Jos ei muunnettavissa, palauttaa alkuperäisen arvon.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            :amount: Muunnettava määrä (float)</span>
+<span class="sd">            :unitFrom: Alkuperäinen yksikkö</span>
+<span class="sd">            :unitTo: Haluttu yksikkö</span>
+<span class="sd">            :density: aineen tiheys, tarvitaan vain kun muunnetaan massa&lt;-&gt;tilavuus (float)</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            :Muunnetun yksikön (float): </span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="n">unitFrom</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">notConvertableList</span> <span class="ow">or</span> <span class="n">unitTo</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">notConvertableList</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">amount</span>
+        <span class="k">elif</span> <span class="n">unitFrom</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">massDict</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="ow">and</span> <span class="n">unitTo</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">massDict</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">convertMassToMass</span><span class="p">(</span><span class="n">amount</span><span class="p">,</span> <span class="n">unitFrom</span><span class="p">,</span> <span class="n">unitTo</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">unitFrom</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">volumeDict</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="ow">and</span> <span class="n">unitTo</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">volumeDict</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">convertVolumeToVolume</span><span class="p">(</span><span class="n">amount</span><span class="p">,</span> <span class="n">unitFrom</span><span class="p">,</span> <span class="n">unitTo</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">density</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">unitFrom</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">volumeDict</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="ow">and</span> <span class="n">unitTo</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">massDict</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">convertVolumeToMass</span><span class="p">(</span><span class="n">amount</span><span class="p">,</span> <span class="n">unitFrom</span><span class="p">,</span> <span class="n">unitTo</span><span class="p">,</span> <span class="n">density</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">density</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">unitFrom</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">massDict</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="ow">and</span> <span class="n">unitTo</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">volumeDict</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">convertMassToVolume</span><span class="p">(</span><span class="n">amount</span><span class="p">,</span> <span class="n">unitFrom</span><span class="p">,</span> <span class="n">unitTo</span><span class="p">,</span> <span class="n">density</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">amount</span></div>
+        
+<div class="viewcode-block" id="Conversion.convertMassToMass"><a class="viewcode-back" href="../Ohjelman_rakenne.html#conversion.Conversion.convertMassToMass">[docs]</a>    <span class="k">def</span> <span class="nf">convertMassToMass</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">amount</span><span class="p">,</span><span class="n">unitFrom</span><span class="p">,</span><span class="n">unitTo</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Muuttaa massa yksikön massa yksiköksi, esim. g-&gt;kg&#39;&#39;&#39;</span>
+        <span class="n">multiplier</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">massDict</span><span class="p">[</span><span class="n">unitFrom</span><span class="p">]</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">massDict</span><span class="p">[</span><span class="n">unitTo</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">amount</span> <span class="o">*</span> <span class="n">multiplier</span></div>
+    
+<div class="viewcode-block" id="Conversion.convertVolumeToVolume"><a class="viewcode-back" href="../Ohjelman_rakenne.html#conversion.Conversion.convertVolumeToVolume">[docs]</a>    <span class="k">def</span> <span class="nf">convertVolumeToVolume</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">amount</span><span class="p">,</span><span class="n">unitFrom</span><span class="p">,</span><span class="n">unitTo</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Muuttaa tilavuus yksikön tilavuus yksiköksi, esim. l -&gt; m3&#39;&#39;&#39;</span>
+        <span class="n">multiplier</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">volumeDict</span><span class="p">[</span><span class="n">unitFrom</span><span class="p">]</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">volumeDict</span><span class="p">[</span><span class="n">unitTo</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">amount</span> <span class="o">*</span> <span class="n">multiplier</span></div>
+    
+<div class="viewcode-block" id="Conversion.convertMassToVolume"><a class="viewcode-back" href="../Ohjelman_rakenne.html#conversion.Conversion.convertMassToVolume">[docs]</a>    <span class="k">def</span> <span class="nf">convertMassToVolume</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">amount</span><span class="p">,</span><span class="n">unitFrom</span><span class="p">,</span><span class="n">unitTo</span><span class="p">,</span><span class="n">density</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Muuttaa massa yksikön tilavuus yksiköksi, esim. kg -&gt; l. Hyödyntää kaavaa v = m / r&#39;&#39;&#39;</span>
+        <span class="n">volumeM3</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">convertMassToMass</span><span class="p">(</span><span class="n">amount</span><span class="p">,</span> <span class="n">unitFrom</span><span class="p">,</span> <span class="s1">&#39;kg&#39;</span><span class="p">)</span> <span class="o">/</span> <span class="n">density</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">convertVolumeToVolume</span><span class="p">(</span><span class="n">volumeM3</span><span class="p">,</span> <span class="s1">&#39;m3&#39;</span><span class="p">,</span> <span class="n">unitTo</span><span class="p">)</span></div>
+    
+<div class="viewcode-block" id="Conversion.convertVolumeToMass"><a class="viewcode-back" href="../Ohjelman_rakenne.html#conversion.Conversion.convertVolumeToMass">[docs]</a>    <span class="k">def</span> <span class="nf">convertVolumeToMass</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">amount</span><span class="p">,</span><span class="n">unitFrom</span><span class="p">,</span><span class="n">unitTo</span><span class="p">,</span><span class="n">density</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Muuttaa tilavuus yksikön massa yksiköksi, esim. l -&gt; kg. Hyödyntää kaavaa m = v * r&#39;&#39;&#39;</span>
+        <span class="n">massKG</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">convertVolumeToVolume</span><span class="p">(</span><span class="n">amount</span><span class="p">,</span> <span class="n">unitFrom</span><span class="p">,</span> <span class="s1">&#39;m3&#39;</span><span class="p">)</span> <span class="o">*</span> <span class="n">density</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">convertMassToMass</span><span class="p">(</span><span class="n">massKG</span><span class="p">,</span> <span class="s1">&#39;kg&#39;</span><span class="p">,</span> <span class="n">unitTo</span><span class="p">)</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Pikahaku</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Siirry" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, Kimi Päivärinta.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.4.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.7</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>
