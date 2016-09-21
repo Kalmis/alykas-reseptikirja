@@ -1,0 +1,10 @@
+*.pyc
+tokens.conf
+*.json
+*.html
+.DS_STORE
+*_dict
+.project
+.settings
+testing.py
+.pydevproject
